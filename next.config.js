@@ -1,17 +1,14 @@
 /** @type {import('next').NextConfig} */
 
-// SHA-256 hash of the inline theme-detection script in src/app/layout.tsx.
-// If that script is ever changed, recompute with:
-//   printf '<script-content>' | openssl dgst -sha256 -binary | openssl base64
-const THEME_SCRIPT_HASH = "'sha256-qf2BEjOWG/iJcyqzTTD2O5umIzxPf+PkrBbT5t5wnTk='"
-
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
     value: [
       `default-src 'self'`,
-      // Allow the inline theme-detection script by its exact hash; no unsafe-inline needed
-      `script-src 'self' ${THEME_SCRIPT_HASH}`,
+      // Next.js 15 RSC hydration requires inline scripts (self.__next_f.push([...])),
+      // so 'unsafe-inline' is necessary. This still blocks all external script sources.
+      // A nonce-based CSP via middleware would be stricter but adds significant complexity.
+      `script-src 'self' 'unsafe-inline'`,
       // Styles: self + inline (Tailwind / CSS-in-JS inject inline styles at runtime)
       `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
       // Google Fonts and Next.js font optimisation
