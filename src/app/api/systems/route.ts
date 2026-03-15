@@ -9,10 +9,16 @@ export async function GET() {
     fetch(CKAN_URL, { next: { revalidate: 3600 } }),
     fetch(META_URL, { next: { revalidate: 3600 } }),
   ])
+  // F-06: Return a generic error — do not expose upstream HTTP status codes.
   if (!dataRes.ok) {
-    return NextResponse.json({ error: `Upstream error: ${dataRes.status}` }, { status: 502 })
+    return NextResponse.json({ error: 'Unable to retrieve data. Please try again later.' }, { status: 502 })
   }
+
   const [data, meta] = await Promise.all([dataRes.json(), metaRes.json()])
+
+  // F-07: Validate response shape before accessing nested properties.
+  const records: unknown[] = Array.isArray(data?.result?.records) ? data.result.records : []
   const lastModified: string | null = meta?.result?.last_modified ?? meta?.result?.metadata_modified ?? null
-  return NextResponse.json({ records: data.result.records, lastModified })
+
+  return NextResponse.json({ records, lastModified })
 }
