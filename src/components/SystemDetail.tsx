@@ -1,4 +1,6 @@
-import { useEffect } from 'react'
+'use client'
+
+import { useEffect, useRef } from 'react'
 import { AISystem } from '@/lib/types'
 
 interface Props {
@@ -6,12 +8,11 @@ interface Props {
   onClose: () => void
 }
 
-function Section({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-5">
-      <h3 className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
-        <span>{icon}</span>
-        <span>{title}</span>
+    <div className="mb-6">
+      <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+        {title}
       </h3>
       {children}
     </div>
@@ -22,128 +23,127 @@ function Field({ label, value }: { label: string; value?: string }) {
   if (!value?.trim()) return null
   return (
     <div className="mb-3">
-      <dt className="text-xs text-slate-400 mb-0.5">{label}</dt>
-      <dd className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{value}</dd>
+      {label && <dt className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>{label}</dt>}
+      <dd className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{value}</dd>
     </div>
   )
 }
 
-function PillBadge({ value, trueLabel, falseLabel }: { value?: string; trueLabel: string; falseLabel: string }) {
-  const isYes = value === 'Y'
+function Badge({ children, variant = 'default' }: { children: React.ReactNode; variant?: 'default' | 'accent' | 'success' | 'warning' | 'info' }) {
+  const styles = {
+    default: { background: 'var(--bg-hover)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' },
+    accent: { background: 'var(--accent-light)', color: 'var(--accent-text)', border: '1px solid transparent' },
+    success: { background: 'var(--status-production-bg)', color: 'var(--status-production-text)', border: '1px solid transparent' },
+    warning: { background: 'var(--status-development-bg)', color: 'var(--status-development-text)', border: '1px solid transparent' },
+    info: { background: 'var(--status-pilot-bg)', color: 'var(--status-pilot-text)', border: '1px solid transparent' },
+  }
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-      isYes ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
-    }`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${isYes ? 'bg-orange-500' : 'bg-slate-400'}`} />
-      {isYes ? trueLabel : falseLabel}
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium" style={styles[variant]}>
+      {children}
     </span>
   )
 }
 
 function StatusPill({ status }: { status: string }) {
   const s = status?.toLowerCase() ?? ''
-  const { dot, cls } = s.includes('production')
-    ? { dot: 'bg-green-500', cls: 'bg-green-50 text-green-800 border-green-200' }
-    : s.includes('development')
-    ? { dot: 'bg-yellow-500', cls: 'bg-yellow-50 text-yellow-800 border-yellow-200' }
-    : s.includes('pilot') || s.includes('proof')
-    ? { dot: 'bg-blue-500', cls: 'bg-blue-50 text-blue-800 border-blue-200' }
-    : { dot: 'bg-slate-400', cls: 'bg-slate-50 text-slate-700 border-slate-200' }
-
+  const variant = s.includes('production') ? 'success'
+    : s.includes('development') ? 'warning'
+    : s.includes('pilot') || s.includes('proof') ? 'info'
+    : 'default' as const
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${cls}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+    <Badge variant={variant}>
+      <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: 'currentColor' }} aria-hidden="true" />
       {status || '—'}
-    </span>
+    </Badge>
   )
 }
 
 export default function SystemDetail({ system: s, onClose }: Props) {
+  const panelRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+  const titleId = 'system-detail-title'
+
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    previousFocusRef.current = document.activeElement as HTMLElement
+    panelRef.current?.focus()
+    return () => { previousFocusRef.current?.focus() }
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab') return
+      const panel = panelRef.current
+      if (!panel) return
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'))
+      if (focusable.length === 0) return
+      const first = focusable[0], last = focusable[focusable.length - 1]
+      if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus() } }
+      else { if (document.activeElement === last) { e.preventDefault(); first.focus() } }
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [onClose])
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40" onClick={onClose} />
+      <div className="fixed inset-0 z-40 animate-fade-in" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={onClose} aria-hidden="true" />
 
-      {/* Panel */}
-      <div className="fixed top-0 right-0 h-full w-full max-w-xl bg-white z-50 flex flex-col shadow-2xl">
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}
+        className="fixed top-0 right-0 h-full w-full max-w-xl z-50 flex flex-col animate-slide-in-right focus:outline-none transition-colors"
+        style={{ background: 'var(--bg-surface)', borderLeft: '1px solid var(--border-color)', boxShadow: 'var(--shadow-lg)' }}
+      >
         {/* Header */}
-        <div className="bg-slate-900 text-white px-6 py-4 flex items-start justify-between gap-4">
+        <div className="px-6 py-5 flex items-start justify-between gap-4 shrink-0" style={{ borderBottom: '1px solid var(--border-color)' }}>
           <div className="min-w-0">
-            <p className="text-xs text-slate-400 font-mono mb-1">{s.ai_register_id}</p>
-            <h2 className="text-base font-semibold leading-snug">{s.name_ai_system_en || s.name_ai_system_fr}</h2>
-            <p className="text-sm text-slate-300 mt-1">{s.government_organization}</p>
+            <p className="text-xs font-medium mb-1" style={{ color: 'var(--accent)' }}>{s.ai_register_id}</p>
+            <h2 id={titleId} className="text-lg font-semibold leading-snug" style={{ color: 'var(--text-primary)' }}>
+              {s.name_ai_system_en || s.name_ai_system_fr}
+            </h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{s.government_organization}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white text-lg leading-none mt-0.5 shrink-0 transition-colors"
-            aria-label="Close"
+            className="h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            aria-label="Close system detail panel"
           >
-            ✕
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
         {/* Status strip */}
-        <div className="bg-slate-50 border-b border-slate-200 px-6 py-3 flex flex-wrap gap-2">
+        <div className="px-6 py-3 flex flex-wrap gap-2 shrink-0" style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-base)' }}>
           <StatusPill status={s.ai_system_status_en} />
-          {s.status_date && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-              {s.status_date}
-            </span>
-          )}
-          <PillBadge value={s.involves_personal_information} trueLabel="Handles personal data" falseLabel="No personal data" />
-          {s.notification_ai === 'Y' && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-              Users notified
-            </span>
-          )}
+          {s.status_date && <Badge>{s.status_date}</Badge>}
+          <Badge variant={s.involves_personal_information === 'Y' ? 'accent' : 'default'}>
+            {s.involves_personal_information === 'Y' ? 'Handles personal data' : 'No personal data'}
+          </Badge>
+          {s.notification_ai === 'Y' && <Badge variant="info">Users notified</Badge>}
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          {/* Overview */}
-          <Section icon="📋" title="Overview">
-            <Field label="Description" value={s.description_ai_system_en} />
-            <Field label="Primary Users" value={s.ai_system_primary_users_en} />
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          <Section title="Overview">
+            <dl><Field label="Description" value={s.description_ai_system_en} /><Field label="Primary Users" value={s.ai_system_primary_users_en} /></dl>
           </Section>
-
-          {/* Technical */}
-          <Section icon="⚙️" title="Technical">
+          <Section title="Technical Details">
             <dl>
-              {s.developed_by_en && (
-                <div className="mb-3 flex gap-3">
-                  <dt className="text-xs text-slate-400 w-28 shrink-0 pt-0.5">Developed by</dt>
-                  <dd className="text-sm text-slate-700">{s.developed_by_en}</dd>
-                </div>
-              )}
-              {s.vendor_information && (
-                <div className="mb-3 flex gap-3">
-                  <dt className="text-xs text-slate-400 w-28 shrink-0 pt-0.5">Vendor</dt>
-                  <dd className="text-sm text-slate-700">{s.vendor_information}</dd>
-                </div>
-              )}
+              {s.developed_by_en && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>Developed by</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.developed_by_en}</dd></div>}
+              {s.vendor_information && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>Vendor</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.vendor_information}</dd></div>}
+              <Field label="Capabilities" value={s.ai_system_capabilities_en} />
+              <Field label="Data Sources" value={s.data_sources_en} />
             </dl>
-            <Field label="Capabilities" value={s.ai_system_capabilities_en} />
-            <Field label="Data Sources" value={s.data_sources_en} />
           </Section>
-
-          {/* Privacy */}
           {(s.involves_personal_information === 'Y' || s.personal_information_banks_en) && (
-            <Section icon="🔒" title="Privacy">
-              <Field label="Personal Information Banks" value={s.personal_information_banks_en} />
-            </Section>
+            <Section title="Privacy"><dl><Field label="Personal Information Banks" value={s.personal_information_banks_en} /></dl></Section>
           )}
-
-          {/* Outcomes */}
           {s.ai_system_results_en && (
-            <Section icon="📈" title="Results & Benefits">
-              <Field label="" value={s.ai_system_results_en} />
-            </Section>
+            <Section title="Results & Benefits"><dl><Field label="" value={s.ai_system_results_en} /></dl></Section>
           )}
         </div>
       </div>
