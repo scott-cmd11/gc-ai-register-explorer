@@ -212,8 +212,8 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
         <caption className="sr-only">
           {systems.length === totalCount ? `All ${totalCount} AI systems` : `Showing ${systems.length} of ${totalCount} AI systems`}
         </caption>
-        <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)' }}>
-          <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+        <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+          <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
                 aria-sort={sortField === col.field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -313,8 +313,8 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
   return (
     <table className="w-full text-sm">
       <caption className="sr-only">{systems.length === totalCount ? `All ${totalCount} AI systems grouped` : `Showing ${systems.length} of ${totalCount} AI systems grouped`}</caption>
-      <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 0 var(--border-color)' }}>
-        <tr>
+      <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
           {config.colHeaders.map((h) => (
             <th key={h.label} scope="col" className={`px-6 py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{h.label}</th>
           ))}
