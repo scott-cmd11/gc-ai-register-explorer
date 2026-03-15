@@ -329,11 +329,23 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
                   background: isHovered ? 'var(--bg-hover)' : 'transparent',
                   opacity: !isActive ? 0.4 : 1,
                 }}
+                tabIndex={onFilterDepartment ? 0 : undefined}
+                role={onFilterDepartment ? 'button' : undefined}
+                aria-label={onFilterDepartment ? `Filter by ${fullName}` : undefined}
                 onMouseEnter={() => setHoveredDept(fullName)}
                 onMouseLeave={() => setHoveredDept(null)}
                 onClick={() => {
                   if (onFilterDepartment) {
-                    // Find the original department value
+                    const match = systems.find((s) => {
+                      const en = s.government_organization?.split(' / ')[0]?.trim()
+                      return en === fullName
+                    })
+                    if (match) onFilterDepartment(match.government_organization)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ' ') && onFilterDepartment) {
+                    e.preventDefault()
                     const match = systems.find((s) => {
                       const en = s.government_organization?.split(' / ')[0]?.trim()
                       return en === fullName
