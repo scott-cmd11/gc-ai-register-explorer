@@ -206,7 +206,7 @@
 }
 
 [data-theme="retro"] .retro-marquee {
-  animation: retro-marquee 12s linear infinite;
+  animation: retro-marquee 30s linear infinite;
 }
 
 .retro-hr {

@@ -29,7 +29,7 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
   if (!isRetro) return null
 
   return (
-    <>
+    <div style={{ marginTop: '64px' }}>
       {/* Scrolling news ticker */}
       <div
         aria-hidden="true"
@@ -139,6 +139,6 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
           </span>
         </div>
       </div>
-    </>
+    </div>
   )
 }
