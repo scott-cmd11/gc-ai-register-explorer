@@ -27,6 +27,7 @@ export default function HomePage() {
   const [selectedSystem, setSelectedSystem] = useState<AISystem | null>(null)
   const [groupBy, setGroupBy] = useState<GroupBy>('dept')
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const tableRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,6 +39,13 @@ export default function HomePage() {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+  useEffect(() => {
+    if (query && !loading) {
+      setGroupBy('flat')
+      tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [query, loading])
 
   useEffect(() => {
     fetchAllSystems()
@@ -256,7 +264,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            <SystemsTable systems={filtered} sortField={sortField} sortDir={sortDir} onSort={handleSort} onSelect={setSelectedSystem} groupBy={groupBy} totalCount={systems.length} />
+            <div ref={tableRef}>
+              <SystemsTable systems={filtered} sortField={sortField} sortDir={sortDir} onSort={handleSort} onSelect={setSelectedSystem} groupBy={groupBy} totalCount={systems.length} />
+            </div>
           </>
         )}
       </main>
