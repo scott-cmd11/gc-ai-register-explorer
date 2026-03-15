@@ -31,6 +31,7 @@ export interface Filters {
   status: string
   personalInfo: string
   developedBy: string
+  vendor: string
   notificationAi: string
 }
 

@@ -208,7 +208,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
   ]
   return (
     <>
-      <table ref={tableTopRef} className="w-full text-sm">
+      <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
         <caption className="sr-only">
           {systems.length === totalCount ? `All ${totalCount} AI systems` : `Showing ${systems.length} of ${totalCount} AI systems`}
         </caption>

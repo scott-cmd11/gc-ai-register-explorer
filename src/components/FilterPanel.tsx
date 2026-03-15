@@ -4,6 +4,7 @@ interface Options {
   departments: string[]
   statuses: string[]
   developedBy: string[]
+  vendors: string[]
 }
 
 interface Props {
@@ -81,6 +82,7 @@ export default function FilterPanel({ filters, onChange, options, onClear }: Pro
   if (filters.status) activeFilters.push({ label: filters.status, clear: () => onChange({ ...filters, status: '' }) })
   if (filters.personalInfo) activeFilters.push({ label: filters.personalInfo === 'Y' ? 'Has personal data' : 'No personal data', clear: () => onChange({ ...filters, personalInfo: '' }) })
   if (filters.developedBy) activeFilters.push({ label: filters.developedBy, clear: () => onChange({ ...filters, developedBy: '' }) })
+  if (filters.vendor) activeFilters.push({ label: filters.vendor, clear: () => onChange({ ...filters, vendor: '' }) })
   if (filters.notificationAi) activeFilters.push({ label: filters.notificationAi === 'Y' ? 'Users notified' : 'No notification', clear: () => onChange({ ...filters, notificationAi: '' }) })
 
   return (
@@ -118,6 +120,12 @@ export default function FilterPanel({ filters, onChange, options, onClear }: Pro
           value={filters.developedBy} options={options.developedBy}
           placeholder="Developed By"
           onChange={(v) => onChange({ ...filters, developedBy: v })}
+        />
+        <ToolbarSelect
+          id="filter-vendor" label="Vendor"
+          value={filters.vendor} options={options.vendors}
+          placeholder="Vendor"
+          onChange={(v) => onChange({ ...filters, vendor: v })}
         />
         <ToolbarSelect
           id="filter-notification" label="Users Notified"

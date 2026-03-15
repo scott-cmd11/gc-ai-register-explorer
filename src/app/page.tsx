@@ -20,7 +20,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Filters>({
-    department: '', status: '', personalInfo: '', developedBy: '', notificationAi: '',
+    department: '', status: '', personalInfo: '', developedBy: '', vendor: '', notificationAi: '',
   })
   const [sortField, setSortField] = useState<SortField>('name_ai_system_en')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
@@ -60,6 +60,7 @@ export default function HomePage() {
       departments: unique(systems.map((s) => s.government_organization)),
       statuses: unique(systems.map((s) => s.ai_system_status_en)),
       developedBy: unique(systems.map((s) => s.developed_by_en)),
+      vendors: unique(systems.map((s) => s.vendor_information)),
     }
   }, [systems])
 
@@ -71,6 +72,7 @@ export default function HomePage() {
       if (filters.status && s.ai_system_status_en !== filters.status) return false
       if (filters.personalInfo && s.involves_personal_information !== filters.personalInfo) return false
       if (filters.developedBy && s.developed_by_en !== filters.developedBy) return false
+      if (filters.vendor && s.vendor_information !== filters.vendor) return false
       if (filters.notificationAi && s.notification_ai !== filters.notificationAi) return false
       return true
     })
@@ -91,7 +93,7 @@ export default function HomePage() {
 
   const clearFilters = () => {
     setQuery('')
-    setFilters({ department: '', status: '', personalInfo: '', developedBy: '', notificationAi: '' })
+    setFilters({ department: '', status: '', personalInfo: '', developedBy: '', vendor: '', notificationAi: '' })
   }
 
   const exportCsv = () => {
@@ -265,7 +267,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div ref={tableRef}>
+            <div ref={tableRef} style={{ scrollMarginTop: '5rem' }}>
               <SystemsTable systems={filtered} sortField={sortField} sortDir={sortDir} onSort={handleSort} onSelect={setSelectedSystem} groupBy={groupBy} totalCount={systems.length} />
             </div>
           </>
