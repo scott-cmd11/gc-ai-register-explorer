@@ -11,6 +11,7 @@ import SystemsTable, { GroupBy } from '@/components/SystemsTable'
 import SystemDetail from '@/components/SystemDetail'
 import AboutSection from '@/components/AboutSection'
 import RetroOverlay from '@/components/RetroOverlay'
+import ScrollIndicator from '@/components/ScrollIndicator'
 
 export default function HomePage() {
   const [systems, setSystems] = useState<AISystem[]>([])
@@ -107,6 +108,7 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <RetroOverlay />
+      <ScrollIndicator />
 
       <div className="relative overflow-hidden w-full pt-32 pb-20 md:pt-40 md:pb-28 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>
         <div className="max-w-screen-md mx-auto px-6 flex flex-col items-center text-center">
@@ -121,7 +123,7 @@ export default function HomePage() {
           
           <div className="w-full relative group max-w-2xl text-left">
             <div className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-0 group-hover:opacity-100" style={{ background: 'var(--ring)', opacity: 0.15, filter: 'blur(20px)' }} />
-            <div className="relative flex items-center w-full rounded-2xl overflow-hidden transition-all duration-300 bg-white dark:bg-zinc-950" style={{ boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)' }}>
+            <div className="relative flex items-center w-full rounded-2xl overflow-hidden transition-all duration-300" style={{ boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-surface)' }}>
               <svg className="absolute left-5 h-6 w-6 pointer-events-none" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>

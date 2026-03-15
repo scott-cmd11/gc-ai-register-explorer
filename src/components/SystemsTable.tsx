@@ -206,7 +206,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
         <caption className="sr-only">
           {systems.length === totalCount ? `All ${totalCount} AI systems` : `Showing ${systems.length} of ${totalCount} AI systems`}
         </caption>
-        <thead className="sticky top-[3.5rem] z-10" style={{ background: 'var(--bg-surface)' }}>
+        <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)' }}>
           <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
@@ -307,8 +307,8 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
   return (
     <table className="w-full text-sm">
       <caption className="sr-only">{systems.length === totalCount ? `All ${totalCount} AI systems grouped` : `Showing ${systems.length} of ${totalCount} AI systems grouped`}</caption>
-      <thead className="sticky top-[3.5rem] z-10" style={{ background: 'var(--bg-surface)' }}>
-        <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+      <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 0 var(--border-color)' }}>
+        <tr>
           {config.colHeaders.map((h) => (
             <th key={h.label} scope="col" className={`px-6 py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{h.label}</th>
           ))}
@@ -372,8 +372,8 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
     )
   }
   return (
-    <div className="rounded-lg overflow-hidden transition-colors" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
-      <div className="overflow-x-auto">
+    <div className="rounded-lg transition-colors" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+      <div>
         {groupBy === 'dept' && <GroupedTable systems={systems} onSelect={onSelect} config={DEPT_CONFIG} totalCount={totalCount} />}
         {groupBy === 'vendor' && <GroupedTable systems={systems} onSelect={onSelect} config={VENDOR_CONFIG} totalCount={totalCount} />}
         {groupBy === 'flat' && <FlatTable systems={systems} sortField={sortField} sortDir={sortDir} onSort={onSort} onSelect={onSelect} totalCount={totalCount} />}
