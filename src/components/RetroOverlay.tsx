@@ -30,30 +30,6 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
 
   return (
     <>
-      {/* Breaking news ticker bar */}
-      <div
-        aria-hidden="true"
-        style={{
-          background: '#CC0000',
-          padding: '4px 0',
-          textAlign: 'center',
-          borderBottom: '3px outset #C0C0C0',
-        }}
-      >
-        <span
-          style={{
-            color: '#FFFFFF',
-            fontWeight: 'bold',
-            fontSize: '13px',
-            fontFamily: "'Times New Roman', serif",
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-          }}
-        >
-          ⚡ BREAKING NEWS ⚡ <span className="retro-blink">LIVE</span>
-        </span>
-      </div>
-
       {/* Scrolling news ticker */}
       <div
         aria-hidden="true"
@@ -83,31 +59,6 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
           &nbsp;&nbsp;|&nbsp;&nbsp;
           ★ TECH — Best viewed at 800×600 resolution with Netscape Navigator 4.0
         </div>
-      </div>
-
-      {/* Navigation bar — classic 90s news nav */}
-      <div
-        aria-hidden="true"
-        style={{
-          background: '#C0C0C0',
-          padding: '3px 0',
-          textAlign: 'center',
-          borderBottom: '2px outset #C0C0C0',
-          fontFamily: "'Times New Roman', serif",
-          fontSize: '12px',
-        }}
-      >
-        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>HOME</span>
-        {' | '}
-        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>TECHNOLOGY</span>
-        {' | '}
-        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>GOVERNMENT</span>
-        {' | '}
-        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>SEARCH</span>
-        {' | '}
-        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>ABOUT</span>
-        {' | '}
-        <span style={{ color: '#CC0000', fontWeight: 'bold', cursor: 'pointer' }}>WEBMASTER</span>
       </div>
 
       {/* Rainbow HR */}
