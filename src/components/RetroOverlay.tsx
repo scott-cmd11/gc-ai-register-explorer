@@ -64,37 +64,6 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
       {/* Rainbow HR */}
       <div className="retro-hr" aria-hidden="true" />
 
-      {/* Hit counter + info bar */}
-      <div
-        aria-hidden="true"
-        style={{
-          background: '#FFFFCC',
-          textAlign: 'center',
-          padding: '4px 0',
-          borderBottom: '1px solid #808080',
-          fontFamily: "'Times New Roman', serif",
-          fontSize: '11px',
-          color: '#666666',
-        }}
-      >
-        You are visitor #{' '}
-        <span
-          style={{
-            fontFamily: "'Courier New', monospace",
-            background: '#000',
-            color: '#00FF00',
-            padding: '1px 6px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            border: '2px inset #808080',
-          }}
-        >
-          004,782
-        </span>
-        {' '} since Jan 1, 1997 &nbsp;|&nbsp; Last updated: {lastModified ? new Date(lastModified).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'} &nbsp;|&nbsp;
-        <span style={{ fontStyle: 'italic' }}>This page is under construction</span> 🚧
-      </div>
-
 
     </div>
   )
