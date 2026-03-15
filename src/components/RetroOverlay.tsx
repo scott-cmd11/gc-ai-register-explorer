@@ -95,50 +95,7 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
         <span style={{ fontStyle: 'italic' }}>This page is under construction</span> 🚧
       </div>
 
-      {/* "Best viewed in" badge — fixed bottom-right */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          bottom: '12px',
-          right: '12px',
-          zIndex: 50,
-          background: '#FFFFEE',
-          border: '2px outset #C0C0C0',
-          padding: '8px 12px',
-          fontSize: '10px',
-          color: '#000',
-          fontFamily: "'Times New Roman', serif",
-          textAlign: 'center',
-          maxWidth: '180px',
-          lineHeight: 1.5,
-        }}
-      >
-        <div style={{ fontWeight: 'bold', color: '#000080', marginBottom: '2px' }}>
-          🌐 Best viewed in
-        </div>
-        <div style={{ fontWeight: 'bold', fontSize: '12px' }}>
-          Netscape Navigator 4.0
-        </div>
-        <div>at 800×600 resolution</div>
-        <div className="retro-hr" style={{ margin: '5px 0', height: '2px' }} />
-        <div>📝 Made with Notepad</div>
-        <div style={{ marginTop: '3px' }}>
-          <span
-            style={{
-              display: 'inline-block',
-              background: '#000080',
-              color: '#FFFF00',
-              padding: '1px 6px',
-              fontSize: '9px',
-              fontWeight: 'bold',
-              border: '2px outset #808080',
-            }}
-          >
-            ⚡ GeoCities ⚡
-          </span>
-        </div>
-      </div>
+
     </div>
   )
 }
