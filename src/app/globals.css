@@ -77,47 +77,47 @@
   color-scheme: dark;
 }
 
-/* ── 90s Retro theme ───────────────────────────────────────────────── */
+/* ── 90s Retro theme — News site style (CNN/Yahoo circa 1998) ─────── */
 [data-theme="retro"] {
-  --bg-base: #000080;
-  --bg-surface: #C0C0C0;
-  --bg-elevated: #FFFFFF;
-  --bg-hover: #FFFF00;
-  --bg-hover-strong: #FF00FF;
+  --bg-base: #D4D0C8;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #FFFFEE;
+  --bg-hover: #FFFFCC;
+  --bg-hover-strong: #CCCCFF;
   --border-color: #808080;
-  --border-subtle: #A0A0A0;
-  --text-primary: #FFFF00;
-  --text-secondary: #00FF00;
-  --text-tertiary: #FF69B4;
-  --text-muted: #00FFFF;
-  --accent: #FF0000;
-  --accent-light: rgba(255, 0, 0, 0.2);
-  --accent-text: #FF00FF;
-  --accent-hover: #FF00FF;
-  --ring: rgba(255, 0, 0, 0.4);
-  --status-production: #00FF00;
-  --status-production-bg: #003300;
-  --status-production-text: #00FF00;
-  --status-development: #FFFF00;
-  --status-development-bg: #333300;
-  --status-development-text: #FFFF00;
-  --status-pilot: #00FFFF;
-  --status-pilot-bg: #003333;
-  --status-pilot-text: #00FFFF;
-  --status-decommission: #FF0000;
-  --status-decommission-bg: #330000;
-  --status-decommission-text: #FF0000;
-  --shadow-sm: 2px 2px 0 #000;
-  --shadow-md: 3px 3px 0 #000;
-  --shadow-lg: 4px 4px 0 #000;
+  --border-subtle: #C0C0C0;
+  --text-primary: #000000;
+  --text-secondary: #000080;
+  --text-tertiary: #666666;
+  --text-muted: #808080;
+  --accent: #CC0000;
+  --accent-light: #FFEEEE;
+  --accent-text: #CC0000;
+  --accent-hover: #990000;
+  --ring: rgba(204, 0, 0, 0.3);
+  --status-production: #006600;
+  --status-production-bg: #CCFFCC;
+  --status-production-text: #006600;
+  --status-development: #996600;
+  --status-development-bg: #FFFFCC;
+  --status-development-text: #996600;
+  --status-pilot: #000080;
+  --status-pilot-bg: #CCCCFF;
+  --status-pilot-text: #000080;
+  --status-decommission: #CC0000;
+  --status-decommission-bg: #FFCCCC;
+  --status-decommission-text: #CC0000;
+  --shadow-sm: 2px 2px 0 #808080;
+  --shadow-md: 3px 3px 0 #808080;
+  --shadow-lg: 4px 4px 0 #808080;
   --radius: 0px;
   color-scheme: light;
 }
 
-/* Retro font override */
+/* Retro font override — Times New Roman for that 90s news feel */
 [data-theme="retro"] body,
 [data-theme="retro"] body * {
-  font-family: 'Comic Sans MS', 'Comic Sans', cursive !important;
+  font-family: 'Times New Roman', Times, Georgia, serif !important;
 }
 
 /* Retro: kill all border-radius */
@@ -133,19 +133,13 @@
   border-radius: 0 !important;
 }
 
-/* Retro: tiled star background + explicit bg color for instant re-evaluation */
+/* Retro: Win95 gray background + explicit bg color for instant re-evaluation */
 [data-theme="retro"] body {
-  background-color: #000080 !important;
-  background-image:
-    radial-gradient(circle, #FFFF00 1px, transparent 1px),
-    radial-gradient(circle, #FFFFFF 0.5px, transparent 0.5px);
-  background-size: 60px 60px, 35px 35px;
-  background-position: 0 0, 17px 17px;
-  cursor: crosshair;
+  background-color: #D4D0C8 !important;
+  background-image: none;
 }
 
-/* Retro: crosshair cursor except on clickable */
-[data-theme="retro"] * { cursor: crosshair; }
+/* Retro: default cursor, pointer on clickable */
 [data-theme="retro"] button,
 [data-theme="retro"] a,
 [data-theme="retro"] select,
@@ -158,13 +152,16 @@
   border: 3px outset #C0C0C0 !important;
 }
 
-/* Retro: links are blue and underlined */
+/* Retro: classic web links — blue, underlined, purple visited */
 [data-theme="retro"] a {
-  color: #0000FF !important;
+  color: #0000CC !important;
   text-decoration: underline !important;
 }
 [data-theme="retro"] a:visited {
-  color: #800080 !important;
+  color: #660099 !important;
+}
+[data-theme="retro"] a:hover {
+  color: #CC0000 !important;
 }
 
 /* Retro: scrollbar */

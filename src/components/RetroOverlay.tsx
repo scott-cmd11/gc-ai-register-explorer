@@ -22,127 +22,156 @@ export default function RetroOverlay() {
 
   return (
     <>
-      {/* Construction banner */}
+      {/* Breaking news ticker bar */}
       <div
         aria-hidden="true"
         style={{
-          background: 'repeating-linear-gradient(45deg, #000 0px, #000 10px, #FFD700 10px, #FFD700 20px)',
-          padding: '8px 0',
+          background: '#CC0000',
+          padding: '4px 0',
           textAlign: 'center',
           borderBottom: '3px outset #C0C0C0',
         }}
       >
         <span
           style={{
-            background: '#FFD700',
-            color: '#000',
+            color: '#FFFFFF',
             fontWeight: 'bold',
-            padding: '4px 16px',
-            fontSize: '14px',
-            fontFamily: "'Comic Sans MS', cursive",
+            fontSize: '13px',
+            fontFamily: "'Times New Roman', serif",
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
           }}
         >
-          🚧 <span className="retro-blink">THIS SITE IS UNDER CONSTRUCTION</span> 🚧
+          ⚡ BREAKING NEWS ⚡ <span className="retro-blink">LIVE</span>
         </span>
       </div>
 
-      {/* Marquee */}
+      {/* Scrolling news ticker */}
       <div
         aria-hidden="true"
         style={{
           background: '#000080',
           overflow: 'hidden',
-          height: '28px',
-          borderBottom: '2px solid #FFFF00',
+          height: '26px',
+          borderBottom: '2px solid #C0C0C0',
         }}
       >
         <div
           className="retro-marquee"
           style={{
             whiteSpace: 'nowrap',
-            lineHeight: '28px',
-            fontSize: '14px',
-            fontFamily: "'Comic Sans MS', cursive",
+            lineHeight: '26px',
+            fontSize: '13px',
+            fontFamily: "'Times New Roman', serif",
+            color: '#FFFF00',
+            fontWeight: 'bold',
           }}
         >
-          <span className="retro-rainbow">
-            ★★★ Welcome to the GC AI Register Explorer!!! ★★★ Best viewed at 800x600 resolution!!! ★★★ Sign my Guestbook!!! ★★★ You are visitor #{' '}
-            {String(Math.floor(Math.random() * 900000 + 100000)).padStart(6, '0')} ★★★
-          </span>
+          ★ TECHNOLOGY — Government of Canada launches AI Register with 409 systems catalogued
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          ★ UPDATES — Registry last modified November 2025 — 42 departments reporting
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          ★ DATA — 160 systems in production, 87 handle personal information
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          ★ TECH — Best viewed at 800×600 resolution with Netscape Navigator 4.0
         </div>
+      </div>
+
+      {/* Navigation bar — classic 90s news nav */}
+      <div
+        aria-hidden="true"
+        style={{
+          background: '#C0C0C0',
+          padding: '3px 0',
+          textAlign: 'center',
+          borderBottom: '2px outset #C0C0C0',
+          fontFamily: "'Times New Roman', serif",
+          fontSize: '12px',
+        }}
+      >
+        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>HOME</span>
+        {' | '}
+        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>TECHNOLOGY</span>
+        {' | '}
+        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>GOVERNMENT</span>
+        {' | '}
+        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>SEARCH</span>
+        {' | '}
+        <span style={{ color: '#000080', fontWeight: 'bold', cursor: 'pointer' }}>ABOUT</span>
+        {' | '}
+        <span style={{ color: '#CC0000', fontWeight: 'bold', cursor: 'pointer' }}>WEBMASTER</span>
       </div>
 
       {/* Rainbow HR */}
       <div className="retro-hr" aria-hidden="true" />
 
-      {/* Visitor counter */}
+      {/* Hit counter + info bar */}
       <div
         aria-hidden="true"
         style={{
-          background: '#000',
+          background: '#FFFFCC',
           textAlign: 'center',
-          padding: '6px 0',
-          borderBottom: '2px solid #00FF00',
+          padding: '4px 0',
+          borderBottom: '1px solid #808080',
+          fontFamily: "'Times New Roman', serif",
+          fontSize: '11px',
+          color: '#666666',
         }}
       >
+        You are visitor #{' '}
         <span
           style={{
             fontFamily: "'Courier New', monospace",
+            background: '#000',
             color: '#00FF00',
-            fontSize: '13px',
-            letterSpacing: '2px',
+            padding: '1px 6px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            border: '2px inset #808080',
           }}
         >
-          [ You are visitor #{' '}
-          <span style={{ color: '#00FF00', fontWeight: 'bold', fontSize: '16px' }}>
-            004,782
-          </span>{' '}
-          since 1997 ]
+          004,782
         </span>
+        {' '} since Jan 1, 1997 &nbsp;|&nbsp; Last updated: November 25, 2025 &nbsp;|&nbsp;
+        <span style={{ fontStyle: 'italic' }}>This page is under construction</span> 🚧
       </div>
 
-      {/* Netscape badge — fixed bottom-right */}
+      {/* "Best viewed in" badge — fixed bottom-right */}
       <div
         aria-hidden="true"
         style={{
           position: 'fixed',
-          bottom: '16px',
-          right: '16px',
+          bottom: '12px',
+          right: '12px',
           zIndex: 50,
-          background: '#C0C0C0',
-          border: '3px outset #C0C0C0',
-          padding: '10px 14px',
-          fontSize: '11px',
+          background: '#FFFFEE',
+          border: '2px outset #C0C0C0',
+          padding: '8px 12px',
+          fontSize: '10px',
           color: '#000',
-          fontFamily: "'Comic Sans MS', cursive",
+          fontFamily: "'Times New Roman', serif",
           textAlign: 'center',
-          maxWidth: '200px',
+          maxWidth: '180px',
           lineHeight: 1.5,
         }}
       >
-        <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+        <div style={{ fontWeight: 'bold', color: '#000080', marginBottom: '2px' }}>
           🌐 Best viewed in
         </div>
-        <div
-          style={{
-            fontWeight: 'bold',
-            color: '#000080',
-            fontSize: '13px',
-          }}
-        >
+        <div style={{ fontWeight: 'bold', fontSize: '12px' }}>
           Netscape Navigator 4.0
         </div>
-        <div>at 800×600</div>
-        <div className="retro-hr" style={{ margin: '6px 0', height: '3px' }} />
+        <div>at 800×600 resolution</div>
+        <div className="retro-hr" style={{ margin: '5px 0', height: '2px' }} />
         <div>📝 Made with Notepad</div>
-        <div style={{ marginTop: '4px' }}>
+        <div style={{ marginTop: '3px' }}>
           <span
             style={{
               display: 'inline-block',
               background: '#000080',
               color: '#FFFF00',
-              padding: '2px 8px',
-              fontSize: '10px',
+              padding: '1px 6px',
+              fontSize: '9px',
               fontWeight: 'bold',
               border: '2px outset #808080',
             }}
@@ -150,35 +179,6 @@ export default function RetroOverlay() {
             ⚡ GeoCities ⚡
           </span>
         </div>
-      </div>
-
-      {/* Guestbook link bar */}
-      <div
-        aria-hidden="true"
-        style={{
-          background: '#C0C0C0',
-          textAlign: 'center',
-          padding: '4px 0',
-          borderBottom: '3px outset #C0C0C0',
-          fontFamily: "'Comic Sans MS', cursive",
-          fontSize: '12px',
-        }}
-      >
-        <span style={{ color: '#0000FF', textDecoration: 'underline', cursor: 'pointer' }}>
-          📖 Sign my Guestbook
-        </span>
-        {' | '}
-        <span style={{ color: '#0000FF', textDecoration: 'underline', cursor: 'pointer' }}>
-          💌 Email me
-        </span>
-        {' | '}
-        <span style={{ color: '#0000FF', textDecoration: 'underline', cursor: 'pointer' }}>
-          🔗 Cool Links
-        </span>
-        {' | '}
-        <span style={{ color: '#0000FF', textDecoration: 'underline', cursor: 'pointer' }}>
-          🏠 Home
-        </span>
       </div>
     </>
   )

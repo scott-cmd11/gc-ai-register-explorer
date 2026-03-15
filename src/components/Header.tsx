@@ -88,7 +88,7 @@ function RetroToggle() {
       aria-label={isRetro ? 'Disable 90s retro mode' : 'Enable 90s retro mode'}
       className="h-9 px-2.5 rounded-md flex items-center justify-center gap-1.5 transition-colors shrink-0 text-xs font-medium"
       style={isRetro
-        ? { color: '#FF00FF', background: '#C0C0C0', border: '3px outset #C0C0C0', fontFamily: "'Comic Sans MS', cursive" }
+        ? { color: '#CC0000', background: '#C0C0C0', border: '3px outset #C0C0C0', fontFamily: "'Times New Roman', serif", fontWeight: 'bold' }
         : { color: 'var(--text-tertiary)' }
       }
       onMouseEnter={(e) => { if (!isRetro) e.currentTarget.style.background = 'var(--bg-hover)' }}

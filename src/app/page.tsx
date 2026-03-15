@@ -110,17 +110,9 @@ export default function HomePage() {
 
       <div className="relative overflow-hidden w-full pt-32 pb-20 md:pt-40 md:pb-28 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>
         <div className="max-w-screen-md mx-auto px-6 flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-6" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', boxShadow: 'var(--shadow-sm)' }}>
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: 'var(--status-production)' }}></span>
-              <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: 'var(--status-production)' }}></span>
-            </span>
-            Canada AI Directory
-          </div>
-          
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            Canadian AI <br className="hidden md:block"/>
-            <span style={{ color: 'var(--text-muted)' }}>Landscape Explorer</span>
+            AI Register <br className="hidden md:block"/>
+            <span style={{ color: 'var(--text-muted)' }}>Explorer</span>
           </h1>
           
           <p className="text-base md:text-lg mb-10 max-w-xl" style={{ color: 'var(--text-secondary)' }}>
