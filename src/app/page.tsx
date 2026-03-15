@@ -40,12 +40,12 @@ export default function HomePage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  useEffect(() => {
+  const scrollToResults = () => {
     if (query && !loading) {
       setGroupBy('flat')
       tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-  }, [query, loading])
+  }
 
   useEffect(() => {
     fetchAllSystems()
@@ -146,6 +146,7 @@ export default function HomePage() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); scrollToResults() } }}
                 placeholder="Search systems, departments, vendors…"
                 className="w-full h-16 pl-14 pr-16 text-lg bg-transparent outline-none ring-0"
                 style={{ color: 'var(--text-primary)' }}

@@ -214,7 +214,6 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
         title="Systems by Status"
         ariaLabel={`Bar chart: ${byStatus.map((d) => `${d.name} ${d.count}`).join(', ')}`}
         srTable={statusSrTable}
-        hint={onFilterStatus ? 'Click to filter' : undefined}
       >
         <ResponsiveContainer width="100%" height={200}>
           <BarChart
@@ -316,7 +315,6 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
         title="Top Departments"
         ariaLabel={`Top departments: ${byDept.map((d) => `${d.fullName} ${d.count}`).join(', ')}`}
         srTable={deptSrTable}
-        hint={onFilterDepartment ? 'Click to filter' : undefined}
       >
         <div className="space-y-1.5" aria-hidden="true">
           {byDept.map(({ fullName, label, count }, i) => {
