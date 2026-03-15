@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, Fragment } from 'react'
+import { useState, useMemo, useRef, Fragment } from 'react'
 import { AISystem, SortDir, SortField } from '@/lib/types'
 
 export type GroupBy = 'dept' | 'vendor' | 'flat'
@@ -186,11 +186,17 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
 
 function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }: Omit<Props, 'groupBy'>) {
   const [page, setPage] = useState(1)
+  const tableTopRef = useRef<HTMLTableElement>(null)
   const totalPages = Math.ceil(systems.length / PAGE_SIZE)
   const paged = useMemo(() => systems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [systems, page])
 
   // Reset to page 1 when data changes
   useMemo(() => { if (page > totalPages && totalPages > 0) setPage(1) }, [systems.length])
+
+  const handlePageChange = (p: number) => {
+    setPage(p)
+    tableTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   const columns: { label: string; field: SortField; className?: string }[] = [
     { label: 'System', field: 'name_ai_system_en', className: 'min-w-[220px]' },
@@ -202,7 +208,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
   ]
   return (
     <>
-      <table className="w-full text-sm">
+      <table ref={tableTopRef} className="w-full text-sm">
         <caption className="sr-only">
           {systems.length === totalCount ? `All ${totalCount} AI systems` : `Showing ${systems.length} of ${totalCount} AI systems`}
         </caption>
@@ -223,7 +229,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
           {paged.map((s, i) => <SystemRow key={s.ai_register_id ?? i} s={s} onSelect={onSelect} showDept showVendor />)}
         </tbody>
       </table>
-      <Pagination current={page} total={totalPages} onChange={setPage} />
+      <Pagination current={page} total={totalPages} onChange={handlePageChange} />
     </>
   )
 }
