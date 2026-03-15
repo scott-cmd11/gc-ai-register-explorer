@@ -40,7 +40,7 @@ export default function AboutSection() {
             </div>
           </div>
           <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-            <Link href="/about" className="hover:underline transition-colors">About &amp; Contact</Link>
+            <Link href="/about" className="hover:underline transition-colors">About</Link>
             <span aria-hidden="true">·</span>
             <Link href="/privacy" className="hover:underline transition-colors">Privacy Policy</Link>
             <span aria-hidden="true">·</span>
