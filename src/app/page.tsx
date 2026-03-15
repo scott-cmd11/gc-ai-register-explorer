@@ -56,11 +56,12 @@ export default function HomePage() {
 
   const filterOptions = useMemo(() => {
     const unique = (arr: string[]) => Array.from(new Set(arr.filter(Boolean).map((s) => s.trim()))).sort()
+    const uniqueSplit = (arr: string[]) => Array.from(new Set(arr.filter(Boolean).flatMap((s) => s.split(/,\s*/).map((v) => v.trim())).filter(Boolean))).sort()
     return {
       departments: unique(systems.map((s) => s.government_organization)),
       statuses: unique(systems.map((s) => s.ai_system_status_en)),
       developedBy: unique(systems.map((s) => s.developed_by_en)),
-      vendors: unique(systems.map((s) => s.vendor_information)),
+      vendors: uniqueSplit(systems.map((s) => s.vendor_information)),
     }
   }, [systems])
 
@@ -72,7 +73,7 @@ export default function HomePage() {
       if (filters.status && s.ai_system_status_en !== filters.status) return false
       if (filters.personalInfo && s.involves_personal_information !== filters.personalInfo) return false
       if (filters.developedBy && s.developed_by_en !== filters.developedBy) return false
-      if (filters.vendor && s.vendor_information !== filters.vendor) return false
+      if (filters.vendor && !s.vendor_information?.split(/,\s*/).some((v) => v.trim() === filters.vendor)) return false
       if (filters.notificationAi && s.notification_ai !== filters.notificationAi) return false
       return true
     })
