@@ -21,7 +21,7 @@ export default function AboutSection() {
             <a href="https://www.linkedin.com/in/scott-hazlitt/" target="_blank" rel="noopener noreferrer"
               className="underline hover:opacity-70 transition-opacity" style={{ color: 'var(--text-secondary)' }}>
               Scott Hazlitt
-            </a>, a developer based in Manitoba, Canada.
+            </a>, someone exploring what&apos;s possible with AI-assisted coding tools, based in Manitoba, Canada.
           </p>
           <div className="pt-2 space-y-3">
             <div className="flex gap-3 items-start p-3 rounded-lg" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>

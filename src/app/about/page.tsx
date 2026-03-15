@@ -51,7 +51,7 @@ export default function AboutPage() {
           <section>
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Who operates this site?</h2>
             <p>
-              This site is operated by <strong>Scott Hazlitt</strong>, an individual developer based in Manitoba, Canada.
+              This site is operated by <strong>Scott Hazlitt</strong>, a private individual based in Manitoba, Canada, exploring what&apos;s possible with AI-assisted coding tools.
               Scott is not acting on behalf of any company, government body, or organization.
             </p>
             <div className="mt-4 flex flex-col gap-2">
