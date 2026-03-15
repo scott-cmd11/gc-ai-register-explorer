@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-function ThemeToggle() {
+function ThemeToggle({ isRetro }: { isRetro: boolean }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   useEffect(() => {
@@ -15,16 +15,13 @@ function ThemeToggle() {
     }
   }, [])
 
+  if (isRetro) return null
+
   const toggle = () => {
-    // If retro is active, exit retro and apply the new theme
-    if (document.documentElement.getAttribute('data-theme') === 'retro') {
-      localStorage.removeItem('retro')
-    }
     const next = theme === 'light' ? 'dark' : 'light'
     document.documentElement.setAttribute('data-theme', next)
     localStorage.setItem('theme', next)
     setTheme(next)
-    // Force body background repaint
     document.body.style.backgroundColor = ''
     void document.body.offsetHeight
   }
@@ -53,7 +50,7 @@ function ThemeToggle() {
   )
 }
 
-function RetroToggle() {
+function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
   const [isRetro, setIsRetro] = useState(false)
 
   useEffect(() => {
@@ -69,6 +66,7 @@ function RetroToggle() {
       localStorage.removeItem('retro')
       localStorage.removeItem('theme-before-retro')
       setIsRetro(false)
+      onToggle(false)
     } else {
       // Save current theme, switch to retro
       const currentTheme = document.documentElement.getAttribute('data-theme') || 'light'
@@ -76,6 +74,7 @@ function RetroToggle() {
       document.documentElement.setAttribute('data-theme', 'retro')
       localStorage.setItem('retro', 'true')
       setIsRetro(true)
+      onToggle(true)
     }
     // Force body background repaint
     document.body.style.backgroundColor = ''
@@ -102,13 +101,20 @@ function RetroToggle() {
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
+  const [isRetro, setIsRetro] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const check = () => setIsRetro(document.documentElement.getAttribute('data-theme') === 'retro')
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
   }, [])
 
   return (
@@ -139,9 +145,9 @@ export default function Header() {
                 d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
             </svg>
           </a>
-          <RetroToggle />
-          <span className="h-4 w-px mx-1 block hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />
-          <ThemeToggle />
+          <RetroToggle onToggle={setIsRetro} />
+          {!isRetro && <span className="h-4 w-px mx-1 block hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />}
+          <ThemeToggle isRetro={isRetro} />
         </div>
       </div>
     </header>
