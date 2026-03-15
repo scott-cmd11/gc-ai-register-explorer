@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react'
 
-export default function RetroOverlay() {
+interface RetroOverlayProps {
+  totalSystems?: number
+  inProduction?: number
+  handlePii?: number
+  departments?: number
+  lastModified?: string | null
+}
+
+export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handlePii = 0, departments = 0, lastModified }: RetroOverlayProps) {
   const [isRetro, setIsRetro] = useState(false)
 
   useEffect(() => {
@@ -67,11 +75,11 @@ export default function RetroOverlay() {
             fontWeight: 'bold',
           }}
         >
-          ★ TECHNOLOGY — Government of Canada launches AI Register with 409 systems catalogued
+          ★ TECHNOLOGY — Government of Canada launches AI Register with {totalSystems} systems catalogued
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          ★ UPDATES — Registry last modified November 2025 — 42 departments reporting
+          ★ UPDATES — Registry last modified {lastModified ? new Date(lastModified).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'} — {departments} departments reporting
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          ★ DATA — 160 systems in production, 87 handle personal information
+          ★ DATA — {inProduction} systems in production, {handlePii} handle personal information
           &nbsp;&nbsp;|&nbsp;&nbsp;
           ★ TECH — Best viewed at 800×600 resolution with Netscape Navigator 4.0
         </div>
@@ -132,7 +140,7 @@ export default function RetroOverlay() {
         >
           004,782
         </span>
-        {' '} since Jan 1, 1997 &nbsp;|&nbsp; Last updated: November 25, 2025 &nbsp;|&nbsp;
+        {' '} since Jan 1, 1997 &nbsp;|&nbsp; Last updated: {lastModified ? new Date(lastModified).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'} &nbsp;|&nbsp;
         <span style={{ fontStyle: 'italic' }}>This page is under construction</span> 🚧
       </div>
 

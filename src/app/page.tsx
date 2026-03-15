@@ -107,7 +107,13 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <RetroOverlay />
+      <RetroOverlay
+        totalSystems={systems.length}
+        inProduction={systems.filter(s => s.ai_system_status_en?.toLowerCase().includes('production')).length}
+        handlePii={systems.filter(s => s.involves_personal_information === 'Y').length}
+        departments={new Set(systems.map(s => s.government_organization).filter(Boolean)).size}
+        lastModified={lastModified}
+      />
       <ScrollIndicator />
 
       <div className="relative overflow-hidden w-full pt-32 pb-20 md:pt-40 md:pb-28 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>

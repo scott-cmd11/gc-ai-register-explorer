@@ -6,15 +6,15 @@ export default function AboutSection() {
         {/* About & Purpose */}
         <div className="col-span-1 lg:col-span-2 space-y-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-6 w-6 rounded flex items-center justify-center bg-zinc-900 dark:bg-zinc-100">
-              <svg className="h-3.5 w-3.5 text-white dark:text-black" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <div className="h-6 w-6 rounded flex items-center justify-center" style={{ background: 'var(--text-primary)' }}>
+              <svg className="h-3.5 w-3.5" style={{ color: 'var(--bg-base)' }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
               </svg>
             </div>
             <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>About This Project</h3>
           </div>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            The <strong>Canadian AI Landscape Explorer</strong> is an independent data visualization tool designed to make the Government of Canada's Artificial Intelligence Registry more accessible, searchable, and insightful. It transforms raw tabular data into an interactive, high-level overview of how various federal departments are deploying, piloting, or building AI systems.
+            The <strong>AI Register Explorer</strong> is an independent data visualization tool designed to make the Government of Canada's Artificial Intelligence Registry more accessible, searchable, and insightful. It transforms raw tabular data into an interactive, high-level overview of how various federal departments are deploying, piloting, or building AI systems.
           </p>
           <div className="pt-4 space-y-3">
             <div className="flex gap-3 items-start p-3 rounded-lg" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
@@ -60,15 +60,15 @@ export default function AboutSection() {
         <div className="space-y-4">
           <h3 className="text-sm font-semibold tracking-wide uppercase" style={{ color: 'var(--text-primary)' }}>Glossary</h3>
           <ul className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-            <li className="bg-zinc-50 dark:bg-zinc-900/50 p-2.5 rounded-md border" style={{ borderColor: 'var(--border-color)' }}>
+            <li className="p-2.5 rounded-md border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-hover)' }}>
               <strong style={{ color: 'var(--text-primary)' }}>PII</strong><br/>
               <span className="text-xs">Personal Identifiable Information. Indicates if the AI system processes sensitive citizen data.</span>
             </li>
-            <li className="bg-zinc-50 dark:bg-zinc-900/50 p-2.5 rounded-md border" style={{ borderColor: 'var(--border-color)' }}>
+            <li className="p-2.5 rounded-md border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-hover)' }}>
               <strong style={{ color: 'var(--text-primary)' }}>In Production</strong><br/>
               <span className="text-xs">The AI system is actively deployed and in use by the respective federal department.</span>
             </li>
-            <li className="bg-zinc-50 dark:bg-zinc-900/50 p-2.5 rounded-md border" style={{ borderColor: 'var(--border-color)' }}>
+            <li className="p-2.5 rounded-md border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-hover)' }}>
               <strong style={{ color: 'var(--text-primary)' }}>Algorithmic Impact Assessment</strong><br/>
               <span className="text-xs">A mandatory risk-assessment tool used by the GoC to evaluate AI system pipelines.</span>
             </li>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 const RESOURCE_ID = '369f6f34-148a-42ed-b581-8c164e941a89'
-const CKAN_URL = `https://open.canada.ca/data/api/3/action/datastore_search?resource_id=${RESOURCE_ID}&limit=500`
+const CKAN_URL = `https://open.canada.ca/data/api/3/action/datastore_search?resource_id=${RESOURCE_ID}&limit=1000`
 const META_URL = `https://open.canada.ca/data/api/3/action/resource_show?id=${RESOURCE_ID}`
 
 export async function GET() {
