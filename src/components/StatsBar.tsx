@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { AISystem } from '@/lib/types'
+import { useLanguage } from '@/lib/i18n'
 
 interface Props {
   systems: AISystem[]
@@ -21,7 +22,6 @@ function useAnimatedCount(target: number, duration = 800) {
     const tick = (now: number) => {
       const elapsed = now - startTime
       const progress = Math.min(elapsed / duration, 1)
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3)
       setCount(Math.round(start + (target - start) * eased))
       if (progress < 1) requestAnimationFrame(tick)
@@ -65,8 +65,10 @@ function MetricCard({ label, value, icon }: { label: string; value: number; icon
 }
 
 export default function StatsBar({ systems, lastModified }: Props) {
+  const { lang, t } = useLanguage()
+
   const formattedDate = lastModified
-    ? new Date(lastModified).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
+    ? new Date(lastModified).toLocaleDateString(lang === 'fr' ? 'fr-CA' : 'en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
     : null
 
   const total = systems.length
@@ -80,7 +82,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
     <div className="max-w-screen-2xl mx-auto w-full px-6 py-5">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <MetricCard
-          label="Total Systems"
+          label={t('stat_total')}
           value={total}
           icon={
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -89,7 +91,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
           }
         />
         <MetricCard
-          label="In Production"
+          label={t('stat_production')}
           value={inProduction}
           icon={
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -98,7 +100,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
           }
         />
         <MetricCard
-          label="Handle PII"
+          label={t('stat_pii')}
           value={hasPersonalData}
           icon={
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -107,7 +109,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
           }
         />
         <MetricCard
-          label="Departments"
+          label={t('stat_departments')}
           value={depts}
           icon={
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -118,7 +120,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
       </div>
       {formattedDate && (
         <p className="mt-4 text-xs max-w-3xl leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-          <strong style={{ color: 'var(--text-secondary)' }}>Last Updated: {formattedDate}.</strong> This date is automatically pulled from the &quot;Date Modified&quot; metadata of the Government of Canada&apos;s official open data registry for AI systems.
+          <strong style={{ color: 'var(--text-secondary)' }}>{t('last_updated')}: {formattedDate}.</strong> {t('last_updated_text')}
         </p>
       )}
     </div>

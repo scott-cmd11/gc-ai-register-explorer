@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useLanguage } from '@/lib/i18n'
 
 interface RetroOverlayProps {
   totalSystems?: number
@@ -12,6 +13,7 @@ interface RetroOverlayProps {
 
 export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handlePii = 0, departments = 0, lastModified }: RetroOverlayProps) {
   const [isRetro, setIsRetro] = useState(false)
+  const { lang, t } = useLanguage()
 
   useEffect(() => {
     const check = () =>
@@ -27,6 +29,10 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
   }, [])
 
   if (!isRetro) return null
+
+  const dateStr = lastModified
+    ? new Date(lastModified).toLocaleDateString(lang === 'fr' ? 'fr-CA' : 'en-US', { month: 'long', year: 'numeric' })
+    : 'N/A'
 
   return (
     <div style={{ marginTop: '64px' }}>
@@ -51,20 +57,18 @@ export default function RetroOverlay({ totalSystems = 0, inProduction = 0, handl
             fontWeight: 'bold',
           }}
         >
-          ★ TECHNOLOGY — Government of Canada launches AI Register with {totalSystems} systems catalogued
+          ★ {t('retro_tech').replace('{total}', String(totalSystems))}
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          ★ UPDATES — Registry last modified {lastModified ? new Date(lastModified).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'} — {departments} departments reporting
+          ★ {t('retro_updates').replace('{date}', dateStr).replace('{depts}', String(departments))}
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          ★ DATA — {inProduction} systems in production, {handlePii} handle personal information
+          ★ {t('retro_data').replace('{prod}', String(inProduction)).replace('{pii}', String(handlePii))}
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          ★ TECH — Best viewed at 800×600 resolution with Netscape Navigator 4.0
+          ★ {t('retro_best_viewed')}
         </div>
       </div>
 
       {/* Rainbow HR */}
       <div className="retro-hr" aria-hidden="true" />
-
-
     </div>
   )
 }

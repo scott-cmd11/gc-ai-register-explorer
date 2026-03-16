@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+const isDev = process.env.NODE_ENV !== 'production'
+
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
@@ -7,8 +9,9 @@ const securityHeaders = [
       `default-src 'self'`,
       // Next.js 15 RSC hydration requires inline scripts (self.__next_f.push([...])),
       // so 'unsafe-inline' is necessary. This still blocks all external script sources.
+      // In dev mode, React Refresh (HMR) also needs 'unsafe-eval'.
       // A nonce-based CSP via middleware would be stricter but adds significant complexity.
-      `script-src 'self' 'unsafe-inline'`,
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
       // Styles: self + inline (Tailwind / CSS-in-JS inject inline styles at runtime)
       `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
       // Google Fonts and Next.js font optimisation

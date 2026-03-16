@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { AISystem } from '@/lib/types'
+import { useLanguage } from '@/lib/i18n'
 
 interface Props {
   system: AISystem
@@ -59,6 +60,7 @@ function StatusPill({ status }: { status: string }) {
 }
 
 export default function SystemDetail({ system: s, onClose }: Props) {
+  const { t, field, deptName } = useLanguage()
   const panelRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const titleId = 'system-detail-title'
@@ -85,6 +87,9 @@ export default function SystemDetail({ system: s, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler)
   }, [onClose])
 
+  const name = field(s, 'name_ai_system')
+  const status = field(s, 'ai_system_status')
+
   return (
     <>
       <div className="fixed inset-0 z-40 animate-fade-in" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={onClose} aria-hidden="true" />
@@ -98,9 +103,9 @@ export default function SystemDetail({ system: s, onClose }: Props) {
           <div className="min-w-0">
             <p className="text-xs font-medium mb-1" style={{ color: 'var(--accent)' }}>{s.ai_register_id}</p>
             <h2 id={titleId} className="text-lg font-semibold leading-snug" style={{ color: 'var(--text-primary)' }}>
-              {s.name_ai_system_en || s.name_ai_system_fr}
+              {name}
             </h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{s.government_organization}</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization)}</p>
           </div>
           <button
             onClick={onClose}
@@ -108,7 +113,7 @@ export default function SystemDetail({ system: s, onClose }: Props) {
             style={{ color: 'var(--text-muted)' }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            aria-label="Close system detail panel"
+            aria-label={t('close_panel')}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -118,32 +123,35 @@ export default function SystemDetail({ system: s, onClose }: Props) {
 
         {/* Status strip */}
         <div className="px-6 py-3 flex flex-wrap gap-2 shrink-0" style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-base)' }}>
-          <StatusPill status={s.ai_system_status_en} />
+          <StatusPill status={status} />
           {s.status_date && <Badge>{s.status_date}</Badge>}
           <Badge variant={s.involves_personal_information === 'Y' ? 'accent' : 'default'}>
-            {s.involves_personal_information === 'Y' ? 'Handles personal data' : 'No personal data'}
+            {s.involves_personal_information === 'Y' ? t('handles_personal_data') : t('no_personal_data_badge')}
           </Badge>
-          {s.notification_ai === 'Y' && <Badge variant="info">Users notified</Badge>}
+          {s.notification_ai === 'Y' && <Badge variant="info">{t('users_notified')}</Badge>}
         </div>
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
-          <Section title="Overview">
-            <dl><Field label="Description" value={s.description_ai_system_en} /><Field label="Primary Users" value={s.ai_system_primary_users_en} /></dl>
-          </Section>
-          <Section title="Technical Details">
+          <Section title={t('overview')}>
             <dl>
-              {s.developed_by_en && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>Developed by</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.developed_by_en}</dd></div>}
-              {s.vendor_information && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>Vendor</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.vendor_information}</dd></div>}
-              <Field label="Capabilities" value={s.ai_system_capabilities_en} />
-              <Field label="Data Sources" value={s.data_sources_en} />
+              <Field label={t('description')} value={field(s, 'description_ai_system')} />
+              <Field label={t('primary_users')} value={field(s, 'ai_system_primary_users')} />
             </dl>
           </Section>
-          {(s.involves_personal_information === 'Y' || s.personal_information_banks_en) && (
-            <Section title="Privacy"><dl><Field label="Personal Information Banks" value={s.personal_information_banks_en} /></dl></Section>
+          <Section title={t('technical_details')}>
+            <dl>
+              {field(s, 'developed_by') && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>{t('developed_by')}</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{field(s, 'developed_by')}</dd></div>}
+              {s.vendor_information && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>{t('vendor')}</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.vendor_information}</dd></div>}
+              <Field label={t('capabilities')} value={field(s, 'ai_system_capabilities')} />
+              <Field label={t('data_sources')} value={field(s, 'data_sources')} />
+            </dl>
+          </Section>
+          {(s.involves_personal_information === 'Y' || field(s, 'personal_information_banks')) && (
+            <Section title={t('privacy')}><dl><Field label={t('personal_info_banks')} value={field(s, 'personal_information_banks')} /></dl></Section>
           )}
-          {s.ai_system_results_en && (
-            <Section title="Results & Benefits"><dl><Field label="" value={s.ai_system_results_en} /></dl></Section>
+          {field(s, 'ai_system_results') && (
+            <Section title={t('results_benefits')}><dl><Field label="" value={field(s, 'ai_system_results')} /></dl></Section>
           )}
         </div>
       </div>

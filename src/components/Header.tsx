@@ -1,9 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useLanguage } from '@/lib/i18n'
+import LanguageToggle from './LanguageToggle'
 
 function ThemeToggle({ isRetro }: { isRetro: boolean }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const { t } = useLanguage()
 
   useEffect(() => {
     const current = document.documentElement.getAttribute('data-theme')
@@ -29,7 +32,7 @@ function ThemeToggle({ isRetro }: { isRetro: boolean }) {
   return (
     <button
       onClick={toggle}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      aria-label={theme === 'light' ? t('theme_switch_dark') : t('theme_switch_light')}
       className="h-9 w-9 rounded-md flex items-center justify-center transition-colors shrink-0"
       style={{ color: 'var(--text-tertiary)' }}
       onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
@@ -52,6 +55,7 @@ function ThemeToggle({ isRetro }: { isRetro: boolean }) {
 
 function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
   const [isRetro, setIsRetro] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
     setIsRetro(document.documentElement.getAttribute('data-theme') === 'retro')
@@ -59,7 +63,6 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
 
   const toggle = () => {
     if (isRetro) {
-      // Restore saved theme
       const savedTheme = localStorage.getItem('theme-before-retro') || localStorage.getItem('theme') || 'light'
       document.documentElement.setAttribute('data-theme', savedTheme)
       localStorage.setItem('theme', savedTheme)
@@ -68,7 +71,6 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
       setIsRetro(false)
       onToggle(false)
     } else {
-      // Save current theme, switch to retro
       const currentTheme = document.documentElement.getAttribute('data-theme') || 'light'
       localStorage.setItem('theme-before-retro', currentTheme)
       document.documentElement.setAttribute('data-theme', 'retro')
@@ -76,7 +78,6 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
       setIsRetro(true)
       onToggle(true)
     }
-    // Force body background repaint
     document.body.style.backgroundColor = ''
     void document.body.offsetHeight
   }
@@ -84,7 +85,7 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
   return (
     <button
       onClick={toggle}
-      aria-label={isRetro ? 'Disable 90s retro mode' : 'Enable 90s retro mode'}
+      aria-label={isRetro ? t('retro_disable_aria') : t('retro_enable_aria')}
       className="h-9 px-2.5 rounded-md flex items-center justify-center gap-1.5 transition-colors shrink-0 text-xs font-medium"
       style={isRetro
         ? { color: '#CC0000', background: '#C0C0C0', border: '3px outset #C0C0C0', fontFamily: "'Times New Roman', serif", fontWeight: 'bold' }
@@ -94,7 +95,7 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
       onMouseLeave={(e) => { if (!isRetro) e.currentTarget.style.background = 'transparent' }}
     >
       <span aria-hidden="true">🕹️</span>
-      <span className="hidden sm:inline">{isRetro ? 'Exit 90s' : '90s Mode'}</span>
+      <span className="hidden sm:inline">{isRetro ? t('retro_disable') : t('retro_enable')}</span>
     </button>
   )
 }
@@ -102,6 +103,7 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [isRetro, setIsRetro] = useState(false)
+  const { lang, t } = useLanguage()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -117,6 +119,10 @@ export default function Header() {
     return () => observer.disconnect()
   }, [])
 
+  const sourceDataUrl = lang === 'fr'
+    ? 'https://ouvert.canada.ca/data/fr/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
+    : 'https://open.canada.ca/data/en/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
+
   return (
     <header
       className="fixed top-0 left-0 right-0 z-30 transition-all duration-300"
@@ -130,21 +136,22 @@ export default function Header() {
       <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-end">
         <div className="flex items-center gap-2">
           <a
-            href="https://open.canada.ca/data/en/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b"
+            href={sourceDataUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
             style={{ color: 'var(--text-tertiary)' }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            aria-label="View source data on open.canada.ca (opens in new tab)"
+            aria-label={t('source_data_aria')}
           >
-            <span>Source Data</span>
+            <span>{t('source_data')}</span>
             <svg aria-hidden="true" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round"
                 d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
             </svg>
           </a>
+          <LanguageToggle />
           <RetroToggle onToggle={setIsRetro} />
           {!isRetro && <span className="h-4 w-px mx-1 block hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />}
           <ThemeToggle isRetro={isRetro} />
