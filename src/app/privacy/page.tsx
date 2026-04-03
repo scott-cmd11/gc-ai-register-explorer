@@ -126,8 +126,8 @@ export default function PrivacyPage() {
             <p>
               If you believe the Site has inadvertently collected or published your personal information, please contact me
               at{' '}
-              <a href="mailto:scott.hazlitt@gmail.com" className="underline" style={{ color: 'var(--accent)' }}>
-                scott.hazlitt@gmail.com
+              <a href="mailto:scott@scotthazlitt.ai" className="underline" style={{ color: 'var(--accent)' }}>
+                scott@scotthazlitt.ai
               </a>. I will respond within 30 days.
             </p>
           </section>
@@ -141,8 +141,8 @@ export default function PrivacyPage() {
               <p className="font-medium" style={{ color: 'var(--text-primary)' }}>Scott Hazlitt</p>
               <p>Manitoba, Canada</p>
               <p>
-                <a href="mailto:scott.hazlitt@gmail.com" className="underline" style={{ color: 'var(--accent)' }}>
-                  scott.hazlitt@gmail.com
+                <a href="mailto:scott@scotthazlitt.ai" className="underline" style={{ color: 'var(--accent)' }}>
+                  scott@scotthazlitt.ai
                 </a>
               </p>
             </div>

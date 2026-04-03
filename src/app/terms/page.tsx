@@ -149,8 +149,8 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Contact</h2>
             <p>
               Questions about these Terms of Use may be directed to{' '}
-              <a href="mailto:scott.hazlitt@gmail.com" className="underline" style={{ color: 'var(--accent)' }}>
-                scott.hazlitt@gmail.com
+              <a href="mailto:scott@scotthazlitt.ai" className="underline" style={{ color: 'var(--accent)' }}>
+                scott@scotthazlitt.ai
               </a>.
             </p>
           </section>

@@ -58,8 +58,8 @@ export default function AboutPageContent() {
                 <svg className="h-4 w-4 shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                 </svg>
-                <a href="mailto:scott.hazlitt@gmail.com" className="underline transition-colors" style={{ color: 'var(--accent)' }}>
-                  scott.hazlitt@gmail.com
+                <a href="mailto:scott@scotthazlitt.ai" className="underline transition-colors" style={{ color: 'var(--accent)' }}>
+                  scott@scotthazlitt.ai
                 </a>
               </div>
               <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export default function AboutPageContent() {
             </p>
             <p className="mt-3">
               {t('about_corrections_p2')}{' '}
-              <a href="mailto:scott.hazlitt@gmail.com" className="underline" style={{ color: 'var(--accent)' }}>scott.hazlitt@gmail.com</a>.{' '}
+              <a href="mailto:scott@scotthazlitt.ai" className="underline" style={{ color: 'var(--accent)' }}>scott@scotthazlitt.ai</a>.{' '}
               {t('about_corrections_suffix')}
             </p>
           </section>
@@ -109,7 +109,7 @@ export default function AboutPageContent() {
             <p>{t('about_accessibility_p1')}</p>
             <p className="mt-3">
               {t('about_accessibility_p2_prefix')}{' '}
-              <a href="mailto:scott.hazlitt@gmail.com" className="underline" style={{ color: 'var(--accent)' }}>scott.hazlitt@gmail.com</a>{' '}
+              <a href="mailto:scott@scotthazlitt.ai" className="underline" style={{ color: 'var(--accent)' }}>scott@scotthazlitt.ai</a>{' '}
               {t('about_accessibility_p2_suffix')}
             </p>
           </section>
