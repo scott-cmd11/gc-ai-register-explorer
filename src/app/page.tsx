@@ -29,8 +29,6 @@ export default function HomePage() {
   const [selectedSystem, setSelectedSystem] = useState<AISystem | null>(null)
   const [groupBy, setGroupBy] = useState<GroupBy>('dept')
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const tableRef = useRef<HTMLDivElement>(null)
-
   // Update sort field when language changes
   useEffect(() => {
     setSortField(lang === 'fr' ? 'name_ai_system_fr' : 'name_ai_system_en')
@@ -46,13 +44,6 @@ export default function HomePage() {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
-
-  const scrollToResults = () => {
-    if (query && !loading) {
-      setGroupBy('flat')
-      tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
 
   useEffect(() => {
     fetchAllSystems()
@@ -149,51 +140,15 @@ export default function HomePage() {
       />
       <ScrollIndicator />
 
-      <div className="relative overflow-hidden w-full pt-32 pb-20 md:pt-40 md:pb-28 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>
+      <div className="relative overflow-hidden w-full pt-24 pb-14 md:pt-32 md:pb-20 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>
         <div className="max-w-screen-md mx-auto px-6 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
             {t('hero_title_1')} <br className="hidden md:block"/>
             <span style={{ color: 'var(--text-muted)' }}>{t('hero_title_2')}</span>
           </h1>
-
-          <p className="text-base md:text-lg mb-10 max-w-xl" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-base md:text-lg max-w-xl" style={{ color: 'var(--text-secondary)' }}>
             {t('hero_subtitle')}
           </p>
-
-          <div className="w-full relative group max-w-2xl text-left">
-            <div className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-0 group-hover:opacity-100" style={{ background: 'var(--ring)', opacity: 0.15, filter: 'blur(20px)' }} />
-            <div className="relative flex items-center w-full rounded-2xl overflow-hidden transition-all duration-300" style={{ boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-surface)' }}>
-              <svg className="absolute left-5 h-6 w-6 pointer-events-none" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-              <input
-                ref={searchInputRef}
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); scrollToResults() } }}
-                placeholder={t('search_placeholder')}
-                className="w-full h-16 pl-14 pr-16 text-lg bg-transparent outline-none ring-0"
-                style={{ color: 'var(--text-primary)' }}
-                onFocus={(e) => {
-                  e.currentTarget.parentElement!.style.borderColor = 'var(--ring)'
-                  e.currentTarget.parentElement!.style.boxShadow = '0 0 0 1px var(--ring), var(--shadow-lg)'
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.parentElement!.style.borderColor = 'var(--border-color)'
-                  e.currentTarget.parentElement!.style.boxShadow = 'var(--shadow-lg)'
-                }}
-              />
-              {query && (
-                <button onClick={() => setQuery('')} className="absolute right-12 transition-opacity hover:opacity-60" style={{ color: 'var(--text-muted)' }}>
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              )}
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:flex items-center gap-1 opacity-50 transition-opacity aria-[hidden=true]:opacity-0" aria-hidden={query.length > 0}>
-                <kbd className="font-sans px-2 py-0.5 text-xs rounded border bg-transparent" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>⌘K</kbd>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -233,11 +188,37 @@ export default function HomePage() {
               activeDeptFilter={filters.department}
             />
 
-            {/* Toolbar: filters + controls */}
+            {/* Toolbar: search + filters + controls */}
             <div
               className="rounded-lg p-4 mb-3 space-y-3"
               style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}
             >
+              {/* Search row */}
+              <div className="relative flex items-center w-full rounded-lg overflow-hidden transition-all duration-200" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-hover)' }}>
+                <svg className="absolute left-3.5 h-4 w-4 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t('search_placeholder')}
+                  className="w-full h-10 pl-10 pr-20 text-sm bg-transparent outline-none ring-0"
+                  style={{ color: 'var(--text-primary)' }}
+                  onFocus={(e) => { e.currentTarget.parentElement!.style.borderColor = 'var(--ring)' }}
+                  onBlur={(e) => { e.currentTarget.parentElement!.style.borderColor = 'var(--border-color)' }}
+                />
+                {query && (
+                  <button onClick={() => setQuery('')} className="absolute right-10 transition-opacity hover:opacity-60" style={{ color: 'var(--text-muted)' }} aria-label="Clear search">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                )}
+                <div className="absolute right-3 pointer-events-none hidden sm:flex items-center gap-1 opacity-40" aria-hidden="true">
+                  <kbd className="font-sans px-1.5 py-0.5 text-xs rounded border bg-transparent" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>⌘K</kbd>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
                   <FilterPanel filters={filters} onChange={setFilters} options={filterOptions} onClear={clearFilters} />
@@ -286,7 +267,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div ref={tableRef} style={{ scrollMarginTop: '5rem' }}>
+            <div>
               <SystemsTable systems={filtered} sortField={sortField} sortDir={sortDir} onSort={handleSort} onSelect={setSelectedSystem} groupBy={groupBy} totalCount={systems.length} />
             </div>
           </>

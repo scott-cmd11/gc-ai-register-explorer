@@ -18,7 +18,13 @@ export async function GET() {
 
   // F-07: Validate response shape before accessing nested properties.
   const records: unknown[] = Array.isArray(data?.result?.records) ? data.result.records : []
+  const total: number = data?.result?.total ?? records.length
   const lastModified: string | null = meta?.result?.last_modified ?? meta?.result?.metadata_modified ?? null
 
-  return NextResponse.json({ records, lastModified })
+  // Safety: warn in server logs if the dataset has grown beyond our fetch limit.
+  if (total > records.length) {
+    console.warn(`[systems] CKAN reports ${total} records but only ${records.length} were fetched (limit may need increasing).`)
+  }
+
+  return NextResponse.json({ records, lastModified, total })
 }
