@@ -225,7 +225,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   // About page
   'back_to_explorer': { en: 'Back to Explorer', fr: 'Retour \u00e0 l\u2019explorateur' },
   'about_page_title': { en: 'About This Project', fr: '\u00c0 propos de ce projet' },
-  'about_page_updated': { en: 'Last updated: March 2026', fr: 'Derni\u00e8re mise \u00e0 jour\u00a0: mars 2026' },
+  'about_page_updated': { en: 'Last updated: April 2026', fr: 'Derni\u00e8re mise \u00e0 jour\u00a0: avril 2026' },
   'about_what_title': { en: 'What is the AI Register Explorer?', fr: 'Qu\u2019est-ce que l\u2019Explorateur du registre d\u2019IA\u00a0?' },
   'about_what_p1': {
     en: 'The <strong>AI Register Explorer</strong> is an independent, open-source data visualization tool that makes the Government of Canada\u2019s Artificial Intelligence Registry more accessible and searchable. It presents the same data published on',
