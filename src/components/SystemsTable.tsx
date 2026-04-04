@@ -187,6 +187,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
     : t('showing_systems_caption').replace('{filtered}', String(systems.length)).replace('{total}', String(totalCount))
 
   return (
+    <>
     <div className="overflow-x-auto">
       <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
         <caption className="sr-only">{caption}</caption>
