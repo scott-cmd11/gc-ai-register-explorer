@@ -121,7 +121,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
     pages.push(total)
   }
 
-  const btnBase = "h-8 min-w-[2rem] px-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+  const btnBase = "h-10 min-w-[2.5rem] px-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
 
   return (
     <div className="flex items-center justify-between px-6 py-3" style={{ borderTop: '1px solid var(--border-color)' }}>
@@ -129,8 +129,8 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
         onClick={() => onChange(current - 1)} disabled={current === 1} className={btnBase}
         style={{ border: '1px solid var(--border-color)', color: current === 1 ? 'var(--text-muted)' : 'var(--text-secondary)', background: 'var(--bg-surface)', opacity: current === 1 ? 0.5 : 1, cursor: current === 1 ? 'not-allowed' : 'pointer' }}
       >
-        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-        {t('previous')}
+        <svg className="h-4 w-4 sm:mr-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+        <span className="hidden sm:inline">{t('previous')}</span>
       </button>
       <div className="flex items-center gap-1">
         {pages.map((p, i) =>
@@ -147,8 +147,8 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
         onClick={() => onChange(current + 1)} disabled={current === total} className={btnBase}
         style={{ border: '1px solid var(--border-color)', color: current === total ? 'var(--text-muted)' : 'var(--text-secondary)', background: 'var(--bg-surface)', opacity: current === total ? 0.5 : 1, cursor: current === total ? 'not-allowed' : 'pointer' }}
       >
-        {t('next')}
-        <svg className="h-4 w-4 ml-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+        <span className="hidden sm:inline">{t('next')}</span>
+        <svg className="h-4 w-4 sm:ml-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
       </button>
     </div>
   )
@@ -187,10 +187,10 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
     : t('showing_systems_caption').replace('{filtered}', String(systems.length)).replace('{total}', String(totalCount))
 
   return (
-    <>
+    <div className="overflow-x-auto">
       <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
         <caption className="sr-only">{caption}</caption>
-        <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <thead className="sm:sticky sm:top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
           <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
@@ -207,7 +207,8 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
           {paged.map((s, i) => <SystemRow key={s.ai_register_id ?? i} s={s} onSelect={onSelect} showDept showVendor />)}
         </tbody>
       </table>
-      <Pagination current={page} total={totalPages} onChange={handlePageChange} />
+    </div>
+    <Pagination current={page} total={totalPages} onChange={handlePageChange} />
     </>
   )
 }
@@ -246,9 +247,10 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
     : `${t('showing_systems_caption').replace('{filtered}', String(systems.length)).replace('{total}', String(totalCount))} ${t('grouped_suffix')}`
 
   return (
+    <div className="overflow-x-auto">
     <table className="w-full text-sm">
       <caption className="sr-only">{caption}</caption>
-      <thead className="sticky top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+      <thead className="sm:sticky sm:top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
         <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
           {config.colHeaderKeys.map((h) => (
             <th key={h.labelKey} scope="col" className={`px-6 py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{t(h.labelKey)}</th>
@@ -297,6 +299,7 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
         })}
       </tbody>
     </table>
+    </div>
   )
 }
 

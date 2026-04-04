@@ -109,7 +109,7 @@ export default function SystemDetail({ system: s, onClose }: Props) {
           </div>
           <button
             onClick={onClose}
-            className="h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-colors"
+            className="h-10 w-10 rounded-md flex items-center justify-center shrink-0 transition-colors"
             style={{ color: 'var(--text-muted)' }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}

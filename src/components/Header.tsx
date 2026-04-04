@@ -33,7 +33,7 @@ function ThemeToggle({ isRetro }: { isRetro: boolean }) {
     <button
       onClick={toggle}
       aria-label={theme === 'light' ? t('theme_switch_dark') : t('theme_switch_light')}
-      className="h-9 w-9 rounded-md flex items-center justify-center transition-colors shrink-0"
+      className="h-10 w-10 rounded-md flex items-center justify-center transition-colors shrink-0"
       style={{ color: 'var(--text-tertiary)' }}
       onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
       onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
@@ -86,7 +86,7 @@ function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
     <button
       onClick={toggle}
       aria-label={isRetro ? t('retro_disable_aria') : t('retro_enable_aria')}
-      className="h-9 px-2.5 rounded-md flex items-center justify-center gap-1.5 transition-colors shrink-0 text-xs font-medium"
+      className="h-10 px-2.5 rounded-md flex items-center justify-center gap-1.5 transition-colors shrink-0 text-xs font-medium"
       style={isRetro
         ? { color: '#CC0000', background: '#C0C0C0', border: '3px outset #C0C0C0', fontFamily: "'Times New Roman', serif", fontWeight: 'bold' }
         : { color: 'var(--text-tertiary)' }

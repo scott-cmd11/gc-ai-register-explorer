@@ -32,7 +32,7 @@ function ToolbarSelect({
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-color)',
           color: value ? 'var(--text-primary)' : 'var(--text-muted)',
-          minWidth: '130px',
+          minWidth: '110px',
         }}
         onFocus={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px var(--ring)'}
         onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}

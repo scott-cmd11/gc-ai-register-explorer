@@ -37,7 +37,7 @@ function MetricCard({ label, value, icon }: { label: string; value: number; icon
 
   return (
     <div
-      className="flex-1 min-w-[140px] rounded-lg p-4 transition-all group"
+      className="min-w-0 rounded-lg p-4 transition-all group"
       style={{
         background: 'var(--bg-surface)',
         border: '1px solid var(--border-color)',
