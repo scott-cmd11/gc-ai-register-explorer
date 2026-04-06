@@ -87,17 +87,17 @@ function SystemRow({ s, onSelect, showDept, showVendor }: {
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       aria-label={`${t('view_details')} ${name || t('col_system')}`}
     >
-      <td className="px-6 py-3.5">
+      <td className="px-3 sm:px-6 py-3 sm:py-3.5">
         <div className="font-medium text-sm leading-snug" style={{ color: 'var(--text-primary)' }}>
           {name || '—'}
         </div>
         {truncDesc && <div className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{truncDesc}</div>}
       </td>
-      {showDept && <td className="px-6 py-3.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization) || '—'}</td>}
-      <td className="px-6 py-3.5"><StatusBadge status={status} /></td>
-      <td className="px-6 py-3.5 text-sm" style={{ color: 'var(--text-muted)' }}>{s.status_date || '—'}</td>
-      {showVendor && <td className="px-6 py-3.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>{s.vendor_information || '—'}</td>}
-      <td className="px-6 py-3.5 text-center">
+      {showDept && <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization) || '—'}</td>}
+      <td className="px-3 sm:px-6 py-3 sm:py-3.5"><StatusBadge status={status} /></td>
+      <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-sm" style={{ color: 'var(--text-muted)' }}>{s.status_date || '—'}</td>
+      {showVendor && <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>{s.vendor_information || '—'}</td>}
+      <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-center">
         {s.involves_personal_information === 'Y' ? <PiiIcon /> : <span className="text-sm" style={{ color: 'var(--text-muted)' }} aria-label={t('no_personal_info')}>—</span>}
       </td>
     </tr>
@@ -124,7 +124,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
   const btnBase = "h-10 min-w-[2.5rem] px-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
 
   return (
-    <div className="flex items-center justify-between px-6 py-3" style={{ borderTop: '1px solid var(--border-color)' }}>
+    <div className="flex items-center justify-between px-4 sm:px-6 py-3" style={{ borderTop: '1px solid var(--border-color)' }}>
       <button
         onClick={() => onChange(current - 1)} disabled={current === 1} className={btnBase}
         style={{ border: '1px solid var(--border-color)', color: current === 1 ? 'var(--text-muted)' : 'var(--text-secondary)', background: 'var(--bg-surface)', opacity: current === 1 ? 0.5 : 1, cursor: current === 1 ? 'not-allowed' : 'pointer' }}
@@ -196,7 +196,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
                 aria-sort={sortField === col.field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                className={`px-6 py-3 text-left text-sm font-medium cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
+                className={`px-3 sm:px-6 py-2.5 sm:py-3 text-left text-sm font-medium cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
                 style={{ color: sortField === col.field ? 'var(--text-primary)' : 'var(--text-tertiary)' }}
               >
                 {col.label}<SortIcon active={sortField === col.field} dir={sortDir} />
@@ -254,9 +254,9 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
       <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
         <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
           {config.colHeaderKeys.map((h) => (
-            <th key={h.labelKey} scope="col" className={`px-6 py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{t(h.labelKey)}</th>
+            <th key={h.labelKey} scope="col" className={`px-3 sm:px-6 py-2.5 sm:py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{t(h.labelKey)}</th>
           ))}
-          <th scope="col" className="px-6 py-3 text-right">
+          <th scope="col" className="px-3 sm:px-6 py-2.5 sm:py-3 text-right">
             <button onClick={toggleAll} className="text-xs font-medium transition-opacity hover:opacity-60" style={{ color: 'var(--text-muted)' }}>
               {expanded.size === groups.length ? t('collapse_all') : t('expand_all')}
             </button>
@@ -278,7 +278,7 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
                 aria-expanded={isOpen}
               >
-                <td colSpan={colSpan} className="px-6 py-4">
+                <td colSpan={colSpan} className="px-3 sm:px-6 py-3 sm:py-4">
                   <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center justify-center w-5 h-5 rounded overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
                       <svg aria-hidden="true" className={`h-3 w-3 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">

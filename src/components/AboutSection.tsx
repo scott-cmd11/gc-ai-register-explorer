@@ -16,7 +16,7 @@ export default function AboutSection() {
 
   return (
     <div className="w-full border-t mt-12 py-16" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
-      <div className="max-w-screen-xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-10">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-10">
 
         {/* About & Purpose */}
         <div className="col-span-1 lg:col-span-2 space-y-4">
@@ -112,7 +112,7 @@ export default function AboutSection() {
 
       </div>
 
-      <div className="max-w-screen-xl mx-auto px-6 mt-16 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mt-16 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>
         <p>© {new Date().getFullYear()} <a href="https://scotthazlitt.ai" target="_blank" rel="noopener noreferrer" className="hover:underline">Scott Hazlitt</a> — {t('footer_independent')}</p>
         <nav className="flex items-center gap-4" aria-label={lang === 'fr' ? 'Navigation du pied de page' : 'Footer navigation'}>
           <Link href="/about" className="hover:underline transition-colors">{t('footer_about')}</Link>

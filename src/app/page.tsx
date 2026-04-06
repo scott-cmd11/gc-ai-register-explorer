@@ -141,8 +141,8 @@ export default function HomePage() {
       <ScrollIndicator />
 
       <div className="relative overflow-hidden w-full pt-24 pb-14 md:pt-32 md:pb-20 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>
-        <div className="max-w-screen-md mx-auto px-6 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+        <div className="max-w-screen-md mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
             {t('hero_title_1')} <br className="hidden md:block"/>
             <span style={{ color: 'var(--text-muted)' }}>{t('hero_title_2')}</span>
           </h1>
@@ -158,7 +158,7 @@ export default function HomePage() {
         </div>
       )}
 
-      <main id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-6 pb-8" tabIndex={-1}>
+      <main id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pb-8" tabIndex={-1}>
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div className="flex items-center gap-3">
