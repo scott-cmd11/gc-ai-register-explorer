@@ -188,10 +188,10 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
 
   return (
     <>
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
       <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
         <caption className="sr-only">{caption}</caption>
-        <thead className="sm:sticky sm:top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
           <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
@@ -248,10 +248,10 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
     : `${t('showing_systems_caption').replace('{filtered}', String(systems.length)).replace('{total}', String(totalCount))} ${t('grouped_suffix')}`
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
     <table className="w-full text-sm">
       <caption className="sr-only">{caption}</caption>
-      <thead className="sm:sticky sm:top-16 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+      <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
         <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
           {config.colHeaderKeys.map((h) => (
             <th key={h.labelKey} scope="col" className={`px-6 py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{t(h.labelKey)}</th>
