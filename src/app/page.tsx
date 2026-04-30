@@ -56,8 +56,8 @@ export default function HomePage() {
   const developedByField = lang === 'fr' ? 'developed_by_fr' : 'developed_by_en'
 
   const filterOptions = useMemo(() => {
-    const unique = (arr: string[]) => Array.from(new Set(arr.filter(Boolean).map((s) => s.trim()))).sort()
-    const uniqueSplit = (arr: string[]) => Array.from(new Set(arr.filter(Boolean).flatMap((s) => s.split(/,\s*/).map((v) => v.trim())).filter(Boolean))).sort()
+    const unique = (arr: unknown[]) => Array.from(new Set(arr.filter((s): s is string => typeof s === 'string' && s.trim() !== '').map((s) => s.trim()))).sort()
+    const uniqueSplit = (arr: unknown[]) => Array.from(new Set(arr.filter((s): s is string => typeof s === 'string' && s.trim() !== '').flatMap((s) => s.split(/,\s*/).map((v) => v.trim())).filter(Boolean))).sort()
     return {
       departments: unique(systems.map((s) => s.government_organization)),
       statuses: unique(systems.map((s) => s[statusField] as string)),
