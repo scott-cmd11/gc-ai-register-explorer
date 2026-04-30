@@ -9,6 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  PieChart,
+  Pie,
 } from 'recharts'
 import { AISystem } from '@/lib/types'
 import { useLanguage } from '@/lib/i18n'
@@ -21,7 +23,12 @@ interface Props {
   activeDeptFilter?: string
 }
 
-const str = (v: unknown): string => typeof v === 'string' ? v : ''
+// CKAN occasionally returns numeric values (e.g. status_date as int year) for
+// fields the schema declares as string — coerce safely without crashing.
+const str = (v: unknown): string =>
+  typeof v === 'string' ? v
+  : typeof v === 'number' && Number.isFinite(v) ? String(v)
+  : ''
 
 const STATUS_COLORS: Record<string, string> = {
   production: 'var(--status-production)',
@@ -38,6 +45,26 @@ function getStatusColor(status: string): string {
     if (s.includes(key)) return color
   }
   return 'var(--text-muted)'
+}
+
+// Color tokens for new charts. Mapping covers both EN and FR API values so the
+// same record gets the same colour regardless of selected language.
+const PII_COLORS: Record<string, string> = {
+  Y: 'var(--status-decommission)',
+  N: 'var(--status-production)',
+  unknown: 'var(--text-muted)',
+}
+
+const DEV_BY_COLORS: Record<string, string> = {
+  'Government of Canada': 'var(--accent)',
+  'Gouvernement du Canada': 'var(--accent)',
+  Vendor: 'var(--status-pilot)',
+  Fournisseur: 'var(--status-pilot)',
+  'Open source': 'var(--status-production)',
+  'Code source libre': 'var(--status-production)',
+  Other: 'var(--text-muted)',
+  Autre: 'var(--text-muted)',
+  __unknown__: 'var(--bg-hover-strong)',
 }
 
 function countStatuses(systems: AISystem[], statusField: keyof AISystem) {
@@ -81,11 +108,89 @@ function countDepts(systems: AISystem[], limit: number, deptNameFn: (org: string
     .slice(0, limit)
 }
 
+function countDevBy(systems: AISystem[], devByField: keyof AISystem) {
+  const counts: Record<string, number> = {}
+  for (const s of systems) {
+    const raw = str(s[devByField]).trim()
+    const key = raw || '__unknown__'
+    counts[key] = (counts[key] ?? 0) + 1
+  }
+  return Object.entries(counts)
+    .map(([key, count]) => ({ key, count }))
+    .sort((a, b) => b.count - a.count)
+}
+
+function countPii(systems: AISystem[]) {
+  const counts = { Y: 0, N: 0, unknown: 0 }
+  for (const s of systems) {
+    const v = str(s.involves_personal_information).trim().toUpperCase()
+    if (v === 'Y') counts.Y++
+    else if (v === 'N') counts.N++
+    else counts.unknown++
+  }
+  return [
+    { key: 'Y', count: counts.Y },
+    { key: 'N', count: counts.N },
+    { key: 'unknown', count: counts.unknown },
+  ].filter((d) => d.count > 0)
+}
+
+function countTopVendors(systems: AISystem[], limit: number) {
+  const counts: Record<string, number> = {}
+  for (const s of systems) {
+    const v = str(s.vendor_information).trim()
+    if (!v) continue
+    for (const part of v.split(/,\s*/)) {
+      const name = part.trim()
+      if (!name) continue
+      counts[name] = (counts[name] ?? 0) + 1
+    }
+  }
+  return Object.entries(counts)
+    .map(([name, count]) => ({
+      name,
+      label: name.length > 28 ? name.slice(0, 26) + '…' : name,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit)
+}
+
+function countStatusByYear(systems: AISystem[], statusField: keyof AISystem) {
+  const byYear: Record<string, Record<string, number>> = {}
+  const allStatuses = new Set<string>()
+  for (const s of systems) {
+    const year = str(s.status_date).trim().slice(0, 4)
+    if (!year || !/^\d{4}$/.test(year)) continue
+    const raw = str(s[statusField]).trim()
+    if (!raw) continue
+    const status = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
+    allStatuses.add(status)
+    if (!byYear[year]) byYear[year] = {}
+    byYear[year][status] = (byYear[year][status] ?? 0) + 1
+  }
+  // Order statuses by total volume so the largest sits at the bottom of each stack.
+  const totals: Record<string, number> = {}
+  for (const ys of Object.values(byYear)) {
+    for (const [k, v] of Object.entries(ys)) totals[k] = (totals[k] ?? 0) + v
+  }
+  const statuses = Array.from(allStatuses).sort((a, b) => (totals[b] ?? 0) - (totals[a] ?? 0))
+  const rows = Object.entries(byYear)
+    .map(([year, vals]) => {
+      const row: Record<string, string | number> = { year }
+      for (const s of statuses) row[s] = vals[s] ?? 0
+      return row
+    })
+    .sort((a, b) => (a.year as string).localeCompare(b.year as string))
+  return { rows, statuses }
+}
+
 function CustomTooltip({ active, payload, label, total, suffix }: {
-  active?: boolean; payload?: Array<{ value: number }>; label?: string; total: number; suffix?: string
+  active?: boolean; payload?: Array<{ value: number; name?: string }>; label?: string; total: number; suffix?: string
 }) {
   if (!active || !payload?.[0]) return null
   const value = payload[0].value
+  const heading = label ?? payload[0].name ?? ''
   const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0'
   return (
     <div
@@ -97,10 +202,43 @@ function CustomTooltip({ active, payload, label, total, suffix }: {
         color: 'var(--text-primary)',
       }}
     >
-      <p className="font-medium">{label}</p>
+      <p className="font-medium">{heading}</p>
       <p style={{ color: 'var(--text-tertiary)' }}>
         <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{value}</span>
         {' '}{suffix} · {pct}%
+      </p>
+    </div>
+  )
+}
+
+function StackedTooltip({ active, payload, label }: {
+  active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string
+}) {
+  if (!active || !payload?.length) return null
+  const total = payload.reduce((sum, p) => sum + (p.value ?? 0), 0)
+  const visible = payload.filter((p) => p.value > 0)
+  return (
+    <div
+      className="px-3 py-2 rounded-lg text-xs space-y-0.5"
+      style={{
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-md)',
+        color: 'var(--text-primary)',
+        minWidth: 160,
+      }}
+    >
+      <p className="font-medium">{label}</p>
+      {visible.map((p) => (
+        <p key={p.name} className="flex items-center gap-1.5" style={{ color: 'var(--text-tertiary)' }}>
+          <span className="h-2 w-2 rounded-sm shrink-0" style={{ background: p.color }} aria-hidden="true" />
+          <span className="flex-1">{p.name}</span>
+          <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{p.value}</span>
+        </p>
+      ))}
+      <p className="pt-0.5 mt-1 border-t flex items-center justify-between" style={{ borderColor: 'var(--border-color)', color: 'var(--text-tertiary)' }}>
+        <span>Total</span>
+        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{total}</span>
       </p>
     </div>
   )
@@ -121,30 +259,84 @@ function ChartCard({ title, ariaLabel, children, srTable, hint }: {
   )
 }
 
-function AnimatedBar({ width, delay }: { width: number; delay: number }) {
+function AnimatedBar({ width, delay, color = 'var(--accent)' }: { width: number; delay: number; color?: string }) {
   const [animated, setAnimated] = useState(false)
   useEffect(() => {
     const timer = setTimeout(() => setAnimated(true), delay)
     return () => clearTimeout(timer)
   }, [delay])
   return (
-    <div className="h-1.5 rounded-full" style={{ width: animated ? `${width}%` : '0%', background: 'var(--accent)', transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+    <div className="h-1.5 rounded-full" style={{ width: animated ? `${width}%` : '0%', background: color, transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+  )
+}
+
+// Donut card used for PII and Built-by distributions.
+function DonutCard({ title, ariaLabel, srTable, slices, totalSystems, suffix }: {
+  title: string
+  ariaLabel: string
+  srTable?: React.ReactNode
+  slices: Array<{ name: string; value: number; color: string }>
+  totalSystems: number
+  suffix: string
+}) {
+  return (
+    <ChartCard title={title} ariaLabel={ariaLabel} srTable={srTable}>
+      <ResponsiveContainer width="100%" height={200}>
+        <PieChart>
+          <Tooltip content={<CustomTooltip total={totalSystems} suffix={suffix} />} />
+          <Pie
+            data={slices}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            innerRadius={50}
+            outerRadius={80}
+            paddingAngle={slices.length > 1 ? 2 : 0}
+            stroke="var(--bg-surface)"
+            strokeWidth={2}
+            isAnimationActive
+            animationDuration={800}
+            animationEasing="ease-out"
+          >
+            {slices.map((s, i) => <Cell key={i} fill={s.color} />)}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+        {slices.map((s) => (
+          <li key={s.name} className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full inline-block shrink-0" style={{ background: s.color }} aria-hidden="true" />
+            <span>{s.name}</span>
+            <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>{s.value}</span>
+          </li>
+        ))}
+      </ul>
+    </ChartCard>
   )
 }
 
 export default function Charts({ systems, onFilterStatus, onFilterDepartment, activeStatusFilter, activeDeptFilter }: Props) {
   const { lang, t, deptName } = useLanguage()
   const statusField = (lang === 'fr' ? 'ai_system_status_fr' : 'ai_system_status_en') as keyof AISystem
+  const devByField = (lang === 'fr' ? 'developed_by_fr' : 'developed_by_en') as keyof AISystem
 
   const byStatus = useMemo(() => countStatuses(systems, statusField), [systems, statusField])
   const byDept = useMemo(() => countDepts(systems, 10, deptName), [systems, deptName])
   const byYear = useMemo(() => countByYear(systems), [systems])
+  const pii = useMemo(() => countPii(systems), [systems])
+  const devBy = useMemo(() => countDevBy(systems, devByField), [systems, devByField])
+  const topVendors = useMemo(() => countTopVendors(systems, 10), [systems])
+  const statusByYear = useMemo(() => countStatusByYear(systems, statusField), [systems, statusField])
+
   const maxDept = byDept[0]?.count ?? 1
+  const maxVendor = topVendors[0]?.count ?? 1
   const totalSystems = systems.length
 
   const [hoveredStatus, setHoveredStatus] = useState<string | null>(null)
   const [hoveredYear, setHoveredYear] = useState<string | null>(null)
   const [hoveredDept, setHoveredDept] = useState<string | null>(null)
+  const [hoveredVendor, setHoveredVendor] = useState<string | null>(null)
 
   if (systems.length === 0) return null
 
@@ -172,114 +364,262 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
     </table>
   )
 
+  const piiSlices = pii.map((d) => ({
+    name: d.key === 'Y' ? t('handles_personal_info')
+        : d.key === 'N' ? t('no_personal_info')
+        : t('pii_unknown'),
+    value: d.count,
+    color: PII_COLORS[d.key],
+  }))
+
+  const piiSrTable = (
+    <table>
+      <caption>{t('sr_pii_caption')}</caption>
+      <thead><tr><th scope="col">{t('personal_data')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <tbody>{piiSlices.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.value}</td></tr>)}</tbody>
+    </table>
+  )
+
+  const devBySlices = devBy.map((d) => ({
+    name: d.key === '__unknown__' ? t('dev_by_unknown') : d.key,
+    value: d.count,
+    color: DEV_BY_COLORS[d.key] ?? 'var(--text-muted)',
+  }))
+
+  const devBySrTable = (
+    <table>
+      <caption>{t('sr_dev_caption')}</caption>
+      <thead><tr><th scope="col">{t('developed_by')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <tbody>{devBySlices.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.value}</td></tr>)}</tbody>
+    </table>
+  )
+
+  const vendorsSrTable = (
+    <table>
+      <caption>{t('sr_vendors_caption')}</caption>
+      <thead><tr><th scope="col">{t('vendor')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <tbody>{topVendors.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.count}</td></tr>)}</tbody>
+    </table>
+  )
+
+  const statusYearSrTable = (
+    <table>
+      <caption>{t('sr_status_year_caption')}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{t('col_year')}</th>
+          {statusByYear.statuses.map((s) => <th key={s} scope="col">{s}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {statusByYear.rows.map((row) => (
+          <tr key={String(row.year)}>
+            <td>{String(row.year)}</td>
+            {statusByYear.statuses.map((s) => <td key={s}>{row[s] as number}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+
   const axisTickStyle = { fontSize: 11 }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
-      <ChartCard
-        title={t('chart_status')}
-        ariaLabel={`${t('chart_status')}: ${byStatus.map((d) => `${d.name} ${d.count}`).join(', ')}`}
-        srTable={statusSrTable}
-      >
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={byStatus} margin={{ left: 4, right: 4, top: 8, bottom: 40 }}>
-            <XAxis dataKey="name" tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} angle={-20} textAnchor="end" interval={0} />
-            <YAxis tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} width={24} />
-            <Tooltip content={<CustomTooltip total={totalSystems} suffix={t('systems')} />} cursor={{ fill: 'var(--bg-hover)', radius: 4 }} />
-            <Bar
-              dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}
-              animationBegin={0} animationDuration={800} animationEasing="ease-out"
-              style={{ cursor: onFilterStatus ? 'pointer' : 'default' }}
-              onClick={(data) => {
-                if (onFilterStatus && data?.name) {
-                  const match = systems.find((s) => {
-                    const raw = str(s[statusField]).trim()
-                    if (!raw) return false
-                    const key = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
-                    return key === data.name
-                  })
-                  if (match) onFilterStatus(match[statusField] as string)
-                }
-              }}
-              onMouseEnter={(_, index) => setHoveredStatus(byStatus[index]?.name ?? null)}
-              onMouseLeave={() => setHoveredStatus(null)}
-            >
-              {byStatus.map((entry, i) => {
-                const isActive = activeStatusFilter ? entry.name.toLowerCase().includes(activeStatusFilter.toLowerCase()) : true
-                const isHovered = hoveredStatus === entry.name
-                return <Cell key={i} fill={getStatusColor(entry.name)} fillOpacity={!isActive ? 0.3 : isHovered ? 1 : 0.85} stroke={isHovered ? getStatusColor(entry.name) : 'none'} strokeWidth={isHovered ? 2 : 0} />
-              })}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartCard>
-
-      <ChartCard
-        title={t('chart_year')}
-        ariaLabel={`${t('chart_year')}: ${byYear.map((d) => `${d.year}: ${d.count}`).join(', ')}`}
-        srTable={yearSrTable}
-      >
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={byYear} margin={{ left: 4, right: 4, top: 8, bottom: 8 }}>
-            <XAxis dataKey="year" tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} width={24} />
-            <Tooltip content={<CustomTooltip total={totalSystems} suffix={t('systems_added')} />} cursor={{ fill: 'var(--bg-hover)', radius: 4 }} />
-            <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40} fill="var(--accent)" animationBegin={200} animationDuration={800} animationEasing="ease-out"
-              onMouseEnter={(_, index) => setHoveredYear(byYear[index]?.year ?? null)}
-              onMouseLeave={() => setHoveredYear(null)}
-            >
-              {byYear.map((entry, i) => {
-                const isHovered = hoveredYear === entry.year
-                return <Cell key={i} fill="var(--accent)" fillOpacity={isHovered ? 1 : 0.75} stroke={isHovered ? 'var(--accent)' : 'none'} strokeWidth={isHovered ? 2 : 0} />
-              })}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartCard>
-
-      <ChartCard
-        title={t('chart_departments')}
-        ariaLabel={`${t('chart_departments')}: ${byDept.map((d) => `${d.fullName} ${d.count}`).join(', ')}`}
-        srTable={deptSrTable}
-      >
-        <div className="space-y-1.5" aria-hidden="true">
-          {byDept.map(({ fullName, fullOrg, label, count }, i) => {
-            const isHovered = hoveredDept === fullName
-            const isActive = activeDeptFilter ? fullOrg === activeDeptFilter || activeDeptFilter.includes(fullName) : true
-            return (
-              <div
-                key={fullName}
-                className="flex items-center gap-2.5 px-1.5 py-1 rounded-md transition-colors"
-                style={{ cursor: onFilterDepartment ? 'pointer' : 'default', background: isHovered ? 'var(--bg-hover)' : 'transparent', opacity: !isActive ? 0.4 : 1 }}
-                tabIndex={onFilterDepartment ? 0 : undefined}
-                role={onFilterDepartment ? 'button' : undefined}
-                aria-label={onFilterDepartment ? `${t('filter_by')} ${fullName}` : undefined}
-                onMouseEnter={() => setHoveredDept(fullName)}
-                onMouseLeave={() => setHoveredDept(null)}
-                onClick={() => {
-                  if (onFilterDepartment) {
-                    const match = systems.find((s) => deptName(s.government_organization) === fullName)
-                    if (match) onFilterDepartment(match.government_organization)
+    <>
+      {/* Row 1: existing — Status, Year, Top Departments */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+        <ChartCard
+          title={t('chart_status')}
+          ariaLabel={`${t('chart_status')}: ${byStatus.map((d) => `${d.name} ${d.count}`).join(', ')}`}
+          srTable={statusSrTable}
+        >
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={byStatus} margin={{ left: 4, right: 4, top: 8, bottom: 40 }}>
+              <XAxis dataKey="name" tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} angle={-20} textAnchor="end" interval={0} />
+              <YAxis tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} width={24} />
+              <Tooltip content={<CustomTooltip total={totalSystems} suffix={t('systems')} />} cursor={{ fill: 'var(--bg-hover)', radius: 4 }} />
+              <Bar
+                dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}
+                animationBegin={0} animationDuration={800} animationEasing="ease-out"
+                style={{ cursor: onFilterStatus ? 'pointer' : 'default' }}
+                onClick={(data) => {
+                  if (onFilterStatus && data?.name) {
+                    const match = systems.find((s) => {
+                      const raw = str(s[statusField]).trim()
+                      if (!raw) return false
+                      const key = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
+                      return key === data.name
+                    })
+                    if (match) onFilterStatus(match[statusField] as string)
                   }
                 }}
-                onKeyDown={(e) => {
-                  if ((e.key === 'Enter' || e.key === ' ') && onFilterDepartment) {
-                    e.preventDefault()
-                    const match = systems.find((s) => deptName(s.government_organization) === fullName)
-                    if (match) onFilterDepartment(match.government_organization)
-                  }
-                }}
+                onMouseEnter={(_, index) => setHoveredStatus(byStatus[index]?.name ?? null)}
+                onMouseLeave={() => setHoveredStatus(null)}
               >
-                <div className="text-xs shrink-0 truncate" style={{ width: '40%', color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }} title={fullName}>{label}</div>
-                <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
-                  <AnimatedBar width={Math.round((count / maxDept) * 100)} delay={i * 60} />
+                {byStatus.map((entry, i) => {
+                  const isActive = activeStatusFilter ? entry.name.toLowerCase().includes(activeStatusFilter.toLowerCase()) : true
+                  const isHovered = hoveredStatus === entry.name
+                  return <Cell key={i} fill={getStatusColor(entry.name)} fillOpacity={!isActive ? 0.3 : isHovered ? 1 : 0.85} stroke={isHovered ? getStatusColor(entry.name) : 'none'} strokeWidth={isHovered ? 2 : 0} />
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard
+          title={t('chart_year')}
+          ariaLabel={`${t('chart_year')}: ${byYear.map((d) => `${d.year}: ${d.count}`).join(', ')}`}
+          srTable={yearSrTable}
+        >
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={byYear} margin={{ left: 4, right: 4, top: 8, bottom: 8 }}>
+              <XAxis dataKey="year" tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} width={24} />
+              <Tooltip content={<CustomTooltip total={totalSystems} suffix={t('systems_added')} />} cursor={{ fill: 'var(--bg-hover)', radius: 4 }} />
+              <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40} fill="var(--accent)" animationBegin={200} animationDuration={800} animationEasing="ease-out"
+                onMouseEnter={(_, index) => setHoveredYear(byYear[index]?.year ?? null)}
+                onMouseLeave={() => setHoveredYear(null)}
+              >
+                {byYear.map((entry, i) => {
+                  const isHovered = hoveredYear === entry.year
+                  return <Cell key={i} fill="var(--accent)" fillOpacity={isHovered ? 1 : 0.75} stroke={isHovered ? 'var(--accent)' : 'none'} strokeWidth={isHovered ? 2 : 0} />
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard
+          title={t('chart_departments')}
+          ariaLabel={`${t('chart_departments')}: ${byDept.map((d) => `${d.fullName} ${d.count}`).join(', ')}`}
+          srTable={deptSrTable}
+        >
+          <div className="space-y-1.5" aria-hidden="true">
+            {byDept.map(({ fullName, fullOrg, label, count }, i) => {
+              const isHovered = hoveredDept === fullName
+              const isActive = activeDeptFilter ? fullOrg === activeDeptFilter || activeDeptFilter.includes(fullName) : true
+              return (
+                <div
+                  key={fullName}
+                  className="flex items-center gap-2.5 px-1.5 py-1 rounded-md transition-colors"
+                  style={{ cursor: onFilterDepartment ? 'pointer' : 'default', background: isHovered ? 'var(--bg-hover)' : 'transparent', opacity: !isActive ? 0.4 : 1 }}
+                  tabIndex={onFilterDepartment ? 0 : undefined}
+                  role={onFilterDepartment ? 'button' : undefined}
+                  aria-label={onFilterDepartment ? `${t('filter_by')} ${fullName}` : undefined}
+                  onMouseEnter={() => setHoveredDept(fullName)}
+                  onMouseLeave={() => setHoveredDept(null)}
+                  onClick={() => {
+                    if (onFilterDepartment) {
+                      const match = systems.find((s) => deptName(s.government_organization) === fullName)
+                      if (match) onFilterDepartment(match.government_organization)
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if ((e.key === 'Enter' || e.key === ' ') && onFilterDepartment) {
+                      e.preventDefault()
+                      const match = systems.find((s) => deptName(s.government_organization) === fullName)
+                      if (match) onFilterDepartment(match.government_organization)
+                    }
+                  }}
+                >
+                  <div className="text-xs shrink-0 truncate" style={{ width: '40%', color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }} title={fullName}>{label}</div>
+                  <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
+                    <AnimatedBar width={Math.round((count / maxDept) * 100)} delay={i * 60} />
+                  </div>
+                  <div className="text-xs font-medium w-6 text-right shrink-0" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
                 </div>
-                <div className="text-xs font-medium w-6 text-right shrink-0" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
-              </div>
-            )
-          })}
-        </div>
-      </ChartCard>
-    </div>
+              )
+            })}
+          </div>
+        </ChartCard>
+      </div>
+
+      {/* Row 2: PII donut, Dev-by donut, Top Vendors */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+        <DonutCard
+          title={t('chart_pii')}
+          ariaLabel={`${t('chart_pii')}: ${piiSlices.map((d) => `${d.name} ${d.value}`).join(', ')}`}
+          srTable={piiSrTable}
+          slices={piiSlices}
+          totalSystems={totalSystems}
+          suffix={t('systems')}
+        />
+
+        <DonutCard
+          title={t('chart_dev_by')}
+          ariaLabel={`${t('chart_dev_by')}: ${devBySlices.map((d) => `${d.name} ${d.value}`).join(', ')}`}
+          srTable={devBySrTable}
+          slices={devBySlices}
+          totalSystems={totalSystems}
+          suffix={t('systems')}
+        />
+
+        <ChartCard
+          title={t('chart_vendors')}
+          ariaLabel={`${t('chart_vendors')}: ${topVendors.map((d) => `${d.name} ${d.count}`).join(', ')}`}
+          srTable={vendorsSrTable}
+        >
+          <div className="space-y-1.5" aria-hidden="true">
+            {topVendors.map(({ name, label, count }, i) => {
+              const isHovered = hoveredVendor === name
+              return (
+                <div
+                  key={name}
+                  className="flex items-center gap-2.5 px-1.5 py-1 rounded-md transition-colors"
+                  style={{ background: isHovered ? 'var(--bg-hover)' : 'transparent' }}
+                  onMouseEnter={() => setHoveredVendor(name)}
+                  onMouseLeave={() => setHoveredVendor(null)}
+                >
+                  <div className="text-xs shrink-0 truncate" style={{ width: '40%', color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }} title={name}>{label}</div>
+                  <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
+                    <AnimatedBar width={Math.round((count / maxVendor) * 100)} delay={i * 60} />
+                  </div>
+                  <div className="text-xs font-medium w-6 text-right shrink-0" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
+                </div>
+              )
+            })}
+          </div>
+        </ChartCard>
+      </div>
+
+      {/* Row 3: Status × Year stacked bar (full width) */}
+      <div className="mb-4">
+        <ChartCard
+          title={t('chart_status_year')}
+          ariaLabel={`${t('chart_status_year')}: ${statusByYear.statuses.join(', ')}`}
+          srTable={statusYearSrTable}
+        >
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={statusByYear.rows} margin={{ left: 4, right: 4, top: 8, bottom: 8 }}>
+              <XAxis dataKey="year" tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ ...axisTickStyle, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} width={28} />
+              <Tooltip content={<StackedTooltip />} cursor={{ fill: 'var(--bg-hover)', radius: 4 }} />
+              {statusByYear.statuses.map((status, i) => (
+                <Bar
+                  key={status}
+                  dataKey={status}
+                  stackId="s"
+                  fill={getStatusColor(status)}
+                  fillOpacity={0.9}
+                  radius={i === statusByYear.statuses.length - 1 ? [4, 4, 0, 0] : 0}
+                  maxBarSize={40}
+                  animationBegin={i * 80}
+                  animationDuration={700}
+                  animationEasing="ease-out"
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+          <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+            {statusByYear.statuses.map((s) => (
+              <li key={s} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-sm inline-block shrink-0" style={{ background: getStatusColor(s) }} aria-hidden="true" />
+                <span>{s}</span>
+              </li>
+            ))}
+          </ul>
+        </ChartCard>
+      </div>
+    </>
   )
 }

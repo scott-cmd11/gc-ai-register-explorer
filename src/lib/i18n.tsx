@@ -92,6 +92,16 @@ const translations: Record<string, { en: string; fr: string }> = {
   'sr_year_caption': { en: 'Systems by year', fr: 'Syst\u00e8mes par ann\u00e9e' },
   'sr_dept_caption': { en: 'Top 10 departments by system count', fr: 'Les 10 principaux minist\u00e8res par nombre de syst\u00e8mes' },
   'filter_by': { en: 'Filter by', fr: 'Filtrer par' },
+  'chart_pii': { en: 'Personal Information', fr: 'Renseignements personnels' },
+  'chart_dev_by': { en: 'Built By', fr: 'Con\u00e7u par' },
+  'chart_vendors': { en: 'Top Vendors', fr: 'Principaux fournisseurs' },
+  'chart_status_year': { en: 'Status by Year', fr: '\u00c9tat par ann\u00e9e' },
+  'pii_unknown': { en: 'Not specified', fr: 'Non pr\u00e9cis\u00e9' },
+  'dev_by_unknown': { en: 'Not specified', fr: 'Non pr\u00e9cis\u00e9' },
+  'sr_pii_caption': { en: 'Systems by personal information handling', fr: 'Syst\u00e8mes par traitement des renseignements personnels' },
+  'sr_dev_caption': { en: 'Systems by who built them', fr: 'Syst\u00e8mes par concepteur' },
+  'sr_vendors_caption': { en: 'Top 10 vendors by system count', fr: 'Les 10 principaux fournisseurs par nombre de syst\u00e8mes' },
+  'sr_status_year_caption': { en: 'Status distribution per year', fr: 'R\u00e9partition de l\u2019\u00e9tat par ann\u00e9e' },
 
   // Table
   'col_system': { en: 'System', fr: 'Syst\u00e8me' },
