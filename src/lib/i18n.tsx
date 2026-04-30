@@ -40,10 +40,6 @@ const translations: Record<string, { en: string; fr: string }> = {
   'skip_nav': { en: 'Skip to main content', fr: 'Passer au contenu principal' },
   'source_data': { en: 'Source Data', fr: 'Donn\u00e9es source' },
   'source_data_aria': { en: 'View source data on open.canada.ca (opens in new tab)', fr: 'Voir les donn\u00e9es source sur ouvert.canada.ca (ouvre dans un nouvel onglet)' },
-  'retro_enable': { en: '90s Mode', fr: 'Mode ann\u00e9es 90' },
-  'retro_disable': { en: 'Exit 90s', fr: 'Quitter 90s' },
-  'retro_enable_aria': { en: 'Enable 90s retro mode', fr: 'Activer le mode r\u00e9tro ann\u00e9es 90' },
-  'retro_disable_aria': { en: 'Disable 90s retro mode', fr: 'D\u00e9sactiver le mode r\u00e9tro ann\u00e9es 90' },
   'theme_switch_dark': { en: 'Switch to dark mode', fr: 'Passer au mode sombre' },
   'theme_switch_light': { en: 'Switch to light mode', fr: 'Passer au mode clair' },
 
@@ -213,24 +209,6 @@ const translations: Record<string, { en: string; fr: string }> = {
   'footer_home': { en: 'Home', fr: 'Accueil' },
   'footer_privacy_policy': { en: 'Privacy Policy', fr: 'Politique de confidentialit\u00e9' },
   'footer_terms_of_use': { en: 'Terms of Use', fr: 'Conditions d\u2019utilisation' },
-
-  // Retro overlay
-  'retro_tech': {
-    en: 'TECHNOLOGY \u2014 Government of Canada launches AI Register with {total} systems catalogued',
-    fr: 'TECHNOLOGIE \u2014 Le gouvernement du Canada lance le registre d\u2019IA avec {total} syst\u00e8mes catalogu\u00e9s',
-  },
-  'retro_updates': {
-    en: 'UPDATES \u2014 Registry last modified {date} \u2014 {depts} departments reporting',
-    fr: 'MISES \u00c0 JOUR \u2014 Registre modifi\u00e9 pour la derni\u00e8re fois en {date} \u2014 {depts} minist\u00e8res d\u00e9clarants',
-  },
-  'retro_data': {
-    en: 'DATA \u2014 {prod} systems in production, {pii} handle personal information',
-    fr: 'DONN\u00c9ES \u2014 {prod} syst\u00e8mes en production, {pii} traitent des renseignements personnels',
-  },
-  'retro_best_viewed': {
-    en: 'TECH \u2014 Best viewed at 800\u00d7600 resolution with Netscape Navigator 4.0',
-    fr: 'TECH \u2014 Meilleur affichage \u00e0 800\u00d7600 avec Netscape Navigator 4.0',
-  },
 
   // About page
   'back_to_explorer': { en: 'Back to Explorer', fr: 'Retour \u00e0 l\u2019explorateur' },

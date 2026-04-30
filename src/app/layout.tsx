@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Prevent flash of wrong theme and wrong language */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var r=localStorage.getItem('retro');if(r==='true'){document.documentElement.setAttribute('data-theme','retro');return}var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);var l=localStorage.getItem('lang');if(l==='fr')document.documentElement.setAttribute('lang','fr')}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);var l=localStorage.getItem('lang');if(l==='fr')document.documentElement.setAttribute('lang','fr')}catch(e){}})()`,
           }}
         />
       </head>

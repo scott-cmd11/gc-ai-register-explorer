@@ -4,21 +4,14 @@ import { useEffect, useState } from 'react'
 import { useLanguage } from '@/lib/i18n'
 import LanguageToggle from './LanguageToggle'
 
-function ThemeToggle({ isRetro }: { isRetro: boolean }) {
+function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const { t } = useLanguage()
 
   useEffect(() => {
     const current = document.documentElement.getAttribute('data-theme')
-    if (current === 'retro') {
-      const saved = (localStorage.getItem('theme-before-retro') as 'light' | 'dark') || 'light'
-      setTheme(saved)
-    } else {
-      setTheme((current as 'light' | 'dark') || 'light')
-    }
+    setTheme((current as 'light' | 'dark') || 'light')
   }, [])
-
-  if (isRetro) return null
 
   const toggle = () => {
     const next = theme === 'light' ? 'dark' : 'light'
@@ -53,70 +46,14 @@ function ThemeToggle({ isRetro }: { isRetro: boolean }) {
   )
 }
 
-function RetroToggle({ onToggle }: { onToggle: (isRetro: boolean) => void }) {
-  const [isRetro, setIsRetro] = useState(false)
-  const { t } = useLanguage()
-
-  useEffect(() => {
-    setIsRetro(document.documentElement.getAttribute('data-theme') === 'retro')
-  }, [])
-
-  const toggle = () => {
-    if (isRetro) {
-      const savedTheme = localStorage.getItem('theme-before-retro') || localStorage.getItem('theme') || 'light'
-      document.documentElement.setAttribute('data-theme', savedTheme)
-      localStorage.setItem('theme', savedTheme)
-      localStorage.removeItem('retro')
-      localStorage.removeItem('theme-before-retro')
-      setIsRetro(false)
-      onToggle(false)
-    } else {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light'
-      localStorage.setItem('theme-before-retro', currentTheme)
-      document.documentElement.setAttribute('data-theme', 'retro')
-      localStorage.setItem('retro', 'true')
-      setIsRetro(true)
-      onToggle(true)
-    }
-    document.body.style.backgroundColor = ''
-    void document.body.offsetHeight
-  }
-
-  return (
-    <button
-      onClick={toggle}
-      aria-label={isRetro ? t('retro_disable_aria') : t('retro_enable_aria')}
-      className="h-10 px-2.5 rounded-md flex items-center justify-center gap-1.5 transition-colors shrink-0 text-xs font-medium"
-      style={isRetro
-        ? { color: '#CC0000', background: '#C0C0C0', border: '3px outset #C0C0C0', fontFamily: "'Times New Roman', serif", fontWeight: 'bold' }
-        : { color: 'var(--text-tertiary)' }
-      }
-      onMouseEnter={(e) => { if (!isRetro) e.currentTarget.style.background = 'var(--bg-hover)' }}
-      onMouseLeave={(e) => { if (!isRetro) e.currentTarget.style.background = 'transparent' }}
-    >
-      <span aria-hidden="true">🕹️</span>
-      <span className="hidden sm:inline">{isRetro ? t('retro_disable') : t('retro_enable')}</span>
-    </button>
-  )
-}
-
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
-  const [isRetro, setIsRetro] = useState(false)
   const { lang, t } = useLanguage()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const check = () => setIsRetro(document.documentElement.getAttribute('data-theme') === 'retro')
-    check()
-    const observer = new MutationObserver(check)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-    return () => observer.disconnect()
   }, [])
 
   const sourceDataUrl = lang === 'fr'
@@ -152,9 +89,8 @@ export default function Header() {
             </svg>
           </a>
           <LanguageToggle />
-          <RetroToggle onToggle={setIsRetro} />
-          {!isRetro && <span className="h-4 w-px mx-1 block hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />}
-          <ThemeToggle isRetro={isRetro} />
+          <span className="h-4 w-px mx-1 hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />
+          <ThemeToggle />
         </div>
       </div>
     </header>

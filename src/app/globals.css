@@ -77,146 +77,6 @@
   color-scheme: dark;
 }
 
-/* ── 90s Retro theme — News site style (CNN/Yahoo circa 1998) ─────── */
-[data-theme="retro"] {
-  --bg-base: #D4D0C8;
-  --bg-surface: #FFFFFF;
-  --bg-elevated: #FFFFEE;
-  --bg-hover: #FFFFCC;
-  --bg-hover-strong: #CCCCFF;
-  --border-color: #808080;
-  --border-subtle: #C0C0C0;
-  --text-primary: #000000;
-  --text-secondary: #000080;
-  --text-tertiary: #666666;
-  --text-muted: #808080;
-  --accent: #CC0000;
-  --accent-light: #FFEEEE;
-  --accent-text: #CC0000;
-  --accent-hover: #990000;
-  --ring: rgba(204, 0, 0, 0.3);
-  --status-production: #006600;
-  --status-production-bg: #CCFFCC;
-  --status-production-text: #006600;
-  --status-development: #996600;
-  --status-development-bg: #FFFFCC;
-  --status-development-text: #996600;
-  --status-pilot: #000080;
-  --status-pilot-bg: #CCCCFF;
-  --status-pilot-text: #000080;
-  --status-decommission: #CC0000;
-  --status-decommission-bg: #FFCCCC;
-  --status-decommission-text: #CC0000;
-  --shadow-sm: 2px 2px 0 #808080;
-  --shadow-md: 3px 3px 0 #808080;
-  --shadow-lg: 4px 4px 0 #808080;
-  --radius: 0px;
-  color-scheme: light;
-}
-
-/* Retro font override — Times New Roman for that 90s news feel */
-[data-theme="retro"] body,
-[data-theme="retro"] body * {
-  font-family: 'Times New Roman', Times, Georgia, serif !important;
-}
-
-/* Retro: kill all border-radius */
-[data-theme="retro"] [class*="rounded"] {
-  border-radius: 0 !important;
-}
-
-/* Retro: beveled 3D borders on interactive elements */
-[data-theme="retro"] button,
-[data-theme="retro"] select,
-[data-theme="retro"] input {
-  border: 3px outset #C0C0C0 !important;
-  border-radius: 0 !important;
-}
-
-/* Retro: Win95 gray background + explicit bg color for instant re-evaluation */
-[data-theme="retro"] body {
-  background-color: #D4D0C8 !important;
-  background-image: none;
-}
-
-/* Retro: default cursor, pointer on clickable */
-[data-theme="retro"] button,
-[data-theme="retro"] a,
-[data-theme="retro"] select,
-[data-theme="retro"] [role="button"],
-[data-theme="retro"] tr[tabindex] { cursor: pointer; }
-
-/* Retro: panels get outset borders */
-[data-theme="retro"] [style*="border: 1px solid"],
-[data-theme="retro"] [style*="border:1px solid"] {
-  border: 3px outset #C0C0C0 !important;
-}
-
-/* Retro: classic web links — blue, underlined, purple visited */
-[data-theme="retro"] a {
-  color: #0000CC !important;
-  text-decoration: underline !important;
-}
-[data-theme="retro"] a:visited {
-  color: #660099 !important;
-}
-[data-theme="retro"] a:hover {
-  color: #CC0000 !important;
-}
-
-/* Retro: scrollbar */
-[data-theme="retro"] *::-webkit-scrollbar-thumb {
-  background: #C0C0C0;
-  border: 2px outset #C0C0C0;
-  border-radius: 0;
-}
-
-/* ── Retro keyframe animations ─────────────────────────────────────── */
-@keyframes retro-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-@keyframes retro-rainbow {
-  0% { color: #FF0000; }
-  16% { color: #FF8000; }
-  33% { color: #FFFF00; }
-  50% { color: #00FF00; }
-  66% { color: #0000FF; }
-  83% { color: #FF00FF; }
-  100% { color: #FF0000; }
-}
-
-@keyframes retro-marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-@keyframes retro-rainbow-bg {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-[data-theme="retro"] .retro-blink {
-  animation: retro-blink 1s step-end infinite;
-}
-
-[data-theme="retro"] .retro-rainbow {
-  animation: retro-rainbow 3s linear infinite;
-}
-
-[data-theme="retro"] .retro-marquee {
-  animation: retro-marquee 30s linear infinite;
-}
-
-.retro-hr {
-  height: 4px;
-  border: none;
-  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet, red);
-  background-size: 200% 100%;
-  animation: retro-rainbow-bg 3s linear infinite;
-}
-
 /* ── Base ────────────────────────────────────────────────────────────── */
 body {
   background-color: var(--bg-base);
@@ -230,6 +90,35 @@ body {
 /* Explicit body bg per theme for reliable re-evaluation on toggle */
 [data-theme="light"] body { background-color: #FAFAFA; color: #09090B; }
 [data-theme="dark"] body { background-color: #09090B; color: #FAFAFA; }
+
+/* Visible scrollbar — used inside scrollable table containers so users
+   notice the scroll affordance without relying on the default thin OS bar. */
+.scroll-visible {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) var(--bg-hover);
+}
+.scroll-visible::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.scroll-visible::-webkit-scrollbar-track {
+  background: var(--bg-hover);
+  border-radius: 6px;
+}
+.scroll-visible::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 6px;
+  border: 3px solid var(--bg-hover);
+  background-clip: padding-box;
+}
+.scroll-visible::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+  background-clip: padding-box;
+  border: 3px solid var(--bg-hover);
+}
+.scroll-visible::-webkit-scrollbar-corner {
+  background: var(--bg-hover);
+}
 
 /* Skip navigation */
 .skip-nav {
