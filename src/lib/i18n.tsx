@@ -44,12 +44,17 @@ const translations: Record<string, { en: string; fr: string }> = {
   'theme_switch_light': { en: 'Switch to light mode', fr: 'Passer au mode clair' },
 
   // Hero
-  'hero_title_1': { en: 'AI Register', fr: 'Registre d\u2019IA' },
-  'hero_title_2': { en: 'Explorer', fr: 'Explorateur' },
+  'hero_badge': { en: 'Government of Canada AI Registry Explorer', fr: 'Explorateur du registre d\u2019IA du gouvernement du Canada' },
+  'hero_title_1': { en: 'Explore AI systems used across the', fr: 'Explorez les syst\u00e8mes d\u2019IA utilis\u00e9s dans l\u2019ensemble du' },
+  'hero_title_2': { en: 'Government of Canada', fr: 'gouvernement du Canada' },
   'hero_subtitle': {
-    en: 'An open directory of artificial intelligence systems developed, procured, or implemented by departments across the Government of Canada.',
-    fr: 'Un r\u00e9pertoire ouvert des syst\u00e8mes d\u2019intelligence artificielle d\u00e9velopp\u00e9s, acquis ou mis en \u0153uvre par les minist\u00e8res du gouvernement du Canada.',
+    en: 'An independent, open-source tool for browsing the federal AI registry. Search, filter, and export data on AI systems reported by departments across the Government of Canada.',
+    fr: 'Un outil ind\u00e9pendant et \u00e0 code source ouvert pour parcourir le registre f\u00e9d\u00e9ral d\u2019IA. Recherchez, filtrez et exportez des donn\u00e9es sur les syst\u00e8mes d\u2019IA d\u00e9clar\u00e9s par les minist\u00e8res du gouvernement du Canada.',
   },
+  'hero_cta': { en: 'Browse systems', fr: 'Parcourir les syst\u00e8mes' },
+  'hero_source': { en: 'View source data', fr: 'Voir les donn\u00e9es source' },
+  'hero_independent': { en: 'Independent project \u2014 not affiliated with the Government of Canada', fr: 'Projet ind\u00e9pendant \u2014 non affili\u00e9 au gouvernement du Canada' },
+  'hero_source_label': { en: 'Source: open.canada.ca', fr: 'Source\u00a0: ouvert.canada.ca' },
   'search_placeholder': { en: 'Search systems, departments, vendors\u2026', fr: 'Rechercher des syst\u00e8mes, minist\u00e8res, fournisseurs\u2026' },
 
   // Stats bar

@@ -2,78 +2,84 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Shadcn-inspired Design Tokens — Light theme (default) ──────────── */
+/* ── Design Tokens — Light theme ───────────────────────────────────── */
 :root,
 [data-theme="light"] {
-  --bg-base: #FAFAFA;
+  --bg-base: #F8F9FA;
   --bg-surface: #FFFFFF;
   --bg-elevated: #FFFFFF;
-  --bg-hover: #F4F4F5;
-  --bg-hover-strong: #E4E4E7;
-  --border-color: #E4E4E7;
-  --border-subtle: #F4F4F5;
-  --text-primary: #09090B;
-  --text-secondary: #3F3F46;
-  --text-tertiary: #71717A;
-  --text-muted: #A1A1AA;
-  --accent: #4F46E5;
-  --accent-light: rgba(79, 70, 229, 0.08);
-  --accent-text: #4338CA;
-  --accent-hover: #4338CA;
-  --ring: rgba(79, 70, 229, 0.25);
-  --status-production: #059669;
-  --status-production-bg: #ECFDF5;
-  --status-production-text: #065F46;
-  --status-development: #D97706;
-  --status-development-bg: #FFFBEB;
-  --status-development-text: #92400E;
-  --status-pilot: #2563EB;
-  --status-pilot-bg: #EFF6FF;
-  --status-pilot-text: #1E40AF;
-  --status-decommission: #DC2626;
-  --status-decommission-bg: #FEF2F2;
-  --status-decommission-text: #991B1B;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --bg-hover: #F1F3F5;
+  --bg-hover-strong: #E9ECEF;
+  --bg-hero: #F1F3F5;
+  --border-color: #DEE2E6;
+  --border-subtle: #F1F3F5;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-tertiary: #6C757D;
+  --text-muted: #ADB5BD;
+  --accent: #3B5BDB;
+  --accent-light: rgba(59, 91, 219, 0.07);
+  --accent-text: #364FC7;
+  --accent-hover: #364FC7;
+  --accent-subtle: #EDF2FF;
+  --ring: rgba(59, 91, 219, 0.25);
+  --status-production: #099268;
+  --status-production-bg: #E6FCF5;
+  --status-production-text: #087F5B;
+  --status-development: #E67700;
+  --status-development-bg: #FFF9DB;
+  --status-development-text: #E67700;
+  --status-pilot: #1C7ED6;
+  --status-pilot-bg: #E7F5FF;
+  --status-pilot-text: #1864AB;
+  --status-decommission: #E03131;
+  --status-decommission-bg: #FFF5F5;
+  --status-decommission-text: #C92A2A;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px -2px rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 24px -4px rgba(0, 0, 0, 0.1), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
   --radius: 0.5rem;
+  --radius-lg: 0.75rem;
   color-scheme: light;
 }
 
 /* ── Dark theme ─────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg-base: #09090B;
-  --bg-surface: #18181B;
-  --bg-elevated: #27272A;
-  --bg-hover: #27272A;
-  --bg-hover-strong: #3F3F46;
-  --border-color: #27272A;
-  --border-subtle: #1E1E22;
-  --text-primary: #FAFAFA;
-  --text-secondary: #D4D4D8;
-  --text-tertiary: #A1A1AA;
-  --text-muted: #71717A;
-  --accent: #818CF8;
-  --accent-light: rgba(129, 140, 248, 0.1);
-  --accent-text: #A5B4FC;
-  --accent-hover: #A5B4FC;
-  --ring: rgba(129, 140, 248, 0.3);
-  --status-production: #34D399;
-  --status-production-bg: rgba(52, 211, 153, 0.1);
-  --status-production-text: #6EE7B7;
-  --status-development: #FBBF24;
-  --status-development-bg: rgba(251, 191, 36, 0.1);
-  --status-development-text: #FDE68A;
-  --status-pilot: #60A5FA;
-  --status-pilot-bg: rgba(96, 165, 250, 0.1);
-  --status-pilot-text: #93C5FD;
-  --status-decommission: #F87171;
-  --status-decommission-bg: rgba(248, 113, 113, 0.1);
-  --status-decommission-text: #FCA5A5;
+  --bg-base: #0C0D10;
+  --bg-surface: #16181D;
+  --bg-elevated: #1E2028;
+  --bg-hover: #1E2028;
+  --bg-hover-strong: #2C2E36;
+  --bg-hero: #12131A;
+  --border-color: #2C2E36;
+  --border-subtle: #1E2028;
+  --text-primary: #E9ECEF;
+  --text-secondary: #CED4DA;
+  --text-tertiary: #909296;
+  --text-muted: #5C5F66;
+  --accent: #748FFC;
+  --accent-light: rgba(116, 143, 252, 0.1);
+  --accent-text: #91A7FF;
+  --accent-hover: #91A7FF;
+  --accent-subtle: rgba(116, 143, 252, 0.08);
+  --ring: rgba(116, 143, 252, 0.3);
+  --status-production: #38D9A9;
+  --status-production-bg: rgba(56, 217, 169, 0.1);
+  --status-production-text: #63E6BE;
+  --status-development: #FCC419;
+  --status-development-bg: rgba(252, 196, 25, 0.1);
+  --status-development-text: #FFD43B;
+  --status-pilot: #74C0FC;
+  --status-pilot-bg: rgba(116, 192, 252, 0.1);
+  --status-pilot-text: #A5D8FF;
+  --status-decommission: #FF6B6B;
+  --status-decommission-bg: rgba(255, 107, 107, 0.1);
+  --status-decommission-text: #FFA8A8;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px -2px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px -4px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
   --radius: 0.5rem;
+  --radius-lg: 0.75rem;
   color-scheme: dark;
 }
 
@@ -85,14 +91,14 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.011em;
 }
 
-/* Explicit body bg per theme for reliable re-evaluation on toggle */
-[data-theme="light"] body { background-color: #FAFAFA; color: #09090B; }
-[data-theme="dark"] body { background-color: #09090B; color: #FAFAFA; }
+[data-theme="light"] body { background-color: #F8F9FA; color: #212529; }
+[data-theme="dark"] body { background-color: #0C0D10; color: #E9ECEF; }
 
-/* Visible scrollbar — used inside scrollable table containers so users
-   notice the scroll affordance without relying on the default thin OS bar. */
+/* ── Visible scrollbar ──────────────────────────────────────────────── */
 .scroll-visible {
   scrollbar-width: thin;
   scrollbar-color: var(--text-muted) var(--bg-hover);
@@ -120,7 +126,7 @@ body {
   background: var(--bg-hover);
 }
 
-/* Skip navigation */
+/* ── Skip navigation ────────────────────────────────────────────────── */
 .skip-nav {
   position: absolute;
   top: -100%;
@@ -139,21 +145,21 @@ body {
   top: 0;
 }
 
-/* Global focus-visible ring */
+/* ── Global focus-visible ring ──────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-/* Hide native search clear button (we have a custom one) */
+/* ── Hide native search clear button ────────────────────────────────── */
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
   appearance: none;
 }
 
-/* Scrollbar */
+/* ── Scrollbar ──────────────────────────────────────────────────────── */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
@@ -165,7 +171,7 @@ input[type="search"]::-webkit-search-decoration {
   border-radius: 9999px;
 }
 
-/* Screen-reader only utility */
+/* ── Screen-reader only ─────────────────────────────────────────────── */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -178,7 +184,7 @@ input[type="search"]::-webkit-search-decoration {
   border-width: 0;
 }
 
-/* Reduced motion */
+/* ── Reduced motion ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -36,17 +36,17 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
 function StatusBadge({ status }: { status: string }) {
   const s = status?.toLowerCase() ?? ''
   const vars = s.includes('production')
-    ? { color: 'var(--status-production-text)', bg: 'var(--status-production-bg)' }
+    ? { color: 'var(--status-production-text)', bg: 'var(--status-production-bg)', dot: 'var(--status-production)' }
     : s.includes('development')
-    ? { color: 'var(--status-development-text)', bg: 'var(--status-development-bg)' }
+    ? { color: 'var(--status-development-text)', bg: 'var(--status-development-bg)', dot: 'var(--status-development)' }
     : s.includes('pilot') || s.includes('proof')
-    ? { color: 'var(--status-pilot-text)', bg: 'var(--status-pilot-bg)' }
+    ? { color: 'var(--status-pilot-text)', bg: 'var(--status-pilot-bg)', dot: 'var(--status-pilot)' }
     : s.includes('decommission') || s.includes('retired')
-    ? { color: 'var(--status-decommission-text)', bg: 'var(--status-decommission-bg)' }
-    : { color: 'var(--text-tertiary)', bg: 'var(--bg-hover)' }
+    ? { color: 'var(--status-decommission-text)', bg: 'var(--status-decommission-bg)', dot: 'var(--status-decommission)' }
+    : { color: 'var(--text-tertiary)', bg: 'var(--bg-hover)', dot: 'var(--text-muted)' }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap" style={{ background: vars.bg, color: vars.color }}>
-      <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: 'currentColor' }} aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap" style={{ background: vars.bg, color: vars.color }}>
+      <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: vars.dot }} aria-hidden="true" />
       {status || '—'}
     </span>
   )
@@ -56,12 +56,12 @@ function PiiIcon() {
   const { t } = useLanguage()
   return (
     <span
-      className="inline-flex items-center justify-center h-5 w-5 rounded-md"
-      style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}
+      className="inline-flex items-center justify-center h-6 w-6 rounded-md"
+      style={{ background: 'var(--status-development-bg)', color: 'var(--status-development)' }}
       title={t('handles_personal_info')}
       aria-label={t('handles_personal_info')}
     >
-      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+      <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
       </svg>
     </span>
@@ -87,24 +87,22 @@ function SystemRow({ s, onSelect, showDept, showVendor }: {
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       aria-label={`${t('view_details')} ${name || t('col_system')}`}
     >
-      <td className="px-3 sm:px-6 py-3 sm:py-3.5">
+      <td className="px-4 sm:px-6 py-3.5 sm:py-4">
         <div className="font-medium text-sm leading-snug" style={{ color: 'var(--text-primary)' }}>
           {name || '—'}
         </div>
         {truncDesc && <div className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{truncDesc}</div>}
       </td>
-      {showDept && <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization) || '—'}</td>}
-      <td className="px-3 sm:px-6 py-3 sm:py-3.5"><StatusBadge status={status} /></td>
-      <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-sm" style={{ color: 'var(--text-muted)' }}>{s.status_date || '—'}</td>
-      {showVendor && <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>{s.vendor_information || '—'}</td>}
-      <td className="px-3 sm:px-6 py-3 sm:py-3.5 text-center">
+      {showDept && <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-sm" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization) || '—'}</td>}
+      <td className="px-4 sm:px-6 py-3.5 sm:py-4"><StatusBadge status={status} /></td>
+      <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-sm tabular-nums" style={{ color: 'var(--text-muted)' }}>{s.status_date || '—'}</td>
+      {showVendor && <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-sm" style={{ color: 'var(--text-tertiary)' }}>{s.vendor_information || '—'}</td>}
+      <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-center">
         {s.involves_personal_information === 'Y' ? <PiiIcon /> : <span className="text-sm" style={{ color: 'var(--text-muted)' }} aria-label={t('no_personal_info')}>—</span>}
       </td>
     </tr>
   )
 }
-
-// ── Pagination ──────────────────────────────────────────────────────────────
 
 function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (p: number) => void }) {
   const { t } = useLanguage()
@@ -121,7 +119,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
     pages.push(total)
   }
 
-  const btnBase = "h-10 min-w-[2.5rem] px-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+  const btnBase = "h-9 min-w-[2.25rem] px-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
 
   return (
     <div className="flex items-center justify-between px-4 sm:px-6 py-3" style={{ borderTop: '1px solid var(--border-color)' }}>
@@ -153,8 +151,6 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
     </div>
   )
 }
-
-// ── Flat table ──────────────────────────────────────────────────────────────
 
 function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }: Omit<Props, 'groupBy'>) {
   const { lang, t } = useLanguage()
@@ -191,13 +187,13 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
     <div className="scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
       <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
         <caption className="sr-only">{caption}</caption>
-        <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-          <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
+        <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 0 var(--border-color)' }}>
+          <tr>
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
                 aria-sort={sortField === col.field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                className={`px-3 sm:px-6 py-2.5 sm:py-3 text-left text-sm font-medium cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
-                style={{ color: sortField === col.field ? 'var(--text-primary)' : 'var(--text-tertiary)' }}
+                className={`px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
+                style={{ color: sortField === col.field ? 'var(--accent-text)' : 'var(--text-muted)', letterSpacing: '0.05em', borderBottom: '2px solid var(--border-color)' }}
               >
                 {col.label}<SortIcon active={sortField === col.field} dir={sortDir} />
               </th>
@@ -213,8 +209,6 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
     </>
   )
 }
-
-// ── Grouped view ────────────────────────────────────────────────────────────
 
 interface GroupConfig {
   groupKey: (s: AISystem) => string
@@ -251,13 +245,13 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
     <div className="scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
     <table className="w-full text-sm">
       <caption className="sr-only">{caption}</caption>
-      <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
+      <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 0 var(--border-color)' }}>
+        <tr>
           {config.colHeaderKeys.map((h) => (
-            <th key={h.labelKey} scope="col" className={`px-3 sm:px-6 py-2.5 sm:py-3 text-left text-sm font-medium whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-tertiary)' }}>{t(h.labelKey)}</th>
+            <th key={h.labelKey} scope="col" className={`px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-muted)', letterSpacing: '0.05em', borderBottom: '2px solid var(--border-color)' }}>{t(h.labelKey)}</th>
           ))}
-          <th scope="col" className="px-3 sm:px-6 py-2.5 sm:py-3 text-right">
-            <button onClick={toggleAll} className="text-xs font-medium transition-opacity hover:opacity-60" style={{ color: 'var(--text-muted)' }}>
+          <th scope="col" className="px-4 sm:px-6 py-3 text-right" style={{ borderBottom: '2px solid var(--border-color)' }}>
+            <button onClick={toggleAll} className="text-xs font-medium transition-opacity hover:opacity-60" style={{ color: 'var(--accent-text)' }}>
               {expanded.size === groups.length ? t('collapse_all') : t('expand_all')}
             </button>
           </th>
@@ -278,7 +272,7 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
                 aria-expanded={isOpen}
               >
-                <td colSpan={colSpan} className="px-3 sm:px-6 py-3 sm:py-4">
+                <td colSpan={colSpan} className="px-4 sm:px-6 py-3.5 sm:py-4">
                   <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center justify-center w-5 h-5 rounded overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
                       <svg aria-hidden="true" className={`h-3 w-3 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -286,7 +280,7 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
                       </svg>
                     </div>
                     <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{config.groupLabel(key)}</span>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>{groupSystems.length} {t('systems')}</span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md tabular-nums" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>{groupSystems.length} {t('systems')}</span>
                     <div className="ml-2 pl-2 border-l" style={{ borderColor: 'var(--border-color)' }}>
                       {config.groupSummary(key, groupSystems, t)}
                     </div>
@@ -316,7 +310,7 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
       return (
         <div className="flex gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           {prod > 0 && <span className="flex items-center gap-1">{summaryDot('var(--status-production)')}{prod} {t('production')}</span>}
-          {pii > 0 && <span className="flex items-center gap-1">{summaryDot('var(--accent)')}{pii} {t('pii_label')}</span>}
+          {pii > 0 && <span className="flex items-center gap-1">{summaryDot('var(--status-development)')}{pii} {t('pii_label')}</span>}
         </div>
       )
     },
@@ -341,7 +335,7 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
         <div className="flex gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           {depts.size > 0 && <span className="flex items-center gap-1">{summaryDot('var(--status-pilot)')}{depts.size} {depts.size === 1 ? t('dept_singular') : t('dept_plural')}</span>}
           {prod > 0 && <span className="flex items-center gap-1">{summaryDot('var(--status-production)')}{prod} {t('production')}</span>}
-          {pii > 0 && <span className="flex items-center gap-1">{summaryDot('var(--accent)')}{pii} {t('pii_label')}</span>}
+          {pii > 0 && <span className="flex items-center gap-1">{summaryDot('var(--status-development)')}{pii} {t('pii_label')}</span>}
         </div>
       )
     },
@@ -357,7 +351,7 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
 
   if (systems.length === 0) {
     return (
-      <div className="rounded-lg p-16 text-center" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+      <div className="rounded-xl p-16 text-center" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
         <svg className="mx-auto h-10 w-10 mb-3" style={{ color: 'var(--text-muted)', opacity: 0.5 }} fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
@@ -367,7 +361,7 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
     )
   }
   return (
-    <div className="rounded-lg transition-colors" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+    <div className="rounded-xl transition-colors overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
       <div>
         {groupBy === 'dept' && <GroupedTable systems={systems} onSelect={onSelect} config={DEPT_CONFIG} totalCount={totalCount} />}
         {groupBy === 'vendor' && <GroupedTable systems={systems} onSelect={onSelect} config={VENDOR_CONFIG} totalCount={totalCount} />}

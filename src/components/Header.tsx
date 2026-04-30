@@ -26,10 +26,10 @@ function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={theme === 'light' ? t('theme_switch_dark') : t('theme_switch_light')}
-      className="h-10 w-10 rounded-md flex items-center justify-center transition-colors shrink-0"
-      style={{ color: 'var(--text-tertiary)' }}
-      onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
-      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+      className="h-9 w-9 rounded-lg flex items-center justify-center transition-colors shrink-0"
+      style={{ color: 'var(--text-tertiary)', border: '1px solid transparent' }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.borderColor = 'var(--border-color)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }}
     >
       {theme === 'light' ? (
         <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -62,21 +62,30 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-30 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-30 transition-all duration-200"
       style={{
         background: scrolled ? 'var(--bg-surface)' : 'transparent',
         borderBottom: scrolled ? '1px solid var(--border-color)' : '1px solid transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        backgroundColor: scrolled ? 'color-mix(in srgb, var(--bg-surface) 85%, transparent)' : 'transparent',
+        backgroundColor: scrolled ? 'color-mix(in srgb, var(--bg-surface) 90%, transparent)' : 'transparent',
       }}
     >
-      <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-end">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        {/* Left: brand mark */}
         <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-md flex items-center justify-center shrink-0" style={{ background: 'var(--accent)', color: '#fff' }}>
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+          </div>
+          <span className="text-sm font-semibold hidden sm:inline" style={{ color: 'var(--text-primary)' }}>AI Register Explorer</span>
+        </div>
+
+        {/* Right: controls */}
+        <div className="flex items-center gap-1.5">
           <a
             href={sourceDataUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
             style={{ color: 'var(--text-tertiary)' }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
@@ -89,7 +98,7 @@ export default function Header() {
             </svg>
           </a>
           <LanguageToggle />
-          <span className="h-4 w-px mx-1 hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />
+          <span className="h-4 w-px hidden md:block" style={{ background: 'var(--border-color)' }} aria-hidden="true" />
           <ThemeToggle />
         </div>
       </div>

@@ -28,7 +28,8 @@ export default function HomePage() {
   const [selectedSystem, setSelectedSystem] = useState<AISystem | null>(null)
   const [groupBy, setGroupBy] = useState<GroupBy>('dept')
   const searchInputRef = useRef<HTMLInputElement>(null)
-  // Update sort field when language changes
+  const mainRef = useRef<HTMLElement>(null)
+
   useEffect(() => {
     setSortField(lang === 'fr' ? 'name_ai_system_fr' : 'name_ai_system_en')
   }, [lang])
@@ -121,6 +122,14 @@ export default function HomePage() {
     URL.revokeObjectURL(url)
   }
 
+  const scrollToMain = () => {
+    mainRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const sourceDataUrl = lang === 'fr'
+    ? 'https://ouvert.canada.ca/data/fr/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
+    : 'https://open.canada.ca/data/en/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
+
   const groupButtons: { key: GroupBy; labelKey: string; icon: string }[] = [
     { key: 'dept', labelKey: 'group_department', icon: 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z' },
     { key: 'vendor', labelKey: 'group_vendor', icon: 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z' },
@@ -132,25 +141,70 @@ export default function HomePage() {
       <Header />
       <ScrollIndicator />
 
-      <div className="relative overflow-hidden w-full pt-24 pb-14 md:pt-32 md:pb-20 border-b" style={{ borderColor: 'var(--border-color)', background: 'radial-gradient(ellipse at top, var(--bg-hover) 0%, transparent 70%)' }}>
-        <div className="max-w-screen-md mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            {t('hero_title_1')} <br className="hidden md:block"/>
-            <span style={{ color: 'var(--text-muted)' }}>{t('hero_title_2')}</span>
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <div className="relative w-full pt-24 pb-12 md:pt-28 md:pb-16" style={{ background: 'var(--bg-hero)' }}>
+        <div className="max-w-screen-lg mx-auto px-4 sm:px-6">
+          {/* H1 */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-bold tracking-tight leading-tight mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
+            {t('hero_title_1')}{' '}
+            <span style={{ color: 'var(--accent)' }}>{t('hero_title_2')}</span>
           </h1>
-          <p className="text-base md:text-lg max-w-xl" style={{ color: 'var(--text-secondary)' }}>
+
+          {/* Subtitle */}
+          <p className="text-base md:text-lg max-w-2xl leading-relaxed mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             {t('hero_subtitle')}
           </p>
+
+          {/* CTAs */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            <button
+              onClick={scrollToMain}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all"
+              style={{ background: 'var(--accent)', color: '#fff', boxShadow: 'var(--shadow-sm)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-hover)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)' }}
+            >
+              {t('hero_cta')}
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" /></svg>
+            </button>
+            <a
+              href={sourceDataUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)', background: 'var(--bg-surface)' }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-surface)'}
+            >
+              {t('hero_source')}
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+            </a>
+          </div>
+
+          {/* Trust indicators */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+            <span className="flex items-center gap-1.5">
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" /></svg>
+              {t('hero_source_label')}
+            </span>
+            <span className="h-3 w-px" style={{ background: 'var(--border-color)' }} aria-hidden="true" />
+            <span className="flex items-center gap-1.5">
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+              {t('hero_independent')}
+            </span>
+          </div>
         </div>
       </div>
 
+      {/* ── Stats ────────────────────────────────────────────────────── */}
       {!loading && !error && (
-        <div className="w-full border-b mb-8" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
+        <div className="w-full border-b" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
           <StatsBar systems={systems} lastModified={lastModified} />
         </div>
       )}
 
-      <main id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pb-8" tabIndex={-1}>
+      {/* ── Main content ─────────────────────────────────────────────── */}
+      <main ref={mainRef} id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pt-8 pb-8" tabIndex={-1} style={{ scrollMarginTop: '5rem' }}>
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div className="flex items-center gap-3">
@@ -180,14 +234,14 @@ export default function HomePage() {
               activeDeptFilter={filters.department}
             />
 
-            {/* Toolbar: search + filters + controls */}
+            {/* ── Toolbar: search + filters + controls ────────────────── */}
             <div
-              className="rounded-lg p-4 mb-3 space-y-3"
-              style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}
+              className="rounded-xl p-4 md:p-5 mb-4 space-y-4"
+              style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
             >
               {/* Search row */}
-              <div className="relative flex items-center w-full rounded-lg overflow-hidden transition-all duration-200" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-hover)' }}>
-                <svg className="absolute left-3.5 h-4 w-4 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+              <div className="relative flex items-center w-full rounded-lg overflow-hidden transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'var(--bg-base)' }}>
+                <svg className="absolute left-3.5 h-4.5 w-4.5 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
                 <input
@@ -196,9 +250,9 @@ export default function HomePage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t('search_placeholder')}
-                  className="w-full h-10 pl-10 pr-20 text-sm bg-transparent outline-none ring-0"
+                  className="w-full h-11 pl-10 pr-20 text-sm bg-transparent outline-none ring-0"
                   style={{ color: 'var(--text-primary)' }}
-                  onFocus={(e) => { e.currentTarget.parentElement!.style.borderColor = 'var(--ring)' }}
+                  onFocus={(e) => { e.currentTarget.parentElement!.style.borderColor = 'var(--accent)' }}
                   onBlur={(e) => { e.currentTarget.parentElement!.style.borderColor = 'var(--border-color)' }}
                 />
                 {query && (
@@ -216,9 +270,9 @@ export default function HomePage() {
                   <FilterPanel filters={filters} onChange={setFilters} options={filterOptions} onClear={clearFilters} />
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2.5 shrink-0">
                   <p className="text-sm" style={{ color: 'var(--text-tertiary)' }} aria-live="polite" aria-atomic="true">
-                    <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{filtered.length}</span>
+                    <span className="font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>{filtered.length}</span>
                     {filtered.length !== systems.length && <span style={{ color: 'var(--text-muted)' }}> / {systems.length}</span>}
                     <span> {t('systems')}</span>
                   </p>
@@ -227,7 +281,7 @@ export default function HomePage() {
 
                   <button
                     onClick={exportCsv}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors"
                     style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)', background: 'var(--bg-surface)' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-surface)'}
@@ -242,7 +296,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background: 'var(--bg-hover)' }} role="group" aria-label={t('table_grouping')}>
                     {groupButtons.map(({ key, labelKey, icon }) => (
                       <button key={key} onClick={() => setGroupBy(key)} aria-pressed={groupBy === key}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all"
                         style={groupBy === key
                           ? { background: 'var(--bg-surface)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }
                           : { color: 'var(--text-muted)' }

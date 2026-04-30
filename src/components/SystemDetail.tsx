@@ -11,8 +11,8 @@ interface Props {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-6">
-      <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+    <div className="mb-7">
+      <h3 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>
         {title}
       </h3>
       {children}
@@ -23,9 +23,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, value }: { label: string; value?: string }) {
   if (!value?.trim()) return null
   return (
-    <div className="mb-3">
-      {label && <dt className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>{label}</dt>}
-      <dd className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{value}</dd>
+    <div className="mb-4">
+      {label && <dt className="text-xs font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>{label}</dt>}
+      <dd className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>{value}</dd>
     </div>
   )
 }
@@ -39,7 +39,7 @@ function Badge({ children, variant = 'default' }: { children: React.ReactNode; v
     info: { background: 'var(--status-pilot-bg)', color: 'var(--status-pilot-text)', border: '1px solid transparent' },
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium" style={styles[variant]}>
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium" style={styles[variant]}>
       {children}
     </span>
   )
@@ -101,16 +101,16 @@ export default function SystemDetail({ system: s, onClose }: Props) {
         {/* Header */}
         <div className="px-6 py-5 flex items-start justify-between gap-4 shrink-0" style={{ borderBottom: '1px solid var(--border-color)' }}>
           <div className="min-w-0">
-            <p className="text-xs font-medium mb-1" style={{ color: 'var(--accent)' }}>{s.ai_register_id}</p>
-            <h2 id={titleId} className="text-lg font-semibold leading-snug" style={{ color: 'var(--text-primary)' }}>
+            <p className="text-xs font-semibold mb-1.5 tabular-nums" style={{ color: 'var(--accent)' }}>{s.ai_register_id}</p>
+            <h2 id={titleId} className="text-lg font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>
               {name}
             </h2>
             <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization)}</p>
           </div>
           <button
             onClick={onClose}
-            className="h-10 w-10 rounded-md flex items-center justify-center shrink-0 transition-colors"
-            style={{ color: 'var(--text-muted)' }}
+            className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+            style={{ color: 'var(--text-muted)', border: '1px solid var(--border-color)' }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
             aria-label={t('close_panel')}
@@ -122,7 +122,7 @@ export default function SystemDetail({ system: s, onClose }: Props) {
         </div>
 
         {/* Status strip */}
-        <div className="px-6 py-3 flex flex-wrap gap-2 shrink-0" style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-base)' }}>
+        <div className="px-6 py-3.5 flex flex-wrap gap-2 shrink-0" style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-base)' }}>
           <StatusPill status={status} />
           {s.status_date && <Badge>{s.status_date}</Badge>}
           <Badge variant={s.involves_personal_information === 'Y' ? 'accent' : 'default'}>
@@ -141,8 +141,8 @@ export default function SystemDetail({ system: s, onClose }: Props) {
           </Section>
           <Section title={t('technical_details')}>
             <dl>
-              {field(s, 'developed_by') && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>{t('developed_by')}</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{field(s, 'developed_by')}</dd></div>}
-              {s.vendor_information && <div className="mb-3 flex gap-3"><dt className="text-xs font-medium w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>{t('vendor')}</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.vendor_information}</dd></div>}
+              {field(s, 'developed_by') && <div className="mb-4 flex gap-3"><dt className="text-xs font-semibold w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>{t('developed_by')}</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{field(s, 'developed_by')}</dd></div>}
+              {s.vendor_information && <div className="mb-4 flex gap-3"><dt className="text-xs font-semibold w-28 shrink-0 pt-0.5" style={{ color: 'var(--text-muted)' }}>{t('vendor')}</dt><dd className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.vendor_information}</dd></div>}
               <Field label={t('capabilities')} value={field(s, 'ai_system_capabilities')} />
               <Field label={t('data_sources')} value={field(s, 'data_sources')} />
             </dl>

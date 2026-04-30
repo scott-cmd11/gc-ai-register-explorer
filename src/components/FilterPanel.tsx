@@ -27,12 +27,13 @@ function ToolbarSelect({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="text-sm rounded-md pl-3 pr-8 py-1.5 transition-all appearance-none cursor-pointer"
+        className="text-sm rounded-lg pl-3 pr-8 py-2 transition-all appearance-none cursor-pointer"
         style={{
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          color: value ? 'var(--text-primary)' : 'var(--text-muted)',
-          minWidth: '90px',
+          background: value ? 'var(--accent-light)' : 'var(--bg-base)',
+          border: value ? '1px solid var(--accent)' : '1px solid var(--border-color)',
+          color: value ? 'var(--accent-text)' : 'var(--text-secondary)',
+          minWidth: '100px',
+          fontWeight: value ? 500 : 400,
         }}
         onFocus={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px var(--ring)'}
         onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}
@@ -45,7 +46,7 @@ function ToolbarSelect({
       <svg
         aria-hidden="true"
         className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none"
-        style={{ color: 'var(--text-muted)' }}
+        style={{ color: value ? 'var(--accent-text)' : 'var(--text-muted)' }}
         fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -57,16 +58,17 @@ function ToolbarSelect({
 function FilterBadge({ label, onRemove, removeLabel }: { label: string; onRemove: () => void; removeLabel: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1 text-xs font-medium pl-2 pr-1 py-0.5 rounded-md transition-colors"
+      className="inline-flex items-center gap-1 text-xs font-medium pl-2.5 pr-1 py-1 rounded-lg transition-colors"
       style={{
         background: 'var(--accent-light)',
         color: 'var(--accent-text)',
+        border: '1px solid var(--accent)',
       }}
     >
       <span className="max-w-[160px] truncate">{label}</span>
       <button
         onClick={onRemove}
-        className="h-4 w-4 rounded flex items-center justify-center transition-opacity hover:opacity-60"
+        className="h-4 w-4 rounded flex items-center justify-center transition-opacity hover:opacity-60 ml-0.5"
         aria-label={`${removeLabel}: ${label}`}
       >
         <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -89,14 +91,14 @@ export default function FilterPanel({ filters, onChange, options, onClear }: Pro
   if (filters.notificationAi) activeFilters.push({ label: filters.notificationAi === 'Y' ? t('users_notified') : t('no_notification'), clear: () => onChange({ ...filters, notificationAi: '' }) })
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {/* Filter dropdowns row */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="hidden sm:flex items-center gap-1.5 mr-1">
           <svg className="h-4 w-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
           </svg>
-          <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{t('filters')}</span>
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>{t('filters')}</span>
         </div>
 
         <ToolbarSelect
@@ -141,14 +143,16 @@ export default function FilterPanel({ filters, onChange, options, onClear }: Pro
 
       {/* Active filter chips */}
       {activeFilters.length > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap" aria-live="polite" aria-atomic="true">
+        <div className="flex items-center gap-2 flex-wrap" aria-live="polite" aria-atomic="true">
           {activeFilters.map((f) => (
             <FilterBadge key={f.label} label={f.label} onRemove={f.clear} removeLabel={t('remove_filter')} />
           ))}
           <button
             onClick={onClear}
-            className="text-xs font-medium ml-1 transition-opacity hover:opacity-60"
+            className="text-xs font-medium ml-1 px-2 py-1 rounded-md transition-colors"
             style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.background = 'var(--bg-hover)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent' }}
           >
             {t('clear_all')}
           </button>

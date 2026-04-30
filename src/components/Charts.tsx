@@ -23,8 +23,6 @@ interface Props {
   activeDeptFilter?: string
 }
 
-// CKAN occasionally returns numeric values (e.g. status_date as int year) for
-// fields the schema declares as string — coerce safely without crashing.
 const str = (v: unknown): string =>
   typeof v === 'string' ? v
   : typeof v === 'number' && Number.isFinite(v) ? String(v)
@@ -47,8 +45,6 @@ function getStatusColor(status: string): string {
   return 'var(--text-muted)'
 }
 
-// Color tokens for new charts. Mapping covers both EN and FR API values so the
-// same record gets the same colour regardless of selected language.
 const PII_COLORS: Record<string, string> = {
   Y: 'var(--status-decommission)',
   N: 'var(--status-production)',
@@ -169,7 +165,6 @@ function countStatusByYear(systems: AISystem[], statusField: keyof AISystem) {
     if (!byYear[year]) byYear[year] = {}
     byYear[year][status] = (byYear[year][status] ?? 0) + 1
   }
-  // Order statuses by total volume so the largest sits at the bottom of each stack.
   const totals: Record<string, number> = {}
   for (const ys of Object.values(byYear)) {
     for (const [k, v] of Object.entries(ys)) totals[k] = (totals[k] ?? 0) + v
@@ -244,14 +239,20 @@ function StackedTooltip({ active, payload, label }: {
   )
 }
 
-function ChartCard({ title, ariaLabel, children, srTable, hint }: {
-  title: string; ariaLabel: string; children: React.ReactNode; srTable?: React.ReactNode; hint?: string
+function ChartCard({ title, subtitle, ariaLabel, children, srTable, hint }: {
+  title: string; subtitle?: string; ariaLabel: string; children: React.ReactNode; srTable?: React.ReactNode; hint?: string
 }) {
   return (
-    <div className="rounded-lg p-5 transition-colors" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{title}</h3>
-        {hint && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)' }}>{hint}</span>}
+    <div className="rounded-xl p-5 sm:p-6 transition-all" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
+      onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
+      onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-sm)'}
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+          {subtitle && <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>}
+        </div>
+        {hint && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)' }}>{hint}</span>}
       </div>
       <div role="img" aria-label={ariaLabel}>{children}</div>
       {srTable && <div className="sr-only">{srTable}</div>}
@@ -266,13 +267,13 @@ function AnimatedBar({ width, delay, color = 'var(--accent)' }: { width: number;
     return () => clearTimeout(timer)
   }, [delay])
   return (
-    <div className="h-1.5 rounded-full" style={{ width: animated ? `${width}%` : '0%', background: color, transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+    <div className="h-2 rounded-full" style={{ width: animated ? `${width}%` : '0%', background: color, transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }} />
   )
 }
 
-// Donut card used for PII and Built-by distributions.
-function DonutCard({ title, ariaLabel, srTable, slices, totalSystems, suffix }: {
+function DonutCard({ title, subtitle, ariaLabel, srTable, slices, totalSystems, suffix }: {
   title: string
+  subtitle?: string
   ariaLabel: string
   srTable?: React.ReactNode
   slices: Array<{ name: string; value: number; color: string }>
@@ -280,7 +281,7 @@ function DonutCard({ title, ariaLabel, srTable, slices, totalSystems, suffix }: 
   suffix: string
 }) {
   return (
-    <ChartCard title={title} ariaLabel={ariaLabel} srTable={srTable}>
+    <ChartCard title={title} subtitle={subtitle} ariaLabel={ariaLabel} srTable={srTable}>
       <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Tooltip content={<CustomTooltip total={totalSystems} suffix={suffix} />} />
@@ -303,12 +304,12 @@ function DonutCard({ title, ariaLabel, srTable, slices, totalSystems, suffix }: 
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-      <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+      <ul className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
         {slices.map((s) => (
           <li key={s.name} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full inline-block shrink-0" style={{ background: s.color }} aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-sm inline-block shrink-0" style={{ background: s.color }} aria-hidden="true" />
             <span>{s.name}</span>
-            <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>{s.value}</span>
+            <span className="font-semibold tabular-nums" style={{ color: 'var(--text-secondary)' }}>{s.value}</span>
           </li>
         ))}
       </ul>
@@ -426,12 +427,14 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
 
   return (
     <>
-      {/* Row 1: existing — Status, Year, Top Departments */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+      {/* Row 1: Status, Year, Top Departments */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <ChartCard
           title={t('chart_status')}
+          subtitle={lang === 'en' ? 'Current lifecycle stage of each system' : 'Étape actuelle du cycle de vie de chaque système'}
           ariaLabel={`${t('chart_status')}: ${byStatus.map((d) => `${d.name} ${d.count}`).join(', ')}`}
           srTable={statusSrTable}
+          hint={onFilterStatus ? (lang === 'en' ? 'Click to filter' : 'Cliquez pour filtrer') : undefined}
         >
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={byStatus} margin={{ left: 4, right: 4, top: 8, bottom: 40 }}>
@@ -468,6 +471,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
 
         <ChartCard
           title={t('chart_year')}
+          subtitle={lang === 'en' ? 'When systems were added to the registry' : 'Quand les systèmes ont été ajoutés au registre'}
           ariaLabel={`${t('chart_year')}: ${byYear.map((d) => `${d.year}: ${d.count}`).join(', ')}`}
           srTable={yearSrTable}
         >
@@ -491,17 +495,19 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
 
         <ChartCard
           title={t('chart_departments')}
+          subtitle={lang === 'en' ? 'Federal departments with the most AI systems' : 'Ministères fédéraux avec le plus de systèmes d\'IA'}
           ariaLabel={`${t('chart_departments')}: ${byDept.map((d) => `${d.fullName} ${d.count}`).join(', ')}`}
           srTable={deptSrTable}
+          hint={onFilterDepartment ? (lang === 'en' ? 'Click to filter' : 'Cliquez pour filtrer') : undefined}
         >
-          <div className="space-y-1.5" aria-hidden="true">
+          <div className="space-y-2" aria-hidden="true">
             {byDept.map(({ fullName, fullOrg, label, count }, i) => {
               const isHovered = hoveredDept === fullName
               const isActive = activeDeptFilter ? fullOrg === activeDeptFilter || activeDeptFilter.includes(fullName) : true
               return (
                 <div
                   key={fullName}
-                  className="flex items-center gap-2.5 px-1.5 py-1 rounded-md transition-colors"
+                  className="flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors"
                   style={{ cursor: onFilterDepartment ? 'pointer' : 'default', background: isHovered ? 'var(--bg-hover)' : 'transparent', opacity: !isActive ? 0.4 : 1 }}
                   tabIndex={onFilterDepartment ? 0 : undefined}
                   role={onFilterDepartment ? 'button' : undefined}
@@ -523,10 +529,10 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
                   }}
                 >
                   <div className="text-xs shrink-0 truncate" style={{ width: '40%', color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }} title={fullName}>{label}</div>
-                  <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
+                  <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
                     <AnimatedBar width={Math.round((count / maxDept) * 100)} delay={i * 60} />
                   </div>
-                  <div className="text-xs font-medium w-6 text-right shrink-0" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
+                  <div className="text-xs font-semibold w-7 text-right shrink-0 tabular-nums" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
                 </div>
               )
             })}
@@ -535,9 +541,10 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
       </div>
 
       {/* Row 2: PII donut, Dev-by donut, Top Vendors */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <DonutCard
           title={t('chart_pii')}
+          subtitle={lang === 'en' ? 'Systems processing personally identifiable information' : 'Systèmes traitant des renseignements personnels'}
           ariaLabel={`${t('chart_pii')}: ${piiSlices.map((d) => `${d.name} ${d.value}`).join(', ')}`}
           srTable={piiSrTable}
           slices={piiSlices}
@@ -547,6 +554,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
 
         <DonutCard
           title={t('chart_dev_by')}
+          subtitle={lang === 'en' ? 'Who developed each system' : 'Qui a développé chaque système'}
           ariaLabel={`${t('chart_dev_by')}: ${devBySlices.map((d) => `${d.name} ${d.value}`).join(', ')}`}
           srTable={devBySrTable}
           slices={devBySlices}
@@ -556,25 +564,26 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
 
         <ChartCard
           title={t('chart_vendors')}
+          subtitle={lang === 'en' ? 'Most frequently listed technology providers' : 'Fournisseurs de technologie les plus fréquemment cités'}
           ariaLabel={`${t('chart_vendors')}: ${topVendors.map((d) => `${d.name} ${d.count}`).join(', ')}`}
           srTable={vendorsSrTable}
         >
-          <div className="space-y-1.5" aria-hidden="true">
+          <div className="space-y-2" aria-hidden="true">
             {topVendors.map(({ name, label, count }, i) => {
               const isHovered = hoveredVendor === name
               return (
                 <div
                   key={name}
-                  className="flex items-center gap-2.5 px-1.5 py-1 rounded-md transition-colors"
+                  className="flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors"
                   style={{ background: isHovered ? 'var(--bg-hover)' : 'transparent' }}
                   onMouseEnter={() => setHoveredVendor(name)}
                   onMouseLeave={() => setHoveredVendor(null)}
                 >
                   <div className="text-xs shrink-0 truncate" style={{ width: '40%', color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }} title={name}>{label}</div>
-                  <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
+                  <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ background: 'var(--bg-hover-strong)' }}>
                     <AnimatedBar width={Math.round((count / maxVendor) * 100)} delay={i * 60} />
                   </div>
-                  <div className="text-xs font-medium w-6 text-right shrink-0" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
+                  <div className="text-xs font-semibold w-7 text-right shrink-0 tabular-nums" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
                 </div>
               )
             })}
@@ -583,9 +592,10 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
       </div>
 
       {/* Row 3: Status × Year stacked bar (full width) */}
-      <div className="mb-4">
+      <div className="mb-5">
         <ChartCard
           title={t('chart_status_year')}
+          subtitle={lang === 'en' ? 'How system statuses have changed over time' : 'Comment les états des systèmes ont évolué dans le temps'}
           ariaLabel={`${t('chart_status_year')}: ${statusByYear.statuses.join(', ')}`}
           srTable={statusYearSrTable}
         >
@@ -610,10 +620,10 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
               ))}
             </BarChart>
           </ResponsiveContainer>
-          <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+          <ul className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
             {statusByYear.statuses.map((s) => (
               <li key={s} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-sm inline-block shrink-0" style={{ background: getStatusColor(s) }} aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-sm inline-block shrink-0" style={{ background: getStatusColor(s) }} aria-hidden="true" />
                 <span>{s}</span>
               </li>
             ))}
