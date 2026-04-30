@@ -21,6 +21,8 @@ interface Props {
   activeDeptFilter?: string
 }
 
+const str = (v: unknown): string => typeof v === 'string' ? v : ''
+
 const STATUS_COLORS: Record<string, string> = {
   production: 'var(--status-production)',
   development: 'var(--status-development)',
@@ -41,7 +43,7 @@ function getStatusColor(status: string): string {
 function countStatuses(systems: AISystem[], statusField: keyof AISystem) {
   const counts: Record<string, number> = {}
   for (const s of systems) {
-    const raw = (s[statusField] as string)?.trim()
+    const raw = str(s[statusField]).trim()
     if (!raw) continue
     const key = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
     counts[key] = (counts[key] ?? 0) + 1
@@ -54,7 +56,7 @@ function countStatuses(systems: AISystem[], statusField: keyof AISystem) {
 function countByYear(systems: AISystem[]) {
   const counts: Record<string, number> = {}
   for (const s of systems) {
-    const year = s.status_date?.trim().slice(0, 4)
+    const year = str(s.status_date).trim().slice(0, 4)
     if (!year || !/^\d{4}$/.test(year)) continue
     counts[year] = (counts[year] ?? 0) + 1
   }
@@ -66,7 +68,7 @@ function countByYear(systems: AISystem[]) {
 function countDepts(systems: AISystem[], limit: number, deptNameFn: (org: string) => string) {
   const counts: Record<string, { count: number; label: string; fullOrg: string }> = {}
   for (const s of systems) {
-    const full = s.government_organization?.trim()
+    const full = str(s.government_organization).trim()
     if (!full) continue
     const name = deptNameFn(full)
     const label = name.length > 28 ? name.slice(0, 26) + '…' : name
@@ -191,7 +193,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
               onClick={(data) => {
                 if (onFilterStatus && data?.name) {
                   const match = systems.find((s) => {
-                    const raw = (s[statusField] as string)?.trim()
+                    const raw = str(s[statusField]).trim()
                     if (!raw) return false
                     const key = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
                     return key === data.name
