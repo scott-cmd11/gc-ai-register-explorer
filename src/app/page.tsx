@@ -240,8 +240,8 @@ export default function HomePage() {
               style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
             >
               {/* Search row */}
-              <div className="relative flex items-center w-full rounded-lg overflow-hidden transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'var(--bg-base)' }}>
-                <svg className="absolute left-3.5 h-4.5 w-4.5 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+              <div className="relative flex items-center w-full rounded-lg transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'var(--bg-base)' }}>
+                <svg className="absolute left-3.5 h-4 w-4 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
                 <input
