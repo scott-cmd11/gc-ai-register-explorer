@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+const path = require('path')
+
 const isDev = process.env.NODE_ENV !== 'production'
 
 const securityHeaders = [
@@ -51,6 +53,7 @@ const securityHeaders = [
 ]
 
 const nextConfig = {
+  outputFileTracingRoot: path.join(__dirname),
   async headers() {
     return [
       {

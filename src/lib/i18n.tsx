@@ -44,7 +44,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   'theme_switch_light': { en: 'Switch to light mode', fr: 'Passer au mode clair' },
 
   // Hero
-  'hero_badge': { en: 'Government of Canada AI Registry Explorer', fr: 'Explorateur du registre d\u2019IA du gouvernement du Canada' },
+  'hero_badge': { en: 'Independent explorer for public AI registry data', fr: 'Explorateur ind\u00e9pendant des donn\u00e9es publiques du registre d\u2019IA' },
   'hero_title_1': { en: 'Explore AI systems used across the', fr: 'Explorez les syst\u00e8mes d\u2019IA utilis\u00e9s dans l\u2019ensemble du' },
   'hero_title_2': { en: 'Government of Canada', fr: 'gouvernement du Canada' },
   'hero_subtitle': {
@@ -157,7 +157,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   // About section (footer)
   'about_title': { en: 'About This Project', fr: '\u00c0 propos de ce projet' },
   'about_text': {
-    en: 'The <strong>AI Register Explorer</strong> is an independent data visualization tool designed to make the Government of Canada\u2019s Artificial Intelligence Registry more accessible, searchable, and insightful.',
+    en: 'The <strong>AI Register Explorer</strong> is an independent data visualisation tool designed to make the Government of Canada\u2019s Artificial Intelligence Registry more accessible, searchable, and insightful.',
     fr: 'L\u2019<strong>Explorateur du registre d\u2019IA</strong> est un outil ind\u00e9pendant de visualisation de donn\u00e9es con\u00e7u pour rendre le registre d\u2019intelligence artificielle du gouvernement du Canada plus accessible, consultable et informatif.',
   },
   'about_built_by': {
@@ -221,7 +221,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   'about_page_updated': { en: 'Last updated: April 2026', fr: 'Derni\u00e8re mise \u00e0 jour\u00a0: avril 2026' },
   'about_what_title': { en: 'What is the AI Register Explorer?', fr: 'Qu\u2019est-ce que l\u2019Explorateur du registre d\u2019IA\u00a0?' },
   'about_what_p1': {
-    en: 'The <strong>AI Register Explorer</strong> is an independent, open-source data visualization tool that makes the Government of Canada\u2019s Artificial Intelligence Registry more accessible and searchable. It presents the same data published on',
+    en: 'The <strong>AI Register Explorer</strong> is an independent, open-source data visualisation tool that makes the Government of Canada\u2019s Artificial Intelligence Registry more accessible and searchable. It presents the same data published on',
     fr: 'L\u2019<strong>Explorateur du registre d\u2019IA</strong> est un outil ind\u00e9pendant et \u00e0 code source ouvert de visualisation de donn\u00e9es qui rend le registre d\u2019intelligence artificielle du gouvernement du Canada plus accessible et consultable. Il pr\u00e9sente les m\u00eames donn\u00e9es publi\u00e9es sur',
   },
   'about_what_p1_suffix': {
@@ -229,12 +229,12 @@ const translations: Record<string, { en: string; fr: string }> = {
     fr: 'dans une interface interactive avec recherche, filtres, graphiques et exportation CSV.',
   },
   'about_what_p2': {
-    en: 'This site is <strong>not an official Government of Canada website</strong> and is not affiliated with, endorsed by, or sponsored by the Government of Canada or any federal department. It is a personal project built to improve public access to information that is already openly licensed and publicly available.',
+    en: 'This site is <strong>not an official Government of Canada website</strong> and is not affiliated with, endorsed by, or sponsored by the Government of Canada or any federal department. It is a personal project built to improve public access to information that is already publicly available under an open licence.',
     fr: 'Ce site n\u2019est <strong>pas un site officiel du gouvernement du Canada</strong> et n\u2019est ni affili\u00e9 au, ni approuv\u00e9 par, ni parrain\u00e9 par le gouvernement du Canada ou tout minist\u00e8re f\u00e9d\u00e9ral. Il s\u2019agit d\u2019un projet personnel visant \u00e0 am\u00e9liorer l\u2019acc\u00e8s du public \u00e0 des informations d\u00e9j\u00e0 sous licence ouverte et accessibles au public.',
   },
   'about_operator_title': { en: 'Who operates this site?', fr: 'Qui exploite ce site\u00a0?' },
   'about_operator_p1': {
-    en: 'This site is operated by <strong>Scott Hazlitt</strong>, a private individual based in Manitoba, Canada, exploring what\u2019s possible with AI-assisted coding tools. Scott is not acting on behalf of any company, government body, or organization.',
+    en: 'This site is operated by <strong>Scott Hazlitt</strong>, a private individual based in Manitoba, Canada, exploring what\u2019s possible with AI-assisted coding tools. Scott is not acting on behalf of any company, government body, or organisation.',
     fr: 'Ce site est exploit\u00e9 par <strong>Scott Hazlitt</strong>, un particulier bas\u00e9 au Manitoba, Canada, explorant les possibilit\u00e9s des outils de codage assist\u00e9s par l\u2019IA. Scott n\u2019agit au nom d\u2019aucune entreprise, organisme gouvernemental ou organisation.',
   },
   'about_data_title': { en: 'Data source & methodology', fr: 'Source des donn\u00e9es et m\u00e9thodologie' },
@@ -258,7 +258,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   },
   'about_no_ai_label': { en: 'No AI classification:', fr: 'Aucune classification par IA\u00a0:' },
   'about_no_ai': {
-    en: 'No artificial intelligence is used to summarize, classify, or categorize entries. The interface itself was built with AI-assisted development tools, but no AI processing is applied to the government data.',
+    en: 'No artificial intelligence is used to summarise, classify, or categorise entries. The interface itself was built with AI-assisted development tools, but no AI processing is applied to the government data.',
     fr: 'Aucune intelligence artificielle n\u2019est utilis\u00e9e pour r\u00e9sumer, classifier ou cat\u00e9goriser les entr\u00e9es. L\u2019interface elle-m\u00eame a \u00e9t\u00e9 construite avec des outils de d\u00e9veloppement assist\u00e9s par l\u2019IA, mais aucun traitement par IA n\u2019est appliqu\u00e9 aux donn\u00e9es gouvernementales.',
   },
   'about_accuracy_label': { en: 'Accuracy:', fr: 'Exactitude\u00a0:' },

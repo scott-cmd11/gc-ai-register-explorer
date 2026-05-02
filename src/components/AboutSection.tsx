@@ -19,7 +19,7 @@ export default function AboutSection() {
   // not user-supplied content, so XSS risk is not applicable.
 
   return (
-    <div className="w-full border-t mt-12" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-hero)' }}>
+    <div className="w-full border-t mt-14" style={{ borderColor: 'var(--border-color)', background: 'linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-hero) 82%, var(--bg-base)))' }}>
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
 
@@ -31,7 +31,7 @@ export default function AboutSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
               </div>
-              <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{t('about_title')}</h3>
+              <h3 className="font-display text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('about_title')}</h3>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               <span dangerouslySetInnerHTML={{ __html: t('about_text') }} />{' '}
@@ -42,7 +42,7 @@ export default function AboutSection() {
               </a>{t('about_bio')}
             </p>
             <div className="pt-2">
-              <div className="flex gap-3 items-start p-4 rounded-xl" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+              <div className="glass-panel flex gap-3 items-start p-4 rounded-lg">
                 <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'var(--status-decommission-bg)', color: 'var(--status-decommission)' }}>
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -110,15 +110,15 @@ export default function AboutSection() {
           <div className="space-y-4">
             <h3 className="text-xs font-bold tracking-wider uppercase mb-4" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>{t('glossary')}</h3>
             <ul className="space-y-3 text-sm">
-              <li className="p-3 rounded-xl" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+              <li className="glass-panel p-3 rounded-lg">
                 <strong className="text-xs font-semibold block mb-1" style={{ color: 'var(--text-primary)' }}>{t('glossary_pii')}</strong>
                 <span className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>{t('glossary_pii_desc')}</span>
               </li>
-              <li className="p-3 rounded-xl" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+              <li className="glass-panel p-3 rounded-lg">
                 <strong className="text-xs font-semibold block mb-1" style={{ color: 'var(--text-primary)' }}>{t('glossary_production')}</strong>
                 <span className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>{t('glossary_production_desc')}</span>
               </li>
-              <li className="p-3 rounded-xl" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+              <li className="glass-panel p-3 rounded-lg">
                 <strong className="text-xs font-semibold block mb-1" style={{ color: 'var(--text-primary)' }}>{t('glossary_aia')}</strong>
                 <span className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>{t('glossary_aia_desc')}</span>
               </li>

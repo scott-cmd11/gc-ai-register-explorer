@@ -85,8 +85,8 @@ export default function HomePage() {
     })
     if (sortField) {
       result = [...result].sort((a, b) => {
-        const av = (a[sortField] ?? '') as string
-        const bv = (b[sortField] ?? '') as string
+        const av = String(a[sortField] ?? '')
+        const bv = String(b[sortField] ?? '')
         return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
       })
     }
@@ -113,7 +113,7 @@ export default function HomePage() {
       `ai_system_capabilities_${suffix}` as keyof AISystem, `data_sources_${suffix}` as keyof AISystem,
       `personal_information_banks_${suffix}` as keyof AISystem, `ai_system_results_${suffix}` as keyof AISystem,
     ]
-    const escape = (v: string) => `"${(v ?? '').replace(/"/g, '""')}"`
+    const escape = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
     const rows = [cols.join(','), ...filtered.map((s) => cols.map((c) => escape(s[c] as string)).join(','))]
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -142,16 +142,23 @@ export default function HomePage() {
       <ScrollIndicator />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <div className="relative w-full pt-24 pb-12 md:pt-28 md:pb-16" style={{ background: 'var(--bg-hero)' }}>
-        <div className="max-w-screen-lg mx-auto px-4 sm:px-6">
+      <div className="civic-hero-field relative w-full overflow-hidden pt-24 pb-14 md:pt-32 md:pb-24">
+        <div className="hero-photo" aria-hidden="true" />
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+          <div className="min-h-[calc(100vh-9rem)] md:min-h-[680px] flex items-center">
+          <div className="reveal-soft max-w-3xl">
+          <div className="product-pill inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+            <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent)' }} aria-hidden="true" />
+            {t('hero_badge')}
+          </div>
           {/* H1 */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-bold tracking-tight leading-tight mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
+          <h1 className="text-[3.15rem] sm:text-6xl md:text-7xl lg:text-[5.8rem] font-semibold tracking-[-0.055em] leading-[0.9] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
             {t('hero_title_1')}{' '}
-            <span style={{ color: 'var(--accent)' }}>{t('hero_title_2')}</span>
+            <span style={{ color: 'var(--accent-text)' }}>{t('hero_title_2')}</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base md:text-lg max-w-2xl leading-relaxed mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          <p className="text-base md:text-xl max-w-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)', lineHeight: 1.62 }}>
             {t('hero_subtitle')}
           </p>
 
@@ -159,10 +166,10 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center gap-3 mb-8">
             <button
               onClick={scrollToMain}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all"
-              style={{ background: 'var(--accent)', color: '#fff', boxShadow: 'var(--shadow-sm)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-hover)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)' }}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all"
+              style={{ background: 'var(--text-primary)', color: 'var(--bg-base)', boxShadow: '0 20px 56px -30px var(--text-primary)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 22px 48px -25px var(--accent)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 18px 40px -24px var(--accent)' }}
             >
               {t('hero_cta')}
               <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" /></svg>
@@ -171,10 +178,10 @@ export default function HomePage() {
               href={sourceDataUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
-              style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)', background: 'var(--bg-surface)' }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-surface)'}
+              className="product-pill inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-surface)'; e.currentTarget.style.transform = 'translateY(0)' }}
             >
               {t('hero_source')}
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
@@ -182,8 +189,8 @@ export default function HomePage() {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
-            <span className="flex items-center gap-1.5">
+          <div className="product-pill inline-flex flex-wrap items-center gap-x-5 gap-y-2 rounded-full px-4 py-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" /></svg>
               {t('hero_source_label')}
             </span>
@@ -193,18 +200,20 @@ export default function HomePage() {
               {t('hero_independent')}
             </span>
           </div>
+          </div>
+          </div>
         </div>
       </div>
 
       {/* ── Stats ────────────────────────────────────────────────────── */}
       {!loading && !error && (
-        <div className="w-full border-b" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
+        <div className="w-full border-y" style={{ borderColor: 'var(--border-color)', background: 'color-mix(in srgb, var(--bg-base) 74%, transparent)' }}>
           <StatsBar systems={systems} lastModified={lastModified} />
         </div>
       )}
 
       {/* ── Main content ─────────────────────────────────────────────── */}
-      <main ref={mainRef} id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pt-8 pb-8" tabIndex={-1} style={{ scrollMarginTop: '5rem' }}>
+      <main ref={mainRef} id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pt-10 pb-8" tabIndex={-1} style={{ scrollMarginTop: '5rem' }}>
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div className="flex items-center gap-3">
@@ -236,11 +245,11 @@ export default function HomePage() {
 
             {/* ── Toolbar: search + filters + controls ────────────────── */}
             <div
-              className="rounded-xl p-4 md:p-5 mb-4 space-y-4"
+              className="glass-panel rounded-lg p-4 md:p-5 mb-5 space-y-4"
               style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
             >
               {/* Search row */}
-              <div className="relative flex items-center w-full rounded-lg transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'var(--bg-base)' }}>
+              <div className="relative flex items-center w-full rounded-lg transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'color-mix(in srgb, var(--bg-base) 76%, transparent)' }}>
                 <svg className="absolute left-3.5 h-4 w-4 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
@@ -281,7 +290,7 @@ export default function HomePage() {
 
                   <button
                     onClick={exportCsv}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
                     style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)', background: 'var(--bg-surface)' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-surface)'}

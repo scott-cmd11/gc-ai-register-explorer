@@ -243,18 +243,20 @@ function ChartCard({ title, subtitle, ariaLabel, children, srTable, hint }: {
   title: string; subtitle?: string; ariaLabel: string; children: React.ReactNode; srTable?: React.ReactNode; hint?: string
 }) {
   return (
-    <div className="rounded-xl p-5 sm:p-6 transition-all" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
-      onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
-      onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-sm)'}
+    <div className="glass-panel rounded-lg p-5 sm:p-6 transition-all"
+      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</h3>
-          {subtitle && <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>}
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="font-display text-xl font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+            {subtitle && <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>}
+          </div>
+          {hint && <span className="shrink-0 whitespace-nowrap text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>{hint}</span>}
         </div>
-        {hint && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)' }}>{hint}</span>}
       </div>
-      <div role="img" aria-label={ariaLabel}>{children}</div>
+      <div className="relative z-10" role="img" aria-label={ariaLabel}>{children}</div>
       {srTable && <div className="sr-only">{srTable}</div>}
     </div>
   )
@@ -427,6 +429,12 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
 
   return (
     <>
+      <div className="mb-5 max-w-3xl reveal-soft">
+        <p className="section-kicker mb-2">{lang === 'en' ? 'Registry signals' : 'Signaux du registre'}</p>
+        <h2 className="font-display text-3xl md:text-4xl font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
+          {lang === 'en' ? 'A clearer read on how federal AI is showing up.' : 'Une lecture plus claire de la présence de l’IA fédérale.'}
+        </h2>
+      </div>
       {/* Row 1: Status, Year, Top Departments */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <ChartCard
@@ -434,7 +442,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
           subtitle={lang === 'en' ? 'Current lifecycle stage of each system' : 'Étape actuelle du cycle de vie de chaque système'}
           ariaLabel={`${t('chart_status')}: ${byStatus.map((d) => `${d.name} ${d.count}`).join(', ')}`}
           srTable={statusSrTable}
-          hint={onFilterStatus ? (lang === 'en' ? 'Click to filter' : 'Cliquez pour filtrer') : undefined}
+          hint={onFilterStatus ? (lang === 'en' ? 'Click bars to filter' : 'Cliquez les barres pour filtrer') : undefined}
         >
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={byStatus} margin={{ left: 4, right: 4, top: 8, bottom: 40 }}>
@@ -498,7 +506,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
           subtitle={lang === 'en' ? 'Federal departments with the most AI systems' : 'Ministères fédéraux avec le plus de systèmes d\'IA'}
           ariaLabel={`${t('chart_departments')}: ${byDept.map((d) => `${d.fullName} ${d.count}`).join(', ')}`}
           srTable={deptSrTable}
-          hint={onFilterDepartment ? (lang === 'en' ? 'Click to filter' : 'Cliquez pour filtrer') : undefined}
+          hint={onFilterDepartment ? (lang === 'en' ? 'Click rows to filter' : 'Cliquez les lignes pour filtrer') : undefined}
         >
           <div className="space-y-2" aria-hidden="true">
             {byDept.map(({ fullName, fullOrg, label, count }, i) => {

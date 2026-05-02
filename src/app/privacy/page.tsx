@@ -78,7 +78,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               The Site also loads fonts from <strong>Google Fonts</strong> (Google LLC, Mountain View, CA, USA) via the
-              Next.js font optimization service. Google may receive your IP address as part of this font delivery. Google's
+              Next.js font optimisation service. Google may receive your IP address as part of this font delivery. Google's
               data practices are governed by{' '}
               <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
                 className="underline" style={{ color: 'var(--accent)' }}>

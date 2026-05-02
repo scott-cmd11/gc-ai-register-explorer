@@ -46,12 +46,11 @@ export default function ScrollIndicator() {
       aria-label={direction === 'down' ? 'Scroll down for more content' : 'Scroll back to top'}
       className="fixed z-40 flex items-center justify-center transition-all duration-300"
       style={{
-        bottom: '24px',
-        left: '50%',
-        transform: 'translateX(-50%)',
+        bottom: '20px',
+        right: '20px',
         width: '40px',
         height: '40px',
-        borderRadius: '50%',
+        borderRadius: '8px',
         background: 'var(--bg-surface)',
         border: '1px solid var(--border-color)',
         boxShadow: 'var(--shadow-md)',

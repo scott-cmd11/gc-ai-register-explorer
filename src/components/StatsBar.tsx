@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { CSSProperties, useEffect, useState, useRef } from 'react'
 import { AISystem } from '@/lib/types'
 import { useLanguage } from '@/lib/i18n'
 
@@ -37,18 +37,17 @@ function MetricCard({ label, value, accentColor, icon }: { label: string; value:
 
   return (
     <div
-      className="min-w-0 rounded-xl p-4 sm:p-5 transition-all"
+      className="glass-panel metric-card min-w-0 rounded-lg p-4 sm:p-5 transition-all"
       style={{
-        background: 'var(--bg-surface)',
+        '--metric-color': accentColor || 'var(--accent)',
         border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-sm)',
-      }}
+      } as CSSProperties}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = 'var(--shadow-md)'
+        e.currentTarget.style.transform = 'translateY(-2px)'
         e.currentTarget.style.borderColor = accentColor || 'var(--accent)'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
+        e.currentTarget.style.transform = 'translateY(0)'
         e.currentTarget.style.borderColor = 'var(--border-color)'
       }}
     >
@@ -56,11 +55,11 @@ function MetricCard({ label, value, accentColor, icon }: { label: string; value:
         <span className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: accentColor ? `color-mix(in srgb, ${accentColor} 12%, transparent)` : 'var(--accent-light)', color: accentColor || 'var(--accent)' }}>
           {icon}
         </span>
-        <span className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>
+        <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--text-tertiary)' }}>
           {label}
         </span>
       </div>
-      <div className="text-2xl sm:text-3xl font-bold tracking-tight tabular-nums" style={{ color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>
+      <div className="font-display text-3xl sm:text-4xl font-semibold tracking-normal tabular-nums" style={{ color: 'var(--text-primary)' }}>
         {animatedValue}
       </div>
     </div>

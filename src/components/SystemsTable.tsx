@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, Fragment } from 'react'
+import { useState, useMemo, useRef, useEffect, Fragment } from 'react'
 import { AISystem, SortDir, SortField } from '@/lib/types'
 import { useLanguage } from '@/lib/i18n'
 
@@ -159,7 +159,9 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
   const totalPages = Math.ceil(systems.length / PAGE_SIZE)
   const paged = useMemo(() => systems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [systems, page])
 
-  useMemo(() => { if (page > totalPages && totalPages > 0) setPage(1) }, [systems.length])
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) setPage(1)
+  }, [page, totalPages])
 
   const handlePageChange = (p: number) => {
     setPage(p)
@@ -187,13 +189,13 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
     <div className="scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
       <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
         <caption className="sr-only">{caption}</caption>
-        <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 0 var(--border-color)' }}>
+        <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-elevated)', backdropFilter: 'blur(14px)', boxShadow: '0 1px 0 var(--border-color)' }}>
           <tr>
             {columns.map((col) => (
               <th key={col.field} scope="col" onClick={() => onSort(col.field)}
                 aria-sort={sortField === col.field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                className={`px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
-                style={{ color: sortField === col.field ? 'var(--accent-text)' : 'var(--text-muted)', letterSpacing: '0.05em', borderBottom: '2px solid var(--border-color)' }}
+                className={`px-4 sm:px-6 py-3 text-left text-xs font-bold uppercase tracking-[0.12em] cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
+                style={{ color: sortField === col.field ? 'var(--accent-text)' : 'var(--text-muted)', borderBottom: '2px solid var(--border-color)' }}
               >
                 {col.label}<SortIcon active={sortField === col.field} dir={sortDir} />
               </th>
@@ -245,10 +247,10 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
     <div className="scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
     <table className="w-full text-sm">
       <caption className="sr-only">{caption}</caption>
-      <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 0 var(--border-color)' }}>
+      <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-elevated)', backdropFilter: 'blur(14px)', boxShadow: '0 1px 0 var(--border-color)' }}>
         <tr>
           {config.colHeaderKeys.map((h) => (
-            <th key={h.labelKey} scope="col" className={`px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-muted)', letterSpacing: '0.05em', borderBottom: '2px solid var(--border-color)' }}>{t(h.labelKey)}</th>
+            <th key={h.labelKey} scope="col" className={`px-4 sm:px-6 py-3 text-left text-xs font-bold uppercase tracking-[0.12em] whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-muted)', borderBottom: '2px solid var(--border-color)' }}>{t(h.labelKey)}</th>
           ))}
           <th scope="col" className="px-4 sm:px-6 py-3 text-right" style={{ borderBottom: '2px solid var(--border-color)' }}>
             <button onClick={toggleAll} className="text-xs font-medium transition-opacity hover:opacity-60" style={{ color: 'var(--accent-text)' }}>
@@ -361,7 +363,7 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
     )
   }
   return (
-    <div className="rounded-xl transition-colors overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+    <div className="glass-panel rounded-lg transition-colors overflow-hidden">
       <div>
         {groupBy === 'dept' && <GroupedTable systems={systems} onSelect={onSelect} config={DEPT_CONFIG} totalCount={totalCount} />}
         {groupBy === 'vendor' && <GroupedTable systems={systems} onSelect={onSelect} config={VENDOR_CONFIG} totalCount={totalCount} />}
