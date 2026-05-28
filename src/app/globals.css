@@ -48,10 +48,10 @@
 /* ── Dark theme ─────────────────────────────────────────────────────── */
 [data-theme="dark"] {
   --bg-base: #0E1110;
-  --bg-surface: rgba(19, 23, 22, 0.72);
-  --bg-elevated: rgba(26, 31, 30, 0.92);
-  --bg-hover: rgba(136, 201, 190, 0.09);
-  --bg-hover-strong: rgba(136, 201, 190, 0.14);
+  --bg-surface: #151A18;
+  --bg-elevated: #1B211F;
+  --bg-hover: #20312E;
+  --bg-hover-strong: #29403B;
   --bg-hero: #101513;
   --border-color: rgba(234, 241, 237, 0.13);
   --border-subtle: rgba(234, 241, 237, 0.07);
@@ -132,6 +132,14 @@ body::before {
 
 .glass-panel:hover {
   box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .glass-panel {
+  background: var(--bg-surface);
+}
+
+[data-theme="dark"] .product-pill {
+  background: var(--bg-surface);
 }
 
 .paper-panel {
