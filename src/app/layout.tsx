@@ -16,8 +16,21 @@ const mono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ai-register-explorer.vercel.app'),
   title: 'AI Register Explorer',
   description: 'Search and explore AI systems used by the Government of Canada',
+  openGraph: {
+    title: 'AI Register Explorer',
+    description: 'Search and explore AI systems used by the Government of Canada',
+    url: '/',
+    siteName: 'AI Register Explorer',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'AI Register Explorer',
+    description: 'Search and explore AI systems used by the Government of Canada',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

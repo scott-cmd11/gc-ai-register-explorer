@@ -19,7 +19,6 @@ Built as a personal exploration of AI-assisted coding tools — the code was dev
 - Expandable system detail cards
 - Bilingual support (English / French)
 - Dark mode and light mode
-- A 90s retro mode (because why not)
 
 ## Data
 
@@ -49,4 +48,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Contact
 
-Questions or feedback: [scott.hazlitt@gmail.com](mailto:scott.hazlitt@gmail.com)
+Questions or feedback: [scott@scotthazlitt.ai](mailto:scott@scotthazlitt.ai)

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Register Explorer UI/UX Audit Report</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; line-height: 1.5; color: #17211f; background: #f7f5f0; }
+    main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1, h2 { line-height: 1.2; }
+    .verdict { border: 1px solid #cfd8d2; background: #fff; padding: 18px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin: 12px 0 28px; }
+    th, td { border: 1px solid #d8ded9; padding: 9px 11px; vertical-align: top; text-align: left; }
+    th { background: #eef3ef; }
+    code { background: #eef3ef; padding: 1px 4px; border-radius: 3px; }
+    .p1 { color: #8d3d34; font-weight: 700; }
+    .p2 { color: #7a4a19; font-weight: 700; }
+    .pass { color: #075f49; font-weight: 700; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>AI Register Explorer UI/UX Audit Report</h1>
+  <p>Audit date: 2026-05-28. Live site reviewed through web fetch; local rendered checks verified with browser automation after the in-app browser connector failed in this sandbox.</p>
+
+  <section class="verdict">
+    <h2>Verdict</h2>
+    <p>The local codebase is materially closer to a production-grade civic data explorer after this pass. It now presents a clearer search-first journey, stronger mobile filters, visible default results, and recoverable empty states. The live deployment is not currently representative of the improved code because it still shows stale 90s-mode UI.</p>
+  </section>
+
+  <h2>Fixed Issues</h2>
+  <table>
+    <tr><th>Severity</th><th>Issue</th><th>Files</th><th>Why it matters</th><th>Verification</th></tr>
+    <tr><td class="p1">P1</td><td>Search/filter journey was below charts.</td><td><code>src/app/page.tsx</code>, <code>src/lib/i18n.tsx</code></td><td>The primary CTA should land users at the exploration controls first.</td><td class="pass">Rendered smoke confirmed search appears before charts.</td></tr>
+    <tr><td class="p1">P1</td><td>Default table hid records behind collapsed groups.</td><td><code>src/app/page.tsx</code></td><td>Users need to see actual systems immediately to understand the register.</td><td class="pass">Rendered smoke confirmed All grouping is active by default.</td></tr>
+    <tr><td class="p1">P1</td><td>Mobile filter toolbar compressed controls.</td><td><code>src/app/page.tsx</code>, <code>src/components/FilterPanel.tsx</code></td><td>Mobile users could not comfortably read or operate filters.</td><td class="pass">390 px smoke showed six selects at 324 px width and no horizontal overflow.</td></tr>
+    <tr><td class="p2">P2</td><td>No-results state lacked a direct reset action.</td><td><code>src/components/SystemsTable.tsx</code>, <code>src/app/page.tsx</code>, <code>src/lib/i18n.tsx</code></td><td>Empty states should help users recover, not merely describe failure.</td><td class="pass">No-results clear button restored 412 systems.</td></tr>
+    <tr><td class="p2">P2</td><td>Hero was too tall and over-tight for a data explorer.</td><td><code>src/app/page.tsx</code></td><td>First impression should reveal the data workflow sooner and feel civic, not overdesigned.</td><td class="pass">Desktop/mobile screenshots captured shorter hero and visible next section.</td></tr>
+    <tr><td class="p2">P2</td><td>Floating scroll control overlapped mobile content and was English-only.</td><td><code>src/components/ScrollIndicator.tsx</code>, <code>src/lib/i18n.tsx</code></td><td>It looked like a demo widget and could cover controls.</td><td class="pass">390 px smoke confirmed it is hidden on mobile.</td></tr>
+  </table>
+
+  <h2>Remaining Backlog</h2>
+  <table>
+    <tr><th>Severity</th><th>Issue</th><th>Next action</th></tr>
+    <tr><td class="p1">P1</td><td>Live production is stale relative to local code.</td><td>After explicit push/deploy approval, release and verify live screenshots/routes.</td></tr>
+    <tr><td class="p2">P2</td><td>No automated a11y/e2e/visual tests.</td><td>Add Playwright route smoke, keyboard path checks, and accessibility assertions.</td></tr>
+    <tr><td class="p2">P2</td><td>Client bundle remains heavy for a public data explorer.</td><td>Lazy-load chart-heavy sections and evaluate Recharts cost.</td></tr>
+    <tr><td class="p2">P2</td><td>Chart accessibility is improved but not excellent.</td><td>Add visible chart data summaries or table toggles for all chart panels.</td></tr>
+    <tr><td class="p3">P3</td><td>Secondary pages could be more scannable.</td><td>Refine content hierarchy after product/legal review.</td></tr>
+  </table>
+
+  <h2>Evidence</h2>
+  <ul>
+    <li><code>artifacts/visuals/uiux-desktop-final-1440.png</code></li>
+    <li><code>artifacts/visuals/uiux-mobile-final-390.png</code></li>
+    <li><code>artifacts/visuals/uiux-explorer-section.png</code></li>
+    <li><code>artifacts/visuals/uiux-explorer-mobile-final.png</code></li>
+    <li><code>artifacts/visuals/uiux-detail-dialog.png</code></li>
+  </ul>
+
+  <h2>Checks</h2>
+  <ul>
+    <li><code>npm.cmd run build</code>: passed.</li>
+    <li><code>npx.cmd tsc --noEmit</code>: passed.</li>
+    <li>Rendered smoke: 360, 390, 768, 1024, and 1440 px had no horizontal overflow.</li>
+    <li>Interaction smoke: empty-state reset, Microsoft search, detail drawer, and public route checks passed.</li>
+  </ul>
+</main>
+</body>
+</html>

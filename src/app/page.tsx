@@ -13,6 +13,11 @@ import SystemDetail from '@/components/SystemDetail'
 import AboutSection from '@/components/AboutSection'
 import ScrollIndicator from '@/components/ScrollIndicator'
 
+function normalizeStatus(value: unknown) {
+  const raw = typeof value === 'string' ? value.trim() : ''
+  return raw ? raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase() : ''
+}
+
 export default function HomePage() {
   const { lang, t } = useLanguage()
   const [systems, setSystems] = useState<AISystem[]>([])
@@ -26,7 +31,7 @@ export default function HomePage() {
   const [sortField, setSortField] = useState<SortField>(lang === 'fr' ? 'name_ai_system_fr' : 'name_ai_system_en')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [selectedSystem, setSelectedSystem] = useState<AISystem | null>(null)
-  const [groupBy, setGroupBy] = useState<GroupBy>('dept')
+  const [groupBy, setGroupBy] = useState<GroupBy>('flat')
   const searchInputRef = useRef<HTMLInputElement>(null)
   const mainRef = useRef<HTMLElement>(null)
 
@@ -60,7 +65,7 @@ export default function HomePage() {
     const uniqueSplit = (arr: unknown[]) => Array.from(new Set(arr.filter((s): s is string => typeof s === 'string' && s.trim() !== '').flatMap((s) => s.split(/,\s*/).map((v) => v.trim())).filter(Boolean))).sort()
     return {
       departments: unique(systems.map((s) => s.government_organization)),
-      statuses: unique(systems.map((s) => s[statusField] as string)),
+      statuses: unique(systems.map((s) => normalizeStatus(s[statusField]))),
       developedBy: unique(systems.map((s) => s[developedByField] as string)),
       vendors: uniqueSplit(systems.map((s) => s.vendor_information)),
     }
@@ -76,7 +81,7 @@ export default function HomePage() {
     let result = systems.filter((s) => {
       if (q && !(s[nameField] as string)?.toLowerCase().includes(q) && !(s[descField] as string)?.toLowerCase().includes(q) && !s.government_organization?.toLowerCase().includes(q) && !s.vendor_information?.toLowerCase().includes(q) && !(s[capField] as string)?.toLowerCase().includes(q) && !(s[usersField] as string)?.toLowerCase().includes(q)) return false
       if (filters.department && s.government_organization !== filters.department) return false
-      if (filters.status && (s[statusField] as string) !== filters.status) return false
+      if (filters.status && normalizeStatus(s[statusField]) !== filters.status) return false
       if (filters.personalInfo && s.involves_personal_information !== filters.personalInfo) return false
       if (filters.developedBy && (s[developedByField] as string) !== filters.developedBy) return false
       if (filters.vendor && !s.vendor_information?.split(/,\s*/).some((v) => v.trim() === filters.vendor)) return false
@@ -145,14 +150,14 @@ export default function HomePage() {
       <div className="civic-hero-field relative w-full overflow-hidden pt-24 pb-14 md:pt-32 md:pb-24">
         <div className="hero-photo" aria-hidden="true" />
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
-          <div className="min-h-[calc(100vh-9rem)] md:min-h-[680px] flex items-center">
+          <div className="min-h-[540px] md:min-h-[620px] flex items-center">
           <div className="reveal-soft max-w-3xl">
           <div className="product-pill inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
             <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent)' }} aria-hidden="true" />
             {t('hero_badge')}
           </div>
           {/* H1 */}
-          <h1 className="text-[3.15rem] sm:text-6xl md:text-7xl lg:text-[5.8rem] font-semibold tracking-[-0.055em] leading-[0.9] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
+          <h1 className="text-[2.65rem] sm:text-5xl md:text-6xl lg:text-[4.75rem] font-semibold tracking-normal leading-[0.95] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
             {t('hero_title_1')}{' '}
             <span style={{ color: 'var(--accent-text)' }}>{t('hero_title_2')}</span>
           </h1>
@@ -165,6 +170,7 @@ export default function HomePage() {
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-3 mb-8">
             <button
+              type="button"
               onClick={scrollToMain}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all"
               style={{ background: 'var(--text-primary)', color: 'var(--bg-base)', boxShadow: '0 20px 56px -30px var(--text-primary)' }}
@@ -235,13 +241,14 @@ export default function HomePage() {
         )}
         {!loading && !error && (
           <>
-            <Charts
-              systems={filtered}
-              onFilterStatus={(status) => setFilters((f) => ({ ...f, status: f.status === status ? '' : status }))}
-              onFilterDepartment={(dept) => setFilters((f) => ({ ...f, department: f.department === dept ? '' : dept }))}
-              activeStatusFilter={filters.status}
-              activeDeptFilter={filters.department}
-            />
+            <div className="mb-5 max-w-3xl">
+              <h2 className="font-display text-2xl sm:text-3xl font-semibold tracking-normal" style={{ color: 'var(--text-primary)' }}>
+                {t('explorer_title')}
+              </h2>
+              <p className="mt-2 text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                {t('explorer_intro')}
+              </p>
+            </div>
 
             {/* ── Toolbar: search + filters + controls ────────────────── */}
             <div
@@ -250,10 +257,12 @@ export default function HomePage() {
             >
               {/* Search row */}
               <div className="relative flex items-center w-full rounded-lg transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'color-mix(in srgb, var(--bg-base) 76%, transparent)' }}>
+                <label htmlFor="systems-search" className="sr-only">{t('search_label')}</label>
                 <svg className="absolute left-3.5 h-4 w-4 pointer-events-none shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
                 <input
+                  id="systems-search"
                   ref={searchInputRef}
                   type="search"
                   value={query}
@@ -265,21 +274,21 @@ export default function HomePage() {
                   onBlur={(e) => { e.currentTarget.parentElement!.style.borderColor = 'var(--border-color)' }}
                 />
                 {query && (
-                  <button onClick={() => setQuery('')} className="absolute right-10 transition-opacity hover:opacity-60" style={{ color: 'var(--text-muted)' }} aria-label="Clear search">
+                  <button type="button" onClick={() => setQuery('')} className="absolute right-10 transition-opacity hover:opacity-60" style={{ color: 'var(--text-muted)' }} aria-label={t('clear_search')}>
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 )}
                 <div className="absolute right-3 pointer-events-none hidden sm:flex items-center gap-1 opacity-40" aria-hidden="true">
-                  <kbd className="font-sans px-1.5 py-0.5 text-xs rounded border bg-transparent" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>⌘K</kbd>
+                  <kbd className="font-sans px-1.5 py-0.5 text-xs rounded border bg-transparent" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>Ctrl K</kbd>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex-1 min-w-0">
+              <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0 lg:flex-1">
                   <FilterPanel filters={filters} onChange={setFilters} options={filterOptions} onClear={clearFilters} />
                 </div>
 
-                <div className="flex items-center gap-2.5 shrink-0">
+                <div className="flex w-full items-center justify-between gap-2.5 lg:w-auto lg:shrink-0">
                   <p className="text-sm" style={{ color: 'var(--text-tertiary)' }} aria-live="polite" aria-atomic="true">
                     <span className="font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>{filtered.length}</span>
                     {filtered.length !== systems.length && <span style={{ color: 'var(--text-muted)' }}> / {systems.length}</span>}
@@ -289,12 +298,14 @@ export default function HomePage() {
                   <span className="h-4 w-px" style={{ background: 'var(--border-color)' }} aria-hidden="true" />
 
                   <button
+                    type="button"
                     onClick={exportCsv}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
                     style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)', background: 'var(--bg-surface)' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-surface)'}
                     title={t('export_csv_title')}
+                    aria-label={t('export_csv_title')}
                   >
                     <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -305,6 +316,8 @@ export default function HomePage() {
                   <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background: 'var(--bg-hover)' }} role="group" aria-label={t('table_grouping')}>
                     {groupButtons.map(({ key, labelKey, icon }) => (
                       <button key={key} onClick={() => setGroupBy(key)} aria-pressed={groupBy === key}
+                        type="button"
+                        aria-label={t(labelKey)}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all"
                         style={groupBy === key
                           ? { background: 'var(--bg-surface)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }
@@ -322,8 +335,26 @@ export default function HomePage() {
               </div>
             </div>
 
+            <Charts
+              systems={filtered}
+              onFilterStatus={(status) => setFilters((f) => ({ ...f, status: f.status === status ? '' : status }))}
+              onFilterDepartment={(dept) => setFilters((f) => ({ ...f, department: f.department === dept ? '' : dept }))}
+              activeStatusFilter={filters.status}
+              activeDeptFilter={filters.department}
+            />
+
             <div>
-              <SystemsTable systems={filtered} sortField={sortField} sortDir={sortDir} onSort={handleSort} onSelect={setSelectedSystem} groupBy={groupBy} totalCount={systems.length} />
+              <SystemsTable
+                systems={filtered}
+                sortField={sortField}
+                sortDir={sortDir}
+                onSort={handleSort}
+                onSelect={setSelectedSystem}
+                groupBy={groupBy}
+                totalCount={systems.length}
+                canClearFilters={query !== '' || Object.values(filters).some(Boolean)}
+                onClearFilters={clearFilters}
+              />
             </div>
           </>
         )}

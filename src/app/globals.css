@@ -169,7 +169,10 @@ body::before {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background-image: url('/images/ai-registry-hero.png');
+  background-image: image-set(
+    url('/images/ai-registry-hero.webp') type('image/webp'),
+    url('/images/ai-registry-hero.png') type('image/png')
+  );
   background-size: cover;
   background-position: 62% 48%;
   transform: scale(1.01);

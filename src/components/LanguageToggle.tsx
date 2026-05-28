@@ -9,6 +9,7 @@ export default function LanguageToggle() {
 
   return (
     <button
+      type="button"
       onClick={toggle}
       aria-label={lang === 'en' ? 'Passer au français' : 'Switch to English'}
       className="h-9 px-3 rounded-md flex items-center justify-center text-sm font-semibold transition-colors shrink-0"

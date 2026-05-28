@@ -42,6 +42,8 @@ const translations: Record<string, { en: string; fr: string }> = {
   'source_data_aria': { en: 'View source data on open.canada.ca (opens in new tab)', fr: 'Voir les donn\u00e9es source sur ouvert.canada.ca (ouvre dans un nouvel onglet)' },
   'theme_switch_dark': { en: 'Switch to dark mode', fr: 'Passer au mode sombre' },
   'theme_switch_light': { en: 'Switch to light mode', fr: 'Passer au mode clair' },
+  'scroll_more': { en: 'Scroll down for more content', fr: 'Faire d\u00e9filer vers le contenu suivant' },
+  'scroll_top': { en: 'Scroll back to top', fr: 'Revenir en haut de la page' },
 
   // Hero
   'hero_badge': { en: 'Independent explorer for public AI registry data', fr: 'Explorateur ind\u00e9pendant des donn\u00e9es publiques du registre d\u2019IA' },
@@ -55,7 +57,14 @@ const translations: Record<string, { en: string; fr: string }> = {
   'hero_source': { en: 'View source data', fr: 'Voir les donn\u00e9es source' },
   'hero_independent': { en: 'Independent project \u2014 not affiliated with the Government of Canada', fr: 'Projet ind\u00e9pendant \u2014 non affili\u00e9 au gouvernement du Canada' },
   'hero_source_label': { en: 'Source: open.canada.ca', fr: 'Source\u00a0: ouvert.canada.ca' },
+  'search_label': { en: 'Search AI systems', fr: 'Rechercher des syst\u00e8mes d\u2019IA' },
   'search_placeholder': { en: 'Search systems, departments, vendors\u2026', fr: 'Rechercher des syst\u00e8mes, minist\u00e8res, fournisseurs\u2026' },
+  'clear_search': { en: 'Clear search', fr: 'Effacer la recherche' },
+  'explorer_title': { en: 'Explore the register', fr: 'Explorer le registre' },
+  'explorer_intro': {
+    en: 'Start with search or filters, then use the charts to understand patterns in the filtered results.',
+    fr: 'Commencez par la recherche ou les filtres, puis utilisez les graphiques pour comprendre les tendances dans les r\u00e9sultats filtr\u00e9s.',
+  },
 
   // Stats bar
   'stat_total': { en: 'Total Systems', fr: 'Syst\u00e8mes au total' },
@@ -93,6 +102,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   'sr_year_caption': { en: 'Systems by year', fr: 'Syst\u00e8mes par ann\u00e9e' },
   'sr_dept_caption': { en: 'Top 10 departments by system count', fr: 'Les 10 principaux minist\u00e8res par nombre de syst\u00e8mes' },
   'filter_by': { en: 'Filter by', fr: 'Filtrer par' },
+  'filter_by_status': { en: 'Filter by status', fr: 'Filtrer par \u00e9tat' },
   'chart_pii': { en: 'Personal Information', fr: 'Renseignements personnels' },
   'chart_dev_by': { en: 'Built By', fr: 'Con\u00e7u par' },
   'chart_vendors': { en: 'Top Vendors', fr: 'Principaux fournisseurs' },
@@ -113,6 +123,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   'col_pii': { en: 'PII', fr: 'RP' },
   'no_match': { en: 'No systems match your filters', fr: 'Aucun syst\u00e8me ne correspond \u00e0 vos filtres' },
   'try_adjusting': { en: 'Try adjusting your search or filter criteria', fr: 'Essayez de modifier vos crit\u00e8res de recherche ou de filtre' },
+  'clear_results': { en: 'Clear search and filters', fr: 'Effacer la recherche et les filtres' },
   'previous': { en: 'Previous', fr: 'Pr\u00e9c\u00e9dent' },
   'next': { en: 'Next', fr: 'Suivant' },
   'expand_all': { en: 'Expand all', fr: 'Tout d\u00e9plier' },
@@ -125,6 +136,8 @@ const translations: Record<string, { en: string; fr: string }> = {
   'showing_systems_caption': { en: 'Showing {filtered} of {total} AI systems', fr: 'Affichage de {filtered} sur {total} syst\u00e8mes d\u2019IA' },
   'grouped_suffix': { en: 'grouped', fr: 'regroup\u00e9s' },
   'view_details': { en: 'View details for', fr: 'Voir les d\u00e9tails de' },
+  'sort_by': { en: 'Sort by', fr: 'Trier par' },
+  'go_to_page': { en: 'Go to page', fr: 'Aller \u00e0 la page' },
   'handles_personal_info': { en: 'Handles personal information', fr: 'Traite des renseignements personnels' },
   'no_personal_info': { en: 'No personal information', fr: 'Aucun renseignement personnel' },
 

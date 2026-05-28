@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Register Explorer UI/UX Review Notes</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; line-height: 1.5; color: #17211f; background: #f7f5f0; }
+    main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1, h2 { line-height: 1.2; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin: 12px 0 28px; }
+    th, td { border: 1px solid #d8ded9; padding: 9px 11px; vertical-align: top; text-align: left; }
+    th { background: #eef3ef; }
+    code { background: #eef3ef; padding: 1px 4px; border-radius: 3px; }
+    .p1 { color: #8d3d34; font-weight: 700; }
+    .p2 { color: #7a4a19; font-weight: 700; }
+    .done { color: #075f49; font-weight: 700; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Adversarial UI/UX Review Notes</h1>
+  <p>This review treats the site as a civic data-exploration product. The bar is production trust, not visual novelty.</p>
+
+  <h2>Product Assumptions</h2>
+  <ul>
+    <li>Primary users: researchers, journalists, public servants, policy analysts, civic-tech users, and technically curious members of the public.</li>
+    <li>Primary journey: understand the data source, search/filter the federal AI register, inspect records, and export filtered data.</li>
+    <li>Conversion goal: successful data exploration and source trust, not lead capture.</li>
+  </ul>
+
+  <h2>Fixed Findings</h2>
+  <table>
+    <tr><th>Severity</th><th>Finding</th><th>Resolution</th></tr>
+    <tr><td class="p1">P1</td><td>Primary CTA led into charts before search/filter controls.</td><td class="done">Moved search/filter toolbar before charts and added a clear explorer heading.</td></tr>
+    <tr><td class="p1">P1</td><td>Default collapsed department grouping hid real records from first-time users.</td><td class="done">Changed default grouping to All so rows are visible immediately.</td></tr>
+    <tr><td class="p1">P1</td><td>Mobile filter controls were truncated and cramped at 390 px.</td><td class="done">Stacked mobile filters full-width and moved result/actions into their own row.</td></tr>
+    <tr><td class="p2">P2</td><td>No-results state had explanation but no recovery action.</td><td class="done">Added a clear search and filters button to the empty state.</td></tr>
+    <tr><td class="p2">P2</td><td>Hero felt too tall for a data explorer and used aggressive display tracking.</td><td class="done">Reduced hero height/type scale and normalized H1 tracking.</td></tr>
+    <tr><td class="p2">P2</td><td>Floating scroll control overlapped mobile content and was English-only.</td><td class="done">Hidden on mobile and localized for larger screens.</td></tr>
+  </table>
+
+  <h2>Remaining Review Risks</h2>
+  <table>
+    <tr><th>Severity</th><th>Risk</th><th>Recommended next action</th></tr>
+    <tr><td class="p1">P1</td><td>Live deployment is stale and still shows the old 90s-mode UI.</td><td>Deploy only after explicit approval, then verify live routes and screenshots.</td></tr>
+    <tr><td class="p2">P2</td><td>Homepage first-load JavaScript remains around 250 kB, mainly because charts and table logic are client-heavy.</td><td>Split chart/table modules or lazy-load deeper chart panels after initial data controls.</td></tr>
+    <tr><td class="p2">P2</td><td>No automated accessibility or visual regression suite exists.</td><td>Add Playwright smoke tests with axe-style checks and route screenshots.</td></tr>
+    <tr><td class="p2">P2</td><td>Charts are improved but still not equivalent to a first-class accessible data table for all chart views.</td><td>Expose visible data summaries/downloads near charts, not only screen-reader tables.</td></tr>
+    <tr><td class="p3">P3</td><td>Some secondary pages are content-heavy and could be more scannable.</td><td>Add summary boxes or stronger section hierarchy after product/legal review.</td></tr>
+  </table>
+</main>
+</body>
+</html>

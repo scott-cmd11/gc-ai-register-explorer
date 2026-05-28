@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/lib/i18n'
 import LanguageToggle from './LanguageToggle'
@@ -24,6 +25,7 @@ function ThemeToggle() {
 
   return (
     <button
+      type="button"
       onClick={toggle}
       aria-label={theme === 'light' ? t('theme_switch_dark') : t('theme_switch_light')}
       className="h-9 w-9 rounded-lg flex items-center justify-center transition-colors shrink-0"
@@ -72,12 +74,12 @@ export default function Header() {
     >
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* Left: brand mark */}
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 rounded-sm focus:outline-none" aria-label="AI Register Explorer home">
           <div className="h-7 w-7 rounded-md flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-warm))', color: '#fff', boxShadow: '0 10px 24px -18px var(--accent)' }}>
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
           </div>
           <span className="text-sm font-bold hidden sm:inline font-display" style={{ color: 'var(--text-primary)' }}>AI Register Explorer</span>
-        </div>
+        </Link>
 
         {/* Right: controls */}
         <div className="flex items-center gap-1.5">

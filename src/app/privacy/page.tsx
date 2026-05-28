@@ -56,7 +56,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               <strong style={{ color: 'var(--text-primary)' }}>Browser storage (localStorage).</strong> The Site stores your
-              theme preference (light, dark, or 90s mode) in your browser's <code>localStorage</code>. This is local to your
+              theme preference (light or dark mode) in your browser's <code>localStorage</code>. This is local to your
               device, is not a cookie, and is never transmitted to any server.
             </p>
           </section>
@@ -77,13 +77,8 @@ export default function PrivacyPage() {
               </a>. Note that Vercel is a US-based company; your request data may be processed in the United States.
             </p>
             <p>
-              The Site also loads fonts from <strong>Google Fonts</strong> (Google LLC, Mountain View, CA, USA) via the
-              Next.js font optimisation service. Google may receive your IP address as part of this font delivery. Google's
-              data practices are governed by{' '}
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                className="underline" style={{ color: 'var(--accent)' }}>
-                Google's Privacy Policy
-              </a>.
+              The Site uses font files bundled through Next.js font optimisation and served from the Site's own assets.
+              The browser should not contact Google Fonts directly for normal page rendering.
             </p>
           </section>
 

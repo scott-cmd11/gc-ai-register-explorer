@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Register Explorer UI/UX Audit</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; line-height: 1.5; color: #17211f; background: #f7f5f0; }
+    main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1, h2 { line-height: 1.2; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin: 12px 0 28px; }
+    th, td { border: 1px solid #d8ded9; padding: 9px 11px; vertical-align: top; text-align: left; }
+    th { background: #eef3ef; }
+    code { background: #eef3ef; padding: 1px 4px; border-radius: 3px; }
+    .done { color: #075f49; font-weight: 700; }
+    .risk { color: #8d3d34; font-weight: 700; }
+    .note { color: #53605a; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>UI/UX Audit Work Plan</h1>
+  <p class="note">Created 2026-05-28. Scope: live website plus local codebase, with direct fixes for high-impact UX, accessibility, responsiveness, and data-exploration issues.</p>
+
+  <h2>Inspection Map</h2>
+  <table>
+    <tr><th>Area</th><th>Observed scope</th></tr>
+    <tr><td>Main routes/pages</td><td><code>/</code>, <code>/about</code>, <code>/privacy</code>, <code>/terms</code>, <code>/api/systems</code></td></tr>
+    <tr><td>Main journeys</td><td>Understand the project, inspect source/freshness, search/filter AI systems, change grouping, sort table rows, open system details, export CSV, switch language/theme.</td></tr>
+    <tr><td>Primary CTA/actions</td><td>Browse systems, view source data, search, filters, chart filter buttons, grouping controls, CSV export, detail drawer.</td></tr>
+    <tr><td>Core components</td><td><code>Header</code>, <code>StatsBar</code>, <code>Charts</code>, <code>FilterPanel</code>, <code>SystemsTable</code>, <code>SystemDetail</code>, <code>AboutSection</code>, language/theme controls.</td></tr>
+    <tr><td>Styling system</td><td>Next.js + React + Tailwind with CSS custom properties for civic editorial light/dark themes; no external UI component library.</td></tr>
+    <tr><td>Data model</td><td>Client fetch from local <code>/api/systems</code>; route proxies Government of Canada CKAN datastore and metadata.</td></tr>
+    <tr><td>Breakpoints to test</td><td>360, 390, 768, 1024, and 1440 px where browser automation permits.</td></tr>
+    <tr><td>Commands</td><td><code>npm run build</code>, <code>npx tsc --noEmit</code>. No lint/test/e2e script is declared.</td></tr>
+    <tr><td>Highest-risk screens</td><td>Homepage first viewport, search/filter toolbar, default results table state, mobile filters/table, empty state, detail drawer, live deployment freshness.</td></tr>
+  </table>
+
+  <h2>Assumptions</h2>
+  <ul>
+    <li>Primary users are journalists, researchers, public-sector staff, policy analysts, and civic-tech users trying to understand reported federal AI systems.</li>
+    <li>The main user action is to browse/search/filter the public register and inspect details, with CSV export as a secondary action.</li>
+    <li>The product should feel like a credible civic data explorer, not a marketing landing page or experimental demo.</li>
+  </ul>
+
+  <h2>Completed Fix Pass</h2>
+  <ul>
+    <li class="done">Done: Live fetch confirmed production is stale relative to local code and still exposes the old 90s-mode UI.</li>
+    <li class="done">Done: Moved local primary exploration controls before charts so the CTA lands on the searchable register workflow first.</li>
+    <li class="done">Done: Added a clear explorer section heading and intro to explain the search/filter journey.</li>
+    <li class="done">Done: Changed default table grouping to flat results so users see real systems immediately instead of collapsed groups.</li>
+    <li class="done">Done: Added a reset button to the no-results state.</li>
+    <li class="done">Done: Reduced oversized hero height/type treatment and removed the aggressive negative tracking on the H1.</li>
+    <li class="done">Done: Reworked mobile toolbar layout so filters are full-width and actions sit in a separate row.</li>
+    <li class="done">Done: Hid the floating scroll control on mobile and localized its accessible label for larger screens.</li>
+  </ul>
+
+  <h2>Findings Ledger</h2>
+  <table>
+    <tr><th>Severity</th><th>Category</th><th>Location</th><th>Evidence</th><th>Root cause</th><th>Status</th><th>Verification</th></tr>
+    <tr>
+      <td class="risk">P1</td><td>UX / IA</td><td>Live homepage</td>
+      <td>Deployed page still shows old first impression and “90s Mode”.</td>
+      <td>Production deployment is behind the local codebase.</td>
+      <td>Not deploy-fixed because deploy/push was not authorized.</td>
+      <td>Live fetch via web inspection.</td>
+    </tr>
+    <tr>
+      <td class="risk">P1</td><td>Data-exploration UX</td><td><code>src/app/page.tsx</code></td>
+      <td>Browse CTA landed users in charts before search/filter controls.</td>
+      <td>Charts rendered before the primary exploration toolbar.</td>
+      <td>Fixed.</td>
+      <td>Build/typecheck and local browser smoke.</td>
+    </tr>
+    <tr>
+      <td class="risk">P1</td><td>Interaction / discoverability</td><td><code>src/app/page.tsx</code></td>
+      <td>Default grouped table hid actual system rows behind collapsed department groups.</td>
+      <td>Default state optimized for grouping rather than first-time browsing.</td>
+      <td>Fixed by defaulting to flat table.</td>
+      <td>Local browser smoke.</td>
+    </tr>
+    <tr>
+      <td>P2</td><td>Empty state</td><td><code>src/components/SystemsTable.tsx</code></td>
+      <td>No-results state explained the problem but did not provide a direct recovery action.</td>
+      <td>Empty table component had no reset control.</td>
+      <td>Fixed.</td>
+      <td>Local empty-state smoke.</td>
+    </tr>
+    <tr>
+      <td>P2</td><td>First impression / mobile</td><td><code>src/app/page.tsx</code></td>
+      <td>Hero consumed too much of the first viewport and used tightly tracked display text that risked an overdesigned feel.</td>
+      <td>Marketing-style hero sizing persisted into a data-explorer workflow.</td>
+      <td>Fixed with shorter hero and calmer H1 treatment.</td>
+      <td>Responsive screenshots.</td>
+    </tr>
+    <tr>
+      <td class="risk">P1</td><td>Mobile UX</td><td><code>src/app/page.tsx</code>, <code>src/components/FilterPanel.tsx</code></td>
+      <td>At 390 px, filters compressed into narrow truncated controls while result actions floated beside them.</td>
+      <td>The toolbar used a desktop flex layout at mobile widths.</td>
+      <td>Fixed with stacked mobile layout and full-width filter selects.</td>
+      <td>390 px browser smoke: no horizontal overflow; select widths measured 324 px.</td>
+    </tr>
+    <tr>
+      <td>P2</td><td>Mobile UX / accessibility</td><td><code>src/components/ScrollIndicator.tsx</code></td>
+      <td>The floating scroll button overlapped content on mobile and had English-only labels.</td>
+      <td>Decoration-like utility was globally fixed-positioned and not localized.</td>
+      <td>Fixed by hiding it below desktop and using translated labels.</td>
+      <td>390 px browser smoke: scroll button not visible.</td>
+    </tr>
+  </table>
+
+  <h2>Verification Log</h2>
+  <ul>
+    <li><code>npm.cmd run build</code>: passed after fixes.</li>
+    <li><code>npx.cmd tsc --noEmit</code>: passed after fixes.</li>
+    <li>Rendered smoke at 360, 390, 768, 1024, and 1440 px: no horizontal overflow; search appears before charts; default grouping is All.</li>
+    <li>Interaction smoke: no-results reset is visible and restores results; detail drawer opens and closes.</li>
+    <li class="note">Local dev logs show external CKAN fetch failures when the sandbox blocks network and the fetch cache misses; this is an environment limitation, not a verified production failure.</li>
+  </ul>
+</main>
+</body>
+</html>

@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useLanguage } from '@/lib/i18n'
 
 export default function ScrollIndicator() {
   const [direction, setDirection] = useState<'down' | 'up' | null>('down')
+  const { t } = useLanguage()
 
   useEffect(() => {
     const update = () => {
@@ -42,9 +44,10 @@ export default function ScrollIndicator() {
 
   return (
     <button
+      type="button"
       onClick={handleClick}
-      aria-label={direction === 'down' ? 'Scroll down for more content' : 'Scroll back to top'}
-      className="fixed z-40 flex items-center justify-center transition-all duration-300"
+      aria-label={direction === 'down' ? t('scroll_more') : t('scroll_top')}
+      className="fixed z-40 hidden md:flex items-center justify-center transition-all duration-300"
       style={{
         bottom: '20px',
         right: '20px',

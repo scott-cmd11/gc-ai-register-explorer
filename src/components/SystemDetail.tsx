@@ -108,6 +108,7 @@ export default function SystemDetail({ system: s, onClose }: Props) {
             <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization)}</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
             style={{ color: 'var(--text-muted)', border: '1px solid var(--border-color)' }}

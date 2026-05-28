@@ -14,10 +14,10 @@ const securityHeaders = [
       // In dev mode, React Refresh (HMR) also needs 'unsafe-eval'.
       // A nonce-based CSP via middleware would be stricter but adds significant complexity.
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
-      // Styles: self + inline (Tailwind / CSS-in-JS inject inline styles at runtime)
-      `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
-      // Google Fonts and Next.js font optimisation
-      `font-src 'self' https://fonts.gstatic.com`,
+      // Styles: self + inline (Tailwind / runtime style attributes)
+      `style-src 'self' 'unsafe-inline'`,
+      // next/font serves optimized font files from this app's own origin
+      `font-src 'self'`,
       // Image sources: self + data URIs (favicon, inline SVGs)
       `img-src 'self' data:`,
       // Fetch targets: self (API route) + open.canada.ca (CKAN data)

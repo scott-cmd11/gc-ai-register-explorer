@@ -16,6 +16,8 @@ interface Props {
   onSelect: (s: AISystem) => void
   groupBy: GroupBy
   totalCount: number
+  canClearFilters?: boolean
+  onClearFilters?: () => void
 }
 
 function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
@@ -81,17 +83,21 @@ function SystemRow({ s, onSelect, showDept, showVendor }: {
       onClick={() => onSelect(s)}
       className="cursor-pointer transition-colors group"
       style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(s) } }}
       onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-      aria-label={`${t('view_details')} ${name || t('col_system')}`}
     >
       <td className="px-4 sm:px-6 py-3.5 sm:py-4">
-        <div className="font-medium text-sm leading-snug" style={{ color: 'var(--text-primary)' }}>
-          {name || '—'}
-        </div>
-        {truncDesc && <div className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{truncDesc}</div>}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onSelect(s) }}
+          className="block w-full text-left rounded-sm focus:outline-none"
+          aria-label={`${t('view_details')} ${name || t('col_system')}`}
+        >
+          <span className="block font-medium text-sm leading-snug" style={{ color: 'var(--text-primary)' }}>
+            {name || '—'}
+          </span>
+          {truncDesc && <span className="block text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{truncDesc}</span>}
+        </button>
       </td>
       {showDept && <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-sm" style={{ color: 'var(--text-tertiary)' }}>{deptName(s.government_organization) || '—'}</td>}
       <td className="px-4 sm:px-6 py-3.5 sm:py-4"><StatusBadge status={status} /></td>
@@ -124,6 +130,8 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
   return (
     <div className="flex items-center justify-between px-4 sm:px-6 py-3" style={{ borderTop: '1px solid var(--border-color)' }}>
       <button
+        type="button"
+        aria-label={t('previous')}
         onClick={() => onChange(current - 1)} disabled={current === 1} className={btnBase}
         style={{ border: '1px solid var(--border-color)', color: current === 1 ? 'var(--text-muted)' : 'var(--text-secondary)', background: 'var(--bg-surface)', opacity: current === 1 ? 0.5 : 1, cursor: current === 1 ? 'not-allowed' : 'pointer' }}
       >
@@ -136,12 +144,17 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
             <span key={`ellipsis-${i}`} className="px-1 text-sm" style={{ color: 'var(--text-muted)' }}>…</span>
           ) : (
             <button key={p} onClick={() => onChange(p)} className={btnBase}
+              type="button"
+              aria-label={`${t('go_to_page')} ${p}`}
+              aria-current={p === current ? 'page' : undefined}
               style={{ background: p === current ? 'var(--accent)' : 'transparent', color: p === current ? '#FFFFFF' : 'var(--text-secondary)' }}
             >{p}</button>
           )
         )}
       </div>
       <button
+        type="button"
+        aria-label={t('next')}
         onClick={() => onChange(current + 1)} disabled={current === total} className={btnBase}
         style={{ border: '1px solid var(--border-color)', color: current === total ? 'var(--text-muted)' : 'var(--text-secondary)', background: 'var(--bg-surface)', opacity: current === total ? 0.5 : 1, cursor: current === total ? 'not-allowed' : 'pointer' }}
       >
@@ -192,12 +205,20 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
         <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-elevated)', backdropFilter: 'blur(14px)', boxShadow: '0 1px 0 var(--border-color)' }}>
           <tr>
             {columns.map((col) => (
-              <th key={col.field} scope="col" onClick={() => onSort(col.field)}
+              <th key={col.field} scope="col"
                 aria-sort={sortField === col.field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                className={`px-4 sm:px-6 py-3 text-left text-xs font-bold uppercase tracking-[0.12em] cursor-pointer select-none whitespace-nowrap transition-colors ${col.className ?? ''}`}
-                style={{ color: sortField === col.field ? 'var(--accent-text)' : 'var(--text-muted)', borderBottom: '2px solid var(--border-color)' }}
+                className={`px-4 sm:px-6 py-3 text-left whitespace-nowrap ${col.className ?? ''}`}
+                style={{ borderBottom: '2px solid var(--border-color)' }}
               >
-                {col.label}<SortIcon active={sortField === col.field} dir={sortDir} />
+                <button
+                  type="button"
+                  onClick={() => onSort(col.field)}
+                  className="inline-flex items-center text-xs font-bold uppercase tracking-[0.12em] select-none transition-colors rounded-sm"
+                  style={{ color: sortField === col.field ? 'var(--accent-text)' : 'var(--text-muted)' }}
+                  aria-label={`${t('sort_by')} ${col.label}`}
+                >
+                  {col.label}<SortIcon active={sortField === col.field} dir={sortDir} />
+                </button>
               </th>
             ))}
           </tr>
@@ -253,7 +274,7 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
             <th key={h.labelKey} scope="col" className={`px-4 sm:px-6 py-3 text-left text-xs font-bold uppercase tracking-[0.12em] whitespace-nowrap ${h.className ?? ''}`} style={{ color: 'var(--text-muted)', borderBottom: '2px solid var(--border-color)' }}>{t(h.labelKey)}</th>
           ))}
           <th scope="col" className="px-4 sm:px-6 py-3 text-right" style={{ borderBottom: '2px solid var(--border-color)' }}>
-            <button onClick={toggleAll} className="text-xs font-medium transition-opacity hover:opacity-60" style={{ color: 'var(--accent-text)' }}>
+            <button type="button" onClick={toggleAll} className="text-xs font-medium transition-opacity hover:opacity-60" style={{ color: 'var(--accent-text)' }}>
               {expanded.size === groups.length ? t('collapse_all') : t('expand_all')}
             </button>
           </th>
@@ -268,14 +289,16 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
                 onClick={() => toggle(key)}
                 className="cursor-pointer transition-colors group/row"
                 style={{ borderTop: '1px solid var(--border-color)', borderBottom: isOpen ? '1px solid var(--border-subtle)' : 'none', background: 'var(--bg-hover)' }}
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(key) } }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover-strong)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
-                aria-expanded={isOpen}
               >
                 <td colSpan={colSpan} className="px-4 sm:px-6 py-3.5 sm:py-4">
-                  <div className="flex items-center gap-3 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggle(key) }}
+                    className="flex w-full items-center gap-3 flex-wrap text-left rounded-sm focus:outline-none"
+                    aria-expanded={isOpen}
+                  >
                     <div className="flex items-center justify-center w-5 h-5 rounded overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
                       <svg aria-hidden="true" className={`h-3 w-3 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -286,7 +309,7 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
                     <div className="ml-2 pl-2 border-l" style={{ borderColor: 'var(--border-color)' }}>
                       {config.groupSummary(key, groupSystems, t)}
                     </div>
-                  </div>
+                  </button>
                 </td>
                 <td />
               </tr>
@@ -300,7 +323,17 @@ function GroupedTable({ systems, onSelect, config, totalCount }: {
   )
 }
 
-export default function SystemsTable({ systems, sortField, sortDir, onSort, onSelect, groupBy, totalCount }: Props) {
+export default function SystemsTable({
+  systems,
+  sortField,
+  sortDir,
+  onSort,
+  onSelect,
+  groupBy,
+  totalCount,
+  canClearFilters,
+  onClearFilters,
+}: Props) {
   const { t, deptName } = useLanguage()
 
   const DEPT_CONFIG: GroupConfig = useMemo(() => ({
@@ -353,12 +386,22 @@ export default function SystemsTable({ systems, sortField, sortDir, onSort, onSe
 
   if (systems.length === 0) {
     return (
-      <div className="rounded-xl p-16 text-center" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+      <div className="rounded-xl p-8 sm:p-16 text-center" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
         <svg className="mx-auto h-10 w-10 mb-3" style={{ color: 'var(--text-muted)', opacity: 0.5 }} fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
         <p className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>{t('no_match')}</p>
         <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{t('try_adjusting')}</p>
+        {canClearFilters && onClearFilters && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="mt-5 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+            style={{ background: 'var(--text-primary)', color: 'var(--bg-base)' }}
+          >
+            {t('clear_results')}
+          </button>
+        )}
       </div>
     )
   }

@@ -1,6 +1,6 @@
 'use client'
 
-import { CSSProperties, useEffect, useState, useRef } from 'react'
+import { CSSProperties } from 'react'
 import { AISystem } from '@/lib/types'
 import { useLanguage } from '@/lib/i18n'
 
@@ -9,32 +9,7 @@ interface Props {
   lastModified?: string | null
 }
 
-function useAnimatedCount(target: number, duration = 800) {
-  const [count, setCount] = useState(0)
-  const prevTarget = useRef(0)
-
-  useEffect(() => {
-    if (target === 0) { setCount(0); return }
-    const start = prevTarget.current
-    prevTarget.current = target
-    const startTime = performance.now()
-
-    const tick = (now: number) => {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(start + (target - start) * eased))
-      if (progress < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [target, duration])
-
-  return count
-}
-
 function MetricCard({ label, value, accentColor, icon }: { label: string; value: number; accentColor?: string; icon: React.ReactNode }) {
-  const animatedValue = useAnimatedCount(value)
-
   return (
     <div
       className="glass-panel metric-card min-w-0 rounded-lg p-4 sm:p-5 transition-all"
@@ -60,7 +35,7 @@ function MetricCard({ label, value, accentColor, icon }: { label: string; value:
         </span>
       </div>
       <div className="font-display text-3xl sm:text-4xl font-semibold tracking-normal tabular-nums" style={{ color: 'var(--text-primary)' }}>
-        {animatedValue}
+        {value}
       </div>
     </div>
   )

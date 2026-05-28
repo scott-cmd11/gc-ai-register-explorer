@@ -239,8 +239,8 @@ function StackedTooltip({ active, payload, label }: {
   )
 }
 
-function ChartCard({ title, subtitle, ariaLabel, children, srTable, hint }: {
-  title: string; subtitle?: string; ariaLabel: string; children: React.ReactNode; srTable?: React.ReactNode; hint?: string
+function ChartCard({ title, subtitle, ariaLabel, children, srTable, hint, interactive = false }: {
+  title: string; subtitle?: string; ariaLabel: string; children: React.ReactNode; srTable?: React.ReactNode; hint?: string; interactive?: boolean
 }) {
   return (
     <div className="glass-panel rounded-lg p-5 sm:p-6 transition-all"
@@ -256,7 +256,7 @@ function ChartCard({ title, subtitle, ariaLabel, children, srTable, hint }: {
           {hint && <span className="shrink-0 whitespace-nowrap text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>{hint}</span>}
         </div>
       </div>
-      <div className="relative z-10" role="img" aria-label={ariaLabel}>{children}</div>
+      <div className="relative z-10" role={interactive ? 'group' : 'img'} aria-label={ariaLabel}>{children}</div>
       {srTable && <div className="sr-only">{srTable}</div>}
     </div>
   )
@@ -346,7 +346,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
   const statusSrTable = (
     <table>
       <caption>{t('sr_status_caption')}</caption>
-      <thead><tr><th scope="col">{t('status')}</th><th scope="col">{t('col_year')}</th></tr></thead>
+      <thead><tr><th scope="col">{t('status')}</th><th scope="col">{t('systems')}</th></tr></thead>
       <tbody>{byStatus.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.count}</td></tr>)}</tbody>
     </table>
   )
@@ -354,7 +354,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
   const yearSrTable = (
     <table>
       <caption>{t('sr_year_caption')}</caption>
-      <thead><tr><th scope="col">{t('col_year')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <thead><tr><th scope="col">{t('col_year')}</th><th scope="col">{t('systems')}</th></tr></thead>
       <tbody>{byYear.map((d) => <tr key={d.year}><td>{d.year}</td><td>{d.count}</td></tr>)}</tbody>
     </table>
   )
@@ -362,7 +362,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
   const deptSrTable = (
     <table>
       <caption>{t('sr_dept_caption')}</caption>
-      <thead><tr><th scope="col">{t('department')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <thead><tr><th scope="col">{t('department')}</th><th scope="col">{t('systems')}</th></tr></thead>
       <tbody>{byDept.map((d) => <tr key={d.fullName}><td>{d.fullName}</td><td>{d.count}</td></tr>)}</tbody>
     </table>
   )
@@ -378,7 +378,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
   const piiSrTable = (
     <table>
       <caption>{t('sr_pii_caption')}</caption>
-      <thead><tr><th scope="col">{t('personal_data')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <thead><tr><th scope="col">{t('personal_data')}</th><th scope="col">{t('systems')}</th></tr></thead>
       <tbody>{piiSlices.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.value}</td></tr>)}</tbody>
     </table>
   )
@@ -392,7 +392,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
   const devBySrTable = (
     <table>
       <caption>{t('sr_dev_caption')}</caption>
-      <thead><tr><th scope="col">{t('developed_by')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <thead><tr><th scope="col">{t('developed_by')}</th><th scope="col">{t('systems')}</th></tr></thead>
       <tbody>{devBySlices.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.value}</td></tr>)}</tbody>
     </table>
   )
@@ -400,7 +400,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
   const vendorsSrTable = (
     <table>
       <caption>{t('sr_vendors_caption')}</caption>
-      <thead><tr><th scope="col">{t('vendor')}</th><th scope="col">{t('col_status')}</th></tr></thead>
+      <thead><tr><th scope="col">{t('vendor')}</th><th scope="col">{t('systems')}</th></tr></thead>
       <tbody>{topVendors.map((d) => <tr key={d.name}><td>{d.name}</td><td>{d.count}</td></tr>)}</tbody>
     </table>
   )
@@ -443,6 +443,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
           ariaLabel={`${t('chart_status')}: ${byStatus.map((d) => `${d.name} ${d.count}`).join(', ')}`}
           srTable={statusSrTable}
           hint={onFilterStatus ? (lang === 'en' ? 'Click bars to filter' : 'Cliquez les barres pour filtrer') : undefined}
+          interactive={Boolean(onFilterStatus)}
         >
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={byStatus} margin={{ left: 4, right: 4, top: 8, bottom: 40 }}>
@@ -455,26 +456,43 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
                 style={{ cursor: onFilterStatus ? 'pointer' : 'default' }}
                 onClick={(data) => {
                   if (onFilterStatus && data?.name) {
-                    const match = systems.find((s) => {
-                      const raw = str(s[statusField]).trim()
-                      if (!raw) return false
-                      const key = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
-                      return key === data.name
-                    })
-                    if (match) onFilterStatus(match[statusField] as string)
+                    onFilterStatus(String(data.name))
                   }
                 }}
                 onMouseEnter={(_, index) => setHoveredStatus(byStatus[index]?.name ?? null)}
                 onMouseLeave={() => setHoveredStatus(null)}
               >
                 {byStatus.map((entry, i) => {
-                  const isActive = activeStatusFilter ? entry.name.toLowerCase().includes(activeStatusFilter.toLowerCase()) : true
+                  const isActive = activeStatusFilter ? entry.name === activeStatusFilter : true
                   const isHovered = hoveredStatus === entry.name
                   return <Cell key={i} fill={getStatusColor(entry.name)} fillOpacity={!isActive ? 0.3 : isHovered ? 1 : 0.85} stroke={isHovered ? getStatusColor(entry.name) : 'none'} strokeWidth={isHovered ? 2 : 0} />
                 })}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          {onFilterStatus && (
+            <div className="mt-2 flex flex-wrap gap-2" aria-label={t('filter_by_status')}>
+              {byStatus.map((entry) => {
+                const pressed = activeStatusFilter === entry.name
+                return (
+                  <button
+                    key={entry.name}
+                    type="button"
+                    onClick={() => onFilterStatus(entry.name)}
+                    aria-pressed={pressed}
+                    className="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
+                    style={{
+                      background: pressed ? 'var(--accent-light)' : 'var(--bg-hover)',
+                      color: pressed ? 'var(--accent-text)' : 'var(--text-secondary)',
+                      border: pressed ? '1px solid var(--accent)' : '1px solid var(--border-color)',
+                    }}
+                  >
+                    {entry.name} <span className="tabular-nums">{entry.count}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </ChartCard>
 
         <ChartCard
@@ -507,30 +525,25 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
           ariaLabel={`${t('chart_departments')}: ${byDept.map((d) => `${d.fullName} ${d.count}`).join(', ')}`}
           srTable={deptSrTable}
           hint={onFilterDepartment ? (lang === 'en' ? 'Click rows to filter' : 'Cliquez les lignes pour filtrer') : undefined}
+          interactive={Boolean(onFilterDepartment)}
         >
-          <div className="space-y-2" aria-hidden="true">
+          <div className="space-y-2">
             {byDept.map(({ fullName, fullOrg, label, count }, i) => {
               const isHovered = hoveredDept === fullName
               const isActive = activeDeptFilter ? fullOrg === activeDeptFilter || activeDeptFilter.includes(fullName) : true
               return (
-                <div
+                <button
                   key={fullName}
-                  className="flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors"
+                  type="button"
+                  className="flex w-full items-center gap-3 px-2 py-1.5 rounded-lg text-left transition-colors"
                   style={{ cursor: onFilterDepartment ? 'pointer' : 'default', background: isHovered ? 'var(--bg-hover)' : 'transparent', opacity: !isActive ? 0.4 : 1 }}
-                  tabIndex={onFilterDepartment ? 0 : undefined}
-                  role={onFilterDepartment ? 'button' : undefined}
+                  disabled={!onFilterDepartment}
                   aria-label={onFilterDepartment ? `${t('filter_by')} ${fullName}` : undefined}
+                  aria-pressed={activeDeptFilter === fullOrg}
                   onMouseEnter={() => setHoveredDept(fullName)}
                   onMouseLeave={() => setHoveredDept(null)}
                   onClick={() => {
                     if (onFilterDepartment) {
-                      const match = systems.find((s) => deptName(s.government_organization) === fullName)
-                      if (match) onFilterDepartment(match.government_organization)
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if ((e.key === 'Enter' || e.key === ' ') && onFilterDepartment) {
-                      e.preventDefault()
                       const match = systems.find((s) => deptName(s.government_organization) === fullName)
                       if (match) onFilterDepartment(match.government_organization)
                     }
@@ -541,7 +554,7 @@ export default function Charts({ systems, onFilterStatus, onFilterDepartment, ac
                     <AnimatedBar width={Math.round((count / maxDept) * 100)} delay={i * 60} />
                   </div>
                   <div className="text-xs font-semibold w-7 text-right shrink-0 tabular-nums" style={{ color: isHovered ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>{count}</div>
-                </div>
+                </button>
               )
             })}
           </div>
