@@ -65,6 +65,13 @@ const translations: Record<string, { en: string; fr: string }> = {
     en: 'Start with search or filters, then use the charts to understand patterns in the filtered results.',
     fr: 'Commencez par la recherche ou les filtres, puis utilisez les graphiques pour comprendre les tendances dans les r\u00e9sultats filtr\u00e9s.',
   },
+  'explorer_source': { en: 'Source: open.canada.ca', fr: 'Source\u00a0: ouvert.canada.ca' },
+  'explorer_updated': { en: 'Updated', fr: 'Mis \u00e0 jour' },
+  'explorer_cache': { en: 'Cached for 1 hour', fr: 'Mise en cache pendant 1 heure' },
+  'charts_loading': { en: 'Loading registry signals\u2026', fr: 'Chargement des signaux du registre\u2026' },
+  'registry_summary': { en: 'Registry summary', fr: 'R\u00e9sum\u00e9 du registre' },
+  'view_chart_data': { en: 'View chart data', fr: 'Voir les donn\u00e9es du graphique' },
+  'hide_chart_data': { en: 'Hide chart data', fr: 'Masquer les donn\u00e9es du graphique' },
 
   // Stats bar
   'stat_total': { en: 'Total Systems', fr: 'Syst\u00e8mes au total' },
@@ -136,6 +143,7 @@ const translations: Record<string, { en: string; fr: string }> = {
   'showing_systems_caption': { en: 'Showing {filtered} of {total} AI systems', fr: 'Affichage de {filtered} sur {total} syst\u00e8mes d\u2019IA' },
   'grouped_suffix': { en: 'grouped', fr: 'regroup\u00e9s' },
   'view_details': { en: 'View details for', fr: 'Voir les d\u00e9tails de' },
+  'view_details_action': { en: 'View details', fr: 'Voir les d\u00e9tails' },
   'sort_by': { en: 'Sort by', fr: 'Trier par' },
   'go_to_page': { en: 'Go to page', fr: 'Aller \u00e0 la page' },
   'handles_personal_info': { en: 'Handles personal information', fr: 'Traite des renseignements personnels' },

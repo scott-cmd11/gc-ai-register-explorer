@@ -62,6 +62,7 @@ function PiiIcon() {
       style={{ background: 'var(--status-development-bg)', color: 'var(--status-development)' }}
       title={t('handles_personal_info')}
       aria-label={t('handles_personal_info')}
+      role="img"
     >
       <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -104,9 +105,65 @@ function SystemRow({ s, onSelect, showDept, showVendor }: {
       <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-sm tabular-nums" style={{ color: 'var(--text-muted)' }}>{s.status_date || '—'}</td>
       {showVendor && <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-sm" style={{ color: 'var(--text-tertiary)' }}>{s.vendor_information || '—'}</td>}
       <td className="px-4 sm:px-6 py-3.5 sm:py-4 text-center">
-        {s.involves_personal_information === 'Y' ? <PiiIcon /> : <span className="text-sm" style={{ color: 'var(--text-muted)' }} aria-label={t('no_personal_info')}>—</span>}
+        {s.involves_personal_information === 'Y' ? <PiiIcon /> : <span className="text-sm" style={{ color: 'var(--text-muted)' }} aria-label={t('no_personal_info')} role="img">—</span>}
       </td>
     </tr>
+  )
+}
+
+function MobileSystemCard({ s, onSelect }: { s: AISystem; onSelect: (s: AISystem) => void }) {
+  const { field, deptName, t } = useLanguage()
+  const name = field(s, 'name_ai_system')
+  const desc = field(s, 'description_ai_system')?.trim()
+  const status = field(s, 'ai_system_status')
+  const department = deptName(s.government_organization)
+
+  return (
+    <article
+      className="rounded-lg p-4"
+      role="listitem"
+      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold leading-snug" style={{ color: 'var(--text-primary)' }}>{name || '—'}</h3>
+          {department && <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{department}</p>}
+        </div>
+        <StatusBadge status={status} />
+      </div>
+      {desc && (
+        <p className="mt-3 text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
+          {desc.length > 150 ? `${desc.slice(0, 150)}…` : desc}
+        </p>
+      )}
+      <dl className="mt-3 grid grid-cols-2 gap-3 text-xs">
+        <div>
+          <dt className="font-semibold uppercase tracking-[0.08em]" style={{ color: 'var(--text-muted)' }}>{t('col_year')}</dt>
+          <dd className="mt-1 tabular-nums" style={{ color: 'var(--text-primary)' }}>{s.status_date || '—'}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold uppercase tracking-[0.08em]" style={{ color: 'var(--text-muted)' }}>{t('col_pii')}</dt>
+          <dd className="mt-1" style={{ color: 'var(--text-primary)' }}>
+            {s.involves_personal_information === 'Y' ? t('handles_personal_info') : t('no_personal_info')}
+          </dd>
+        </div>
+        {s.vendor_information && (
+          <div className="col-span-2">
+            <dt className="font-semibold uppercase tracking-[0.08em]" style={{ color: 'var(--text-muted)' }}>{t('col_vendor')}</dt>
+            <dd className="mt-1" style={{ color: 'var(--text-primary)' }}>{s.vendor_information}</dd>
+          </div>
+        )}
+      </dl>
+      <button
+        type="button"
+        onClick={() => onSelect(s)}
+        className="mt-4 inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold transition-colors"
+        style={{ background: 'var(--text-primary)', color: 'var(--bg-base)' }}
+        aria-label={`${t('view_details')} ${name || t('col_system')}`}
+      >
+        {t('view_details_action')}
+      </button>
+    </article>
   )
 }
 
@@ -168,7 +225,7 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
 function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }: Omit<Props, 'groupBy'>) {
   const { lang, t } = useLanguage()
   const [page, setPage] = useState(1)
-  const tableTopRef = useRef<HTMLTableElement>(null)
+  const resultsTopRef = useRef<HTMLDivElement>(null)
   const totalPages = Math.ceil(systems.length / PAGE_SIZE)
   const paged = useMemo(() => systems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [systems, page])
 
@@ -178,7 +235,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
 
   const handlePageChange = (p: number) => {
     setPage(p)
-    tableTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    resultsTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const nameField = lang === 'fr' ? 'name_ai_system_fr' : 'name_ai_system_en'
@@ -198,9 +255,12 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
     : t('showing_systems_caption').replace('{filtered}', String(systems.length)).replace('{total}', String(totalCount))
 
   return (
-    <>
-    <div className="scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
-      <table ref={tableTopRef} className="w-full text-sm" style={{ scrollMarginTop: '5rem' }}>
+    <div ref={resultsTopRef} style={{ scrollMarginTop: '5rem' }}>
+    <div className="md:hidden space-y-3 p-3" role="list" aria-label={caption}>
+      {paged.map((s, i) => <MobileSystemCard key={s.ai_register_id ?? i} s={s} onSelect={onSelect} />)}
+    </div>
+    <div className="hidden md:block scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
+      <table className="w-full text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="sticky top-0 z-10" style={{ background: 'var(--bg-elevated)', backdropFilter: 'blur(14px)', boxShadow: '0 1px 0 var(--border-color)' }}>
           <tr>
@@ -229,7 +289,7 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
       </table>
     </div>
     <Pagination current={page} total={totalPages} onChange={handlePageChange} />
-    </>
+    </div>
   )
 }
 

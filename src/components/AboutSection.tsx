@@ -19,7 +19,7 @@ export default function AboutSection() {
   // not user-supplied content, so XSS risk is not applicable.
 
   return (
-    <div className="w-full border-t mt-14" style={{ borderColor: 'var(--border-color)', background: 'linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-hero) 82%, var(--bg-base)))' }}>
+    <section className="w-full border-t mt-14" aria-labelledby="about-project-heading" style={{ borderColor: 'var(--border-color)', background: 'linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-hero) 82%, var(--bg-base)))' }}>
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
 
@@ -31,7 +31,7 @@ export default function AboutSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
               </div>
-              <h3 className="font-display text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('about_title')}</h3>
+              <h3 id="about-project-heading" className="font-display text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('about_title')}</h3>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               <span dangerouslySetInnerHTML={{ __html: t('about_text') }} />{' '}
@@ -129,7 +129,7 @@ export default function AboutSection() {
       </div>
 
       {/* Footer bar */}
-      <div className="border-t" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
+      <footer className="border-t" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           <p>© {new Date().getFullYear()} <a href="https://scotthazlitt.ai" target="_blank" rel="noopener noreferrer" className="hover:underline font-medium">Scott Hazlitt</a> — {t('footer_independent')}</p>
           <nav className="flex items-center gap-4" aria-label={lang === 'fr' ? 'Navigation du pied de page' : 'Footer navigation'}>
@@ -161,7 +161,7 @@ export default function AboutSection() {
             </div>
           </nav>
         </div>
-      </div>
-    </div>
+      </footer>
+    </section>
   )
 }

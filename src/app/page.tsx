@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { fetchAllSystems } from '@/lib/api'
 import { AISystem, Filters, SortDir, SortField } from '@/lib/types'
 import { useLanguage } from '@/lib/i18n'
 import Header from '@/components/Header'
 import StatsBar from '@/components/StatsBar'
 import FilterPanel from '@/components/FilterPanel'
-import Charts from '@/components/Charts'
 import SystemsTable, { GroupBy } from '@/components/SystemsTable'
 import SystemDetail from '@/components/SystemDetail'
 import AboutSection from '@/components/AboutSection'
@@ -17,6 +17,34 @@ function normalizeStatus(value: unknown) {
   const raw = typeof value === 'string' ? value.trim() : ''
   return raw ? raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase() : ''
 }
+
+function ChartsLoading() {
+  const { t } = useLanguage()
+  return (
+    <section
+      className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6"
+      aria-live="polite"
+      aria-label={t('charts_loading')}
+    >
+      {[0, 1, 2].map((item) => (
+        <div
+          key={item}
+          className="glass-panel rounded-lg p-5 sm:p-6 min-h-[260px]"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}
+        >
+          <div className="h-5 w-40 rounded" style={{ background: 'var(--bg-hover)' }} />
+          <div className="mt-4 h-36 rounded" style={{ background: 'var(--bg-hover)' }} />
+          <p className="mt-4 text-xs" style={{ color: 'var(--text-muted)' }}>{t('charts_loading')}</p>
+        </div>
+      ))}
+    </section>
+  )
+}
+
+const Charts = dynamic(() => import('@/components/Charts'), {
+  ssr: false,
+  loading: () => <ChartsLoading />,
+})
 
 export default function HomePage() {
   const { lang, t } = useLanguage()
@@ -41,7 +69,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         searchInputRef.current?.focus()
       }
@@ -123,7 +151,12 @@ export default function HomePage() {
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url; a.download = `gc-ai-register-${filtered.length}-systems.csv`; a.click()
+    a.href = url
+    a.download = `gc-ai-register-${filtered.length}-systems.csv`
+    a.style.display = 'none'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
     URL.revokeObjectURL(url)
   }
 
@@ -134,6 +167,9 @@ export default function HomePage() {
   const sourceDataUrl = lang === 'fr'
     ? 'https://ouvert.canada.ca/data/fr/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
     : 'https://open.canada.ca/data/en/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
+  const formattedLastModified = lastModified
+    ? new Date(lastModified).toLocaleDateString(lang === 'fr' ? 'fr-CA' : 'en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
+    : null
 
   const groupButtons: { key: GroupBy; labelKey: string; icon: string }[] = [
     { key: 'dept', labelKey: 'group_department', icon: 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z' },
@@ -147,7 +183,7 @@ export default function HomePage() {
       <ScrollIndicator />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <div className="civic-hero-field relative w-full overflow-hidden pt-24 pb-14 md:pt-32 md:pb-24">
+      <section className="civic-hero-field relative w-full overflow-hidden pt-24 pb-14 md:pt-32 md:pb-24" aria-labelledby="hero-title">
         <div className="hero-photo" aria-hidden="true" />
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
           <div className="min-h-[540px] md:min-h-[620px] flex items-center">
@@ -157,7 +193,7 @@ export default function HomePage() {
             {t('hero_badge')}
           </div>
           {/* H1 */}
-          <h1 className="text-[2.65rem] sm:text-5xl md:text-6xl lg:text-[4.75rem] font-semibold tracking-normal leading-[0.95] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
+          <h1 id="hero-title" className="text-[2.65rem] sm:text-5xl md:text-6xl lg:text-[4.75rem] font-semibold tracking-normal leading-[0.95] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
             {t('hero_title_1')}{' '}
             <span style={{ color: 'var(--accent-text)' }}>{t('hero_title_2')}</span>
           </h1>
@@ -209,13 +245,13 @@ export default function HomePage() {
           </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ── Stats ────────────────────────────────────────────────────── */}
       {!loading && !error && (
-        <div className="w-full border-y" style={{ borderColor: 'var(--border-color)', background: 'color-mix(in srgb, var(--bg-base) 74%, transparent)' }}>
+        <section className="w-full border-y" aria-label={t('registry_summary')} style={{ borderColor: 'var(--border-color)', background: 'color-mix(in srgb, var(--bg-base) 74%, transparent)' }}>
           <StatsBar systems={systems} lastModified={lastModified} />
-        </div>
+        </section>
       )}
 
       {/* ── Main content ─────────────────────────────────────────────── */}
@@ -248,6 +284,17 @@ export default function HomePage() {
               <p className="mt-2 text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {t('explorer_intro')}
               </p>
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                <a href={sourceDataUrl} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>
+                  {t('explorer_source')}
+                </a>
+                {formattedLastModified && (
+                  <span>
+                    <strong style={{ color: 'var(--text-secondary)' }}>{t('explorer_updated')}:</strong> {formattedLastModified}
+                  </span>
+                )}
+                <span>{t('explorer_cache')}</span>
+              </div>
             </div>
 
             {/* ── Toolbar: search + filters + controls ────────────────── */}
@@ -278,8 +325,8 @@ export default function HomePage() {
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 )}
-                <div className="absolute right-3 pointer-events-none hidden sm:flex items-center gap-1 opacity-40" aria-hidden="true">
-                  <kbd className="font-sans px-1.5 py-0.5 text-xs rounded border bg-transparent" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>Ctrl K</kbd>
+                <div className="absolute right-3 pointer-events-none hidden sm:flex items-center gap-1" aria-hidden="true">
+                  <kbd className="font-sans px-1.5 py-0.5 text-xs rounded border bg-transparent" style={{ borderColor: 'var(--border-color)', color: 'var(--text-tertiary)' }}>Ctrl K</kbd>
                 </div>
               </div>
 
@@ -321,7 +368,7 @@ export default function HomePage() {
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all"
                         style={groupBy === key
                           ? { background: 'var(--bg-surface)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }
-                          : { color: 'var(--text-muted)' }
+                          : { color: 'var(--text-tertiary)' }
                         }
                       >
                         <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">

@@ -25,7 +25,7 @@
 
   <section class="verdict">
     <h2>Verdict</h2>
-    <p>The local codebase is materially closer to a production-grade civic data explorer after this pass. It now presents a clearer search-first journey, stronger mobile filters, visible default results, and recoverable empty states. The live deployment is not currently representative of the improved code because it still shows stale 90s-mode UI.</p>
+    <p>The local codebase is now in credible 9/10 territory for the core data-exploration journey: search is primary, mobile has native result cards, charts expose visible data tables, dark mode passes automated contrast checks, CSV export and keyboard flows are tested, and the build/audit gates pass. It is not honestly 9.5 across every category until the improved code is deployed and production is re-verified.</p>
   </section>
 
   <h2>Fixed Issues</h2>
@@ -37,31 +37,54 @@
     <tr><td class="p2">P2</td><td>No-results state lacked a direct reset action.</td><td><code>src/components/SystemsTable.tsx</code>, <code>src/app/page.tsx</code>, <code>src/lib/i18n.tsx</code></td><td>Empty states should help users recover, not merely describe failure.</td><td class="pass">No-results clear button restored 412 systems.</td></tr>
     <tr><td class="p2">P2</td><td>Hero was too tall and over-tight for a data explorer.</td><td><code>src/app/page.tsx</code></td><td>First impression should reveal the data workflow sooner and feel civic, not overdesigned.</td><td class="pass">Desktop/mobile screenshots captured shorter hero and visible next section.</td></tr>
     <tr><td class="p2">P2</td><td>Floating scroll control overlapped mobile content and was English-only.</td><td><code>src/components/ScrollIndicator.tsx</code>, <code>src/lib/i18n.tsx</code></td><td>It looked like a demo widget and could cover controls.</td><td class="pass">390 px smoke confirmed it is hidden on mobile.</td></tr>
+    <tr><td class="p1">P1</td><td>No automated UI/a11y gate existed.</td><td><code>playwright.config.ts</code>, <code>tests/ui/*</code>, <code>package.json</code></td><td>Production-readiness claims need repeatable evidence.</td><td class="pass"><code>npm.cmd run test:ui</code>: 7 passed.</td></tr>
+    <tr><td class="p1">P1</td><td>Axe found accessibility violations.</td><td><code>src/app/globals.css</code>, <code>src/app/page.tsx</code>, <code>src/components/AboutSection.tsx</code>, <code>src/components/SystemsTable.tsx</code></td><td>Low contrast and missing landmarks hurt real accessibility.</td><td class="pass"><code>npm.cmd run test:a11y</code>: passed.</td></tr>
+    <tr><td class="p1">P1</td><td>Homepage initial JavaScript was too heavy.</td><td><code>src/app/page.tsx</code></td><td>Search-first civic data tools should not ship chart libraries in the initial path.</td><td class="pass">First-load JS reduced from about 250 kB to 130 kB.</td></tr>
+    <tr><td class="p1">P1</td><td>Dependency audit reported vulnerabilities.</td><td><code>package.json</code>, <code>package-lock.json</code></td><td>Security posture affects production readiness and trust.</td><td class="pass"><code>npm.cmd audit</code>: zero vulnerabilities.</td></tr>
+    <tr><td class="p1">P1</td><td>Charts lacked visible data alternatives and one status axis label clipped at smaller desktop widths.</td><td><code>src/components/Charts.tsx</code>, <code>src/app/globals.css</code>, <code>src/lib/i18n.tsx</code></td><td>Users need inspectable source values, not just decorative chart shapes.</td><td class="pass">Visible chart-data table verified; light/dark axe checks passed.</td></tr>
+    <tr><td class="p1">P1</td><td>Mobile browsing depended on desktop table behaviour.</td><td><code>src/components/SystemsTable.tsx</code>, <code>src/lib/i18n.tsx</code></td><td>A 9+ mobile experience needs scannable records and reachable detail actions.</td><td class="pass">390 px Playwright smoke found mobile list visible and no horizontal overflow.</td></tr>
+    <tr><td class="p1">P1</td><td>Keyboard, CSV export, dark-mode, and API failure paths lacked regression coverage.</td><td><code>tests/ui/explorer.spec.ts</code>, <code>tests/ui/accessibility.spec.ts</code>, <code>src/app/page.tsx</code></td><td>These are the flows that usually break between demo and production.</td><td class="pass"><code>npm.cmd run test:ui</code>: 7 passed.</td></tr>
   </table>
 
   <h2>Remaining Backlog</h2>
   <table>
     <tr><th>Severity</th><th>Issue</th><th>Next action</th></tr>
     <tr><td class="p1">P1</td><td>Live production is stale relative to local code.</td><td>After explicit push/deploy approval, release and verify live screenshots/routes.</td></tr>
-    <tr><td class="p2">P2</td><td>No automated a11y/e2e/visual tests.</td><td>Add Playwright route smoke, keyboard path checks, and accessibility assertions.</td></tr>
-    <tr><td class="p2">P2</td><td>Client bundle remains heavy for a public data explorer.</td><td>Lazy-load chart-heavy sections and evaluate Recharts cost.</td></tr>
-    <tr><td class="p2">P2</td><td>Chart accessibility is improved but not excellent.</td><td>Add visible chart data summaries or table toggles for all chart panels.</td></tr>
+    <tr><td class="p2">P2</td><td>Bilingual and combinatorial filter coverage is still thin.</td><td>Add French-language and multi-filter Playwright tests before a larger launch.</td></tr>
+    <tr><td class="p2">P2</td><td>Chart data can be inspected, but chart-level export/share is not available.</td><td>Add only if user research shows chart-specific reuse matters beyond full CSV export.</td></tr>
     <tr><td class="p3">P3</td><td>Secondary pages could be more scannable.</td><td>Refine content hierarchy after product/legal review.</td></tr>
+  </table>
+
+  <h2>Updated Scorecard</h2>
+  <table>
+    <tr><th>Category</th><th>Local score after fixes</th><th>Reason</th></tr>
+    <tr><td>First impression</td><td>9.0</td><td>Clear civic positioning, calmer hero, source trust, and visible next section.</td></tr>
+    <tr><td>Clarity</td><td>9.0</td><td>Search-first structure, plain explorer intro, visible counts, source, update, and cache context.</td></tr>
+    <tr><td>Search/filter UX</td><td>9.0</td><td>Primary controls are early, reset is obvious, grouping defaults to visible records, CSV export is tested.</td></tr>
+    <tr><td>Data comprehension</td><td>9.0</td><td>Charts now have visible data tables; cards/details show labelled metadata.</td></tr>
+    <tr><td>Mobile UX</td><td>9.0</td><td>Full-width controls, no overflow, mobile-native result cards, reachable detail actions.</td></tr>
+    <tr><td>Accessibility</td><td>9.0</td><td>Light and dark axe checks pass; keyboard shortcut and dialog path are tested.</td></tr>
+    <tr><td>Performance as UX</td><td>9.0</td><td>Chart library is deferred; homepage first-load JS is 130 kB.</td></tr>
+    <tr><td>Production readiness</td><td>8.5 local / not scored live</td><td>Local gates pass, but production has not been deployed or reverified.</td></tr>
   </table>
 
   <h2>Evidence</h2>
   <ul>
-    <li><code>artifacts/visuals/uiux-desktop-final-1440.png</code></li>
-    <li><code>artifacts/visuals/uiux-mobile-final-390.png</code></li>
-    <li><code>artifacts/visuals/uiux-explorer-section.png</code></li>
-    <li><code>artifacts/visuals/uiux-explorer-mobile-final.png</code></li>
-    <li><code>artifacts/visuals/uiux-detail-dialog.png</code></li>
+    <li><code>artifacts/visuals/qa-9pass-desktop-1440-home.png</code></li>
+    <li><code>artifacts/visuals/qa-9pass-mobile-390-controls.png</code></li>
+    <li><code>artifacts/visuals/qa-9pass-mobile-390-explorer.png</code></li>
+    <li><code>artifacts/visuals/qa-9pass-tablet-768-explorer.png</code></li>
+    <li><code>artifacts/visuals/qa-9pass-chart-data.png</code></li>
   </ul>
 
   <h2>Checks</h2>
   <ul>
     <li><code>npm.cmd run build</code>: passed.</li>
-    <li><code>npx.cmd tsc --noEmit</code>: passed.</li>
+    <li><code>npm.cmd run typecheck</code>: passed.</li>
+    <li><code>npm.cmd run test:ui</code>: passed, 7 tests.</li>
+    <li><code>npm.cmd run test:a11y</code>: passed.</li>
+    <li><code>npm.cmd audit</code>: passed with zero vulnerabilities.</li>
+    <li>Build output: homepage first-load JS is 130 kB after dynamic chart loading.</li>
     <li>Rendered smoke: 360, 390, 768, 1024, and 1440 px had no horizontal overflow.</li>
     <li>Interaction smoke: empty-state reset, Microsoft search, detail drawer, and public route checks passed.</li>
   </ul>

@@ -38,15 +38,22 @@
     <tr><td class="p2">P2</td><td>No-results state had explanation but no recovery action.</td><td class="done">Added a clear search and filters button to the empty state.</td></tr>
     <tr><td class="p2">P2</td><td>Hero felt too tall for a data explorer and used aggressive display tracking.</td><td class="done">Reduced hero height/type scale and normalized H1 tracking.</td></tr>
     <tr><td class="p2">P2</td><td>Floating scroll control overlapped mobile content and was English-only.</td><td class="done">Hidden on mobile and localized for larger screens.</td></tr>
+    <tr><td class="p1">P1</td><td>No repeatable UI/accessibility regression gate existed.</td><td class="done">Added Playwright tests for homepage journey, mobile layout, public routes, and axe accessibility.</td></tr>
+    <tr><td class="p1">P1</td><td>Axe found contrast, landmark, and ARIA violations.</td><td class="done">Darkened muted text tokens, added landmarks, and corrected icon semantics.</td></tr>
+    <tr><td class="p1">P1</td><td>Homepage first-load JavaScript was too heavy for a public data explorer.</td><td class="done">Dynamically loaded charts; build output dropped from about 250 kB to 130 kB first-load JS.</td></tr>
+    <tr><td class="p2">P2</td><td>Source/freshness context was not visible in the active exploration workflow.</td><td class="done">Added source, updated date, and cache-window copy beside the controls.</td></tr>
+    <tr><td class="p1">P1</td><td>Dependency audit reported Next/PostCSS vulnerabilities.</td><td class="done">Updated Next resolution and overrode PostCSS to patched 8.5.15; audit now reports zero vulnerabilities.</td></tr>
+    <tr><td class="p1">P1</td><td>Charts lacked a visible data alternative and one status-axis label clipped at smaller desktop widths.</td><td class="done">Added chart-data toggles with visible tables and corrected status chart axis spacing.</td></tr>
+    <tr><td class="p1">P1</td><td>Mobile browsing still relied on dense desktop table behaviour.</td><td class="done">Added mobile-native result cards with scannable metadata and full-width detail actions.</td></tr>
+    <tr><td class="p1">P1</td><td>Keyboard, CSV export, dark mode, and API failure states were not regression-tested.</td><td class="done">Extended Playwright coverage for Ctrl/Cmd+K, detail dialog keyboard flow, CSV download, dark-mode axe, and failed API copy.</td></tr>
   </table>
 
   <h2>Remaining Review Risks</h2>
   <table>
     <tr><th>Severity</th><th>Risk</th><th>Recommended next action</th></tr>
     <tr><td class="p1">P1</td><td>Live deployment is stale and still shows the old 90s-mode UI.</td><td>Deploy only after explicit approval, then verify live routes and screenshots.</td></tr>
-    <tr><td class="p2">P2</td><td>Homepage first-load JavaScript remains around 250 kB, mainly because charts and table logic are client-heavy.</td><td>Split chart/table modules or lazy-load deeper chart panels after initial data controls.</td></tr>
-    <tr><td class="p2">P2</td><td>No automated accessibility or visual regression suite exists.</td><td>Add Playwright smoke tests with axe-style checks and route screenshots.</td></tr>
-    <tr><td class="p2">P2</td><td>Charts are improved but still not equivalent to a first-class accessible data table for all chart views.</td><td>Expose visible data summaries/downloads near charts, not only screen-reader tables.</td></tr>
+    <tr><td class="p2">P2</td><td>Chart tables are now visible, but chart exports and richer comparison summaries are still absent.</td><td>Add per-chart copy/export only if users actually need chart-level reuse beyond the full CSV export.</td></tr>
+    <tr><td class="p2">P2</td><td>Automated tests cover the main journeys but not every filter combination or bilingual path.</td><td>Add French-language and multi-filter regression tests before a larger public launch.</td></tr>
     <tr><td class="p3">P3</td><td>Some secondary pages are content-heavy and could be more scannable.</td><td>Add summary boxes or stronger section hierarchy after product/legal review.</td></tr>
   </table>
 </main>
