@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { fetchAllSystems } from '@/lib/api'
+import { DataWarning, fetchAllSystems } from '@/lib/api'
 import { AISystem, Filters, SortDir, SortField } from '@/lib/types'
 import { useLanguage } from '@/lib/i18n'
 import Header from '@/components/Header'
@@ -16,6 +16,13 @@ import ScrollIndicator from '@/components/ScrollIndicator'
 function normalizeStatus(value: unknown) {
   const raw = typeof value === 'string' ? value.trim() : ''
   return raw ? raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase() : ''
+}
+
+function normalizeSearchText(value: unknown) {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
 }
 
 function ChartsLoading() {
@@ -50,6 +57,8 @@ export default function HomePage() {
   const { lang, t } = useLanguage()
   const [systems, setSystems] = useState<AISystem[]>([])
   const [lastModified, setLastModified] = useState<string | null>(null)
+  const [sourceTotal, setSourceTotal] = useState<number | null>(null)
+  const [dataWarnings, setDataWarnings] = useState<DataWarning[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -78,12 +87,23 @@ export default function HomePage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  useEffect(() => {
-    fetchAllSystems()
-      .then(({ systems, lastModified }) => { setSystems(systems); setLastModified(lastModified) })
+  const loadSystems = useCallback(() => {
+    setLoading(true)
+    setError(null)
+    return fetchAllSystems()
+      .then(({ systems, lastModified, total, warnings }) => {
+        setSystems(systems)
+        setLastModified(lastModified)
+        setSourceTotal(total)
+        setDataWarnings(warnings)
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    void loadSystems()
+  }, [loadSystems])
 
   const statusField = lang === 'fr' ? 'ai_system_status_fr' : 'ai_system_status_en'
   const developedByField = lang === 'fr' ? 'developed_by_fr' : 'developed_by_en'
@@ -100,14 +120,42 @@ export default function HomePage() {
   }, [systems, statusField, developedByField])
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase()
+    const q = normalizeSearchText(query)
     const nameField = lang === 'fr' ? 'name_ai_system_fr' : 'name_ai_system_en'
     const descField = lang === 'fr' ? 'description_ai_system_fr' : 'description_ai_system_en'
     const capField = lang === 'fr' ? 'ai_system_capabilities_fr' : 'ai_system_capabilities_en'
     const usersField = lang === 'fr' ? 'ai_system_primary_users_fr' : 'ai_system_primary_users_en'
+    const dataSourcesField = lang === 'fr' ? 'data_sources_fr' : 'data_sources_en'
+    const resultsField = lang === 'fr' ? 'ai_system_results_fr' : 'ai_system_results_en'
 
     let result = systems.filter((s) => {
-      if (q && !(s[nameField] as string)?.toLowerCase().includes(q) && !(s[descField] as string)?.toLowerCase().includes(q) && !s.government_organization?.toLowerCase().includes(q) && !s.vendor_information?.toLowerCase().includes(q) && !(s[capField] as string)?.toLowerCase().includes(q) && !(s[usersField] as string)?.toLowerCase().includes(q)) return false
+      const searchableFields = [
+        s[nameField],
+        s[descField],
+        s[capField],
+        s[usersField],
+        s[dataSourcesField],
+        s[resultsField],
+        s.name_ai_system_en,
+        s.name_ai_system_fr,
+        s.description_ai_system_en,
+        s.description_ai_system_fr,
+        s.ai_system_capabilities_en,
+        s.ai_system_capabilities_fr,
+        s.ai_system_primary_users_en,
+        s.ai_system_primary_users_fr,
+        s.data_sources_en,
+        s.data_sources_fr,
+        s.ai_system_results_en,
+        s.ai_system_results_fr,
+        s.ai_system_status_en,
+        s.ai_system_status_fr,
+        s.developed_by_en,
+        s.developed_by_fr,
+        s.government_organization,
+        s.vendor_information,
+      ]
+      if (q && !searchableFields.some((value) => normalizeSearchText(value).includes(q))) return false
       if (filters.department && s.government_organization !== filters.department) return false
       if (filters.status && normalizeStatus(s[statusField]) !== filters.status) return false
       if (filters.personalInfo && s.involves_personal_information !== filters.personalInfo) return false
@@ -136,6 +184,14 @@ export default function HomePage() {
     setFilters({ department: '', status: '', personalInfo: '', developedBy: '', vendor: '', notificationAi: '' })
   }
 
+  const escapeCsvCell = (value: unknown) => {
+    const text = String(value ?? '')
+    const trimmedStart = text.trimStart()
+    const unsafeForSpreadsheets = /^[=+\-@]/.test(trimmedStart) || /^[\t\r\n]/.test(text)
+    const safeText = unsafeForSpreadsheets ? `'${text}` : text
+    return `"${safeText.replace(/"/g, '""')}"`
+  }
+
   const exportCsv = () => {
     const suffix = lang === 'fr' ? 'fr' : 'en'
     const cols: (keyof AISystem)[] = [
@@ -146,8 +202,7 @@ export default function HomePage() {
       `ai_system_capabilities_${suffix}` as keyof AISystem, `data_sources_${suffix}` as keyof AISystem,
       `personal_information_banks_${suffix}` as keyof AISystem, `ai_system_results_${suffix}` as keyof AISystem,
     ]
-    const escape = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const rows = [cols.join(','), ...filtered.map((s) => cols.map((c) => escape(s[c] as string)).join(','))]
+    const rows = [cols.join(','), ...filtered.map((s) => cols.map((c) => escapeCsvCell(s[c])).join(','))]
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -170,6 +225,25 @@ export default function HomePage() {
   const formattedLastModified = lastModified
     ? new Date(lastModified).toLocaleDateString(lang === 'fr' ? 'fr-CA' : 'en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
     : null
+  const displayWarnings = dataWarnings.length > 0
+    ? dataWarnings
+    : sourceTotal !== null && sourceTotal > systems.length
+    ? [{
+      code: 'partial_dataset',
+      message: 'The source API reported more records than this page received.',
+      total: sourceTotal,
+      returned: systems.length,
+    }]
+    : []
+  const warningText = (warning: DataWarning) => {
+    if (warning.code === 'partial_dataset') {
+      return t('data_warning_partial')
+        .replace('{total}', String(warning.total ?? sourceTotal ?? ''))
+        .replace('{returned}', String(warning.returned ?? systems.length))
+    }
+    if (warning.code === 'invalid_records') return t('data_warning_invalid')
+    return t('data_warning_generic')
+  }
 
   const groupButtons: { key: GroupBy; labelKey: string; icon: string }[] = [
     { key: 'dept', labelKey: 'group_department', icon: 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z' },
@@ -265,13 +339,33 @@ export default function HomePage() {
           </div>
         )}
         {error && (
-          <div className="rounded-lg p-5 text-sm flex items-start gap-3" style={{ background: 'var(--status-decommission-bg)', border: '1px solid var(--status-decommission)', color: 'var(--status-decommission)' }}>
+          <div className="rounded-lg p-5 text-sm flex items-start gap-3" role="alert" style={{ background: 'var(--status-decommission-bg)', border: '1px solid var(--status-decommission)', color: 'var(--status-decommission-text)' }}>
             <svg className="h-5 w-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
             <div>
               <p className="font-medium">{t('error_title')}</p>
               <p className="mt-0.5 opacity-80">{error}</p>
+              <p className="mt-1 opacity-80">{t('error_help')}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => { void loadSystems() }}
+                  className="inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold transition-colors"
+                  style={{ background: 'var(--text-primary)', color: 'var(--bg-base)' }}
+                >
+                  {t('retry_load')}
+                </button>
+                <a
+                  href={sourceDataUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold transition-colors"
+                  style={{ border: '1px solid currentColor', color: 'var(--status-decommission-text)' }}
+                >
+                  {t('open_official_source')}
+                </a>
+              </div>
             </div>
           </div>
         )}
@@ -295,6 +389,20 @@ export default function HomePage() {
                 )}
                 <span>{t('explorer_cache')}</span>
               </div>
+              {displayWarnings.length > 0 && (
+                <div
+                  className="mt-4 rounded-lg p-3 text-xs leading-relaxed"
+                  role="status"
+                  style={{ background: 'var(--status-development-bg)', border: '1px solid var(--status-development)', color: 'var(--status-development-text)' }}
+                >
+                  <p className="font-semibold" style={{ color: 'var(--status-development-text)' }}>{t('data_warning_title')}</p>
+                  <ul className="mt-1 space-y-1">
+                    {displayWarnings.map((warning, index) => (
+                      <li key={`${warning.code}-${index}`}>{warningText(warning)}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* ── Toolbar: search + filters + controls ────────────────── */}

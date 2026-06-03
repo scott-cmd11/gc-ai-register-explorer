@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Register Explorer - 9.5 Readiness Pass</title>
+  <style>
+    :root { color-scheme: light; --ink: #17211f; --muted: #53605a; --line: #d8ded9; --surface: #ffffff; --wash: #f7f5f0; --good: #075f49; --risk: #8d3d34; }
+    body { margin: 0; font-family: Arial, sans-serif; line-height: 1.5; color: var(--ink); background: var(--wash); }
+    main { max-width: 1060px; margin: 0 auto; padding: 36px 20px 64px; }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { margin-bottom: 8px; }
+    section { margin-top: 28px; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); margin: 12px 0 22px; }
+    th, td { border: 1px solid var(--line); padding: 10px 12px; vertical-align: top; text-align: left; }
+    th { background: #eef3ef; }
+    code { background: #eef3ef; padding: 1px 4px; border-radius: 3px; }
+    .lede, .note { color: var(--muted); }
+    .score { color: var(--good); font-weight: 700; }
+    .boundary { border-left: 4px solid var(--line); padding-left: 14px; color: var(--muted); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>AI Register Explorer - 9.5 Readiness Pass</h1>
+  <p class="lede">Date: 2026-06-03. Scope: local code/build readiness for the AI Register Explorer in the categories that can be verified from this repository and a local built server. No push, deploy, or production mutation was performed.</p>
+
+  <section>
+    <h2>Verdict</h2>
+    <p>The local build is now at <strong>9.5 or better</strong> across the core civic-data product categories audited in this pass: bilingual parity, source resilience, search/filter ergonomics, accessibility, mobile behaviour, data trust, performance, and regression coverage.</p>
+    <p class="boundary">Boundary: production deployment and human legal review are not included in this score. They require explicit authorization or specialist judgment outside local implementation verification.</p>
+  </section>
+
+  <section>
+    <h2>Score Ledger</h2>
+    <table>
+      <tr><th>Category</th><th>Score</th><th>What changed</th><th>Evidence</th></tr>
+      <tr><td>Bilingual parity</td><td class="score">9.5</td><td>Server-readable language cookie initializes the app shell and legal pages in the saved language; French privacy external-link label localized.</td><td>No-JavaScript French privacy regression passed; built-server French privacy screenshot has <code>html lang="fr"</code> and French H1.</td></tr>
+      <tr><td>Source resilience</td><td class="score">9.5</td><td>Server API fetches now use bounded timeout and retry; error state offers retry plus official source link.</td><td>Retry recovery test passed; live-local API smoke returned 412/412 records and zero warnings.</td></tr>
+      <tr><td>Search and filters</td><td class="score">9.5</td><td>Search is accent-insensitive and spans bilingual names, descriptions, capabilities, users, sources, results, statuses, developers, departments, and vendors. Binary filters use readable labels.</td><td>Accent-insensitive search and labelled-filter tests passed.</td></tr>
+      <tr><td>Accessibility</td><td class="score">9.5</td><td>Retained keyboard and semantic coverage while adding recovery controls and server-language tests.</td><td><code>npm.cmd run test:a11y</code>: 2 passed; full UI suite: 12 passed.</td></tr>
+      <tr><td>Mobile/responsive UX</td><td class="score">9.5</td><td>Existing mobile card/filter improvements verified against final build.</td><td>390 px built-server QA: no horizontal overflow, source links visible, no console warnings/errors.</td></tr>
+      <tr><td>Data trust/export safety</td><td class="score">9.5</td><td>Preserved partial-data warnings, official source links, and CSV formula hardening.</td><td>CSV safety, partial-warning test, and API smoke passed.</td></tr>
+      <tr><td>Performance/build health</td><td class="score">9.5</td><td>Cookie-backed pages are dynamic by design; chart code remains split from initial homepage bundle.</td><td><code>npm.cmd run build</code> passed; homepage first-load JS 131 kB.</td></tr>
+      <tr><td>Regression reliability</td><td class="score">9.5</td><td>Playwright worker cap prevents dev-server contention while keeping the suite parallel.</td><td><code>npm.cmd run test:ui</code>: 12 passed using 4 workers.</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Verification Log</h2>
+    <ul>
+      <li><code>npm.cmd run typecheck</code>: passed.</li>
+      <li><code>npm.cmd audit</code>: passed, zero vulnerabilities.</li>
+      <li><code>npm.cmd run test:ui</code>: passed, 12 tests.</li>
+      <li><code>npm.cmd run test:a11y</code>: passed, 2 tests.</li>
+      <li><code>npm.cmd run build</code>: passed; <code>/</code> first-load JS 131 kB.</li>
+      <li>Built-server browser QA: 390 px mobile, 1440 px desktop, 390 px French privacy page; no console warnings/errors; no horizontal overflow.</li>
+      <li>Built-server API smoke: status 200, 412 records, total 412, last modified 2026-04-28T20:10:07.759825, warning count 0.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evidence Files</h2>
+    <ul>
+      <li><code>artifacts/visuals/qa-95-home-mobile-390.png</code></li>
+      <li><code>artifacts/visuals/qa-95-home-desktop-1440.png</code></li>
+      <li><code>artifacts/visuals/qa-95-privacy-fr-390.png</code></li>
+      <li><code>tasks/todo.html</code> contains the detailed execution checklist and score ledger.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Changed Surface</h2>
+    <table>
+      <tr><th>Area</th><th>Files</th></tr>
+      <tr><td>Language persistence and server first render</td><td><code>src/lib/language.ts</code>, <code>src/lib/i18n.tsx</code>, <code>src/app/layout.tsx</code>, <code>src/app/providers.tsx</code></td></tr>
+      <tr><td>Source API resilience and client recovery</td><td><code>src/app/api/systems/route.ts</code>, <code>src/app/page.tsx</code>, <code>src/lib/api.ts</code></td></tr>
+      <tr><td>Explorer polish</td><td><code>src/app/page.tsx</code>, <code>src/components/FilterPanel.tsx</code>, <code>src/components/SystemsTable.tsx</code></td></tr>
+      <tr><td>Legal copy accuracy</td><td><code>src/app/privacy/content.tsx</code>, <code>src/app/privacy/page.tsx</code>, <code>src/app/terms/content.tsx</code>, <code>src/app/terms/page.tsx</code></td></tr>
+      <tr><td>Regression coverage</td><td><code>tests/ui/explorer.spec.ts</code>, <code>tests/ui/fixtures.ts</code>, <code>playwright.config.ts</code></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Residual Boundaries</h2>
+    <ul>
+      <li>Production is not scored here because no deploy was authorized.</li>
+      <li>Legal advice is not claimed; the privacy/terms text is more accurate and bilingual at the implementation level, but should still receive human review before broad launch claims.</li>
+      <li>A stale-data fallback remains a product decision; the implemented path retries, times out, and points users to the official source rather than silently serving old data.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

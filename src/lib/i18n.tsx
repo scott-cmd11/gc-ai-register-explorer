@@ -2,8 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
 import { AISystem } from './types'
-
-export type Lang = 'en' | 'fr'
+import { LANGUAGE_COOKIE, Lang, normalizeLang } from './language'
 
 interface LanguageContextValue {
   lang: Lang
@@ -68,6 +67,19 @@ const translations: Record<string, { en: string; fr: string }> = {
   'explorer_source': { en: 'Source: open.canada.ca', fr: 'Source\u00a0: ouvert.canada.ca' },
   'explorer_updated': { en: 'Updated', fr: 'Mis \u00e0 jour' },
   'explorer_cache': { en: 'Cached for 1 hour', fr: 'Mise en cache pendant 1 heure' },
+  'data_warning_title': { en: 'Data quality notice', fr: 'Avis sur la qualit\u00e9 des donn\u00e9es' },
+  'data_warning_partial': {
+    en: 'The source API reported {total} records, but this page received {returned}. Use the source-data link for official verification.',
+    fr: 'L\u2019API source a d\u00e9clar\u00e9 {total} enregistrements, mais cette page en a re\u00e7u {returned}. Utilisez le lien vers les donn\u00e9es source pour une v\u00e9rification officielle.',
+  },
+  'data_warning_invalid': {
+    en: 'Some source records were skipped because they did not include the minimum fields needed to display a system.',
+    fr: 'Certains enregistrements source ont \u00e9t\u00e9 ignor\u00e9s parce qu\u2019ils ne contenaient pas les champs minimaux n\u00e9cessaires \u00e0 l\u2019affichage d\u2019un syst\u00e8me.',
+  },
+  'data_warning_generic': {
+    en: 'The source API returned a warning. Use the source-data link for official verification.',
+    fr: 'L\u2019API source a retourn\u00e9 un avertissement. Utilisez le lien vers les donn\u00e9es source pour une v\u00e9rification officielle.',
+  },
   'charts_loading': { en: 'Loading registry signals\u2026', fr: 'Chargement des signaux du registre\u2026' },
   'registry_summary': { en: 'Registry summary', fr: 'R\u00e9sum\u00e9 du registre' },
   'view_chart_data': { en: 'View chart data', fr: 'Voir les donn\u00e9es du graphique' },
@@ -174,6 +186,12 @@ const translations: Record<string, { en: string; fr: string }> = {
   // Loading & error
   'loading': { en: 'Loading systems\u2026', fr: 'Chargement des syst\u00e8mes\u2026' },
   'error_title': { en: 'Failed to load data', fr: '\u00c9chec du chargement des donn\u00e9es' },
+  'error_help': {
+    en: 'The source registry did not respond successfully. You can retry this page or check the official source dataset.',
+    fr: 'Le registre source n\u2019a pas r\u00e9pondu correctement. Vous pouvez r\u00e9essayer cette page ou consulter le jeu de donn\u00e9es source officiel.',
+  },
+  'retry_load': { en: 'Retry', fr: 'R\u00e9essayer' },
+  'open_official_source': { en: 'Official source', fr: 'Source officielle' },
 
   // About section (footer)
   'about_title': { en: 'About This Project', fr: '\u00c0 propos de ce projet' },
@@ -327,20 +345,26 @@ const translations: Record<string, { en: string; fr: string }> = {
 
 // ── Provider ────────────────────────────────────────────────────────────────
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('en')
+export function LanguageProvider({ children, initialLang }: { children: ReactNode; initialLang: Lang }) {
+  const [lang, setLangState] = useState<Lang>(initialLang)
 
   useEffect(() => {
-    const saved = localStorage.getItem('lang') as Lang | null
-    if (saved === 'en' || saved === 'fr') {
+    const saved = normalizeLang(localStorage.getItem('lang'))
+    if (saved) {
       setLangState(saved)
+      document.documentElement.setAttribute('lang', saved)
+      document.cookie = `${LANGUAGE_COOKIE}=${saved};path=/;max-age=31536000;samesite=lax`
+    } else {
+      localStorage.setItem('lang', initialLang)
+      document.cookie = `${LANGUAGE_COOKIE}=${initialLang};path=/;max-age=31536000;samesite=lax`
     }
-  }, [])
+  }, [initialLang])
 
   const setLang = useCallback((newLang: Lang) => {
     setLangState(newLang)
     localStorage.setItem('lang', newLang)
     document.documentElement.setAttribute('lang', newLang)
+    document.cookie = `${LANGUAGE_COOKIE}=${newLang};path=/;max-age=31536000;samesite=lax`
   }, [])
 
   const t = useCallback((key: string): string => {

@@ -46,14 +46,18 @@
     <tr><td class="p1">P1</td><td>Charts lacked a visible data alternative and one status-axis label clipped at smaller desktop widths.</td><td class="done">Added chart-data toggles with visible tables and corrected status chart axis spacing.</td></tr>
     <tr><td class="p1">P1</td><td>Mobile browsing still relied on dense desktop table behaviour.</td><td class="done">Added mobile-native result cards with scannable metadata and full-width detail actions.</td></tr>
     <tr><td class="p1">P1</td><td>Keyboard, CSV export, dark mode, and API failure states were not regression-tested.</td><td class="done">Extended Playwright coverage for Ctrl/Cmd+K, detail dialog keyboard flow, CSV download, dark-mode axe, and failed API copy.</td></tr>
+    <tr><td class="p1">P1</td><td>Returning French users could still see English server-rendered legal content before hydration.</td><td class="done">Added a server-readable language cookie, passed initial language through the layout/provider, and verified French privacy rendering with JavaScript disabled.</td></tr>
+    <tr><td class="p1">P1</td><td>Upstream CKAN failure produced a dead-end explorer state.</td><td class="done">Added bounded upstream retry/timeout plus a user-facing retry button and official source link.</td></tr>
+    <tr><td class="p2">P2</td><td>Search did not normalize accents and binary filters exposed raw Y/N codes.</td><td class="done">Added accent-insensitive search across more bilingual fields and changed binary filter options to readable labels.</td></tr>
+    <tr><td class="p2">P2</td><td>High-parallel Playwright runs could leave lazy chart assertions waiting on the dev server.</td><td class="done">Capped Playwright workers at 4 locally and 2 in CI to reduce dev-server contention while keeping the suite parallel.</td></tr>
   </table>
 
   <h2>Remaining Review Risks</h2>
   <table>
     <tr><th>Severity</th><th>Risk</th><th>Recommended next action</th></tr>
-    <tr><td class="p1">P1</td><td>Live deployment is stale and still shows the old 90s-mode UI.</td><td>Deploy only after explicit approval, then verify live routes and screenshots.</td></tr>
+    <tr><td class="p1">P1</td><td>Production deployment state was not changed in this pass.</td><td>Deploy only after explicit approval, then verify live routes and screenshots.</td></tr>
     <tr><td class="p2">P2</td><td>Chart tables are now visible, but chart exports and richer comparison summaries are still absent.</td><td>Add per-chart copy/export only if users actually need chart-level reuse beyond the full CSV export.</td></tr>
-    <tr><td class="p2">P2</td><td>Automated tests cover the main journeys but not every filter combination or bilingual path.</td><td>Add French-language and multi-filter regression tests before a larger public launch.</td></tr>
+    <tr><td class="p2">P2</td><td>Automated tests cover the main journeys, French initial render, retry, accent search, and binary filters, but not every possible multi-filter combination.</td><td>Add exhaustive multi-filter tests only if filter logic grows more complex or gets backed by server-side query parameters.</td></tr>
     <tr><td class="p3">P3</td><td>Some secondary pages are content-heavy and could be more scannable.</td><td>Add summary boxes or stronger section hierarchy after product/legal review.</td></tr>
   </table>
 </main>

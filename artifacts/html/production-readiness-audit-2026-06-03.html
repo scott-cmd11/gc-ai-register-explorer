@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Register Explorer Production-Readiness Audit - 2026-06-03</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; line-height: 1.5; color: #17211f; background: #f7f5f0; }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { font-size: 2rem; }
+    h2 { margin-top: 36px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin: 12px 0 26px; }
+    th, td { border: 1px solid #d8ded9; padding: 9px 11px; vertical-align: top; text-align: left; font-size: 0.92rem; }
+    th { background: #eef3ef; }
+    code { background: #eef3ef; padding: 1px 4px; border-radius: 3px; }
+    .note { color: #53605a; }
+    .pass { color: #075f49; font-weight: 700; }
+    .warn { color: #8a4f23; font-weight: 700; }
+    .fail { color: #8d3d34; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+    .card { background: #fff; border: 1px solid #d8ded9; border-radius: 8px; padding: 14px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>AI Register Explorer Production-Readiness Audit</h1>
+  <p class="note">Date: 2026-06-03. Scope: current local codebase, live/source API checks, rendered localhost browser checks, safe P0/P1/high-impact P2 fixes. No commit, push, or deploy performed.</p>
+
+  <h2>1. UI/UX/Data-Product Verdict</h2>
+  <div class="grid">
+    <div class="card"><strong>Production-ready?</strong><br>Partially. Strong public beta / near-production civic-data product, but not 9.5/10.</div>
+    <div class="card"><strong>Credible for civic-data users?</strong><br>Yes, with remaining data-resilience and bilingual-server-rendering caveats.</div>
+    <div class="card"><strong>Primary journey clear?</strong><br>Yes. Search, filter, inspect, charts, and CSV export are visible and tested.</div>
+    <div class="card"><strong>Data trust clear?</strong><br>Partially improved. Source, freshness, warnings, and API total checks now exist.</div>
+    <div class="card"><strong>Bilingual UX credible?</strong><br>Partially. Main app and legal pages are bilingual; direct French visits still briefly render English before hydration.</div>
+    <div class="card"><strong>Would a senior product/design/a11y/data team approve?</strong><br>Partially. They would likely approve the direction and fixes, but ask for remaining resilience and localization work.</div>
+  </div>
+
+  <h2>2. Inspection Map</h2>
+  <table>
+    <tr><th>Area</th><th>Observed</th></tr>
+    <tr><td>Routes/pages</td><td><code>/</code>, <code>/about</code>, <code>/privacy</code>, <code>/terms</code>, <code>/api/systems</code>.</td></tr>
+    <tr><td>Main journeys</td><td>Understand independence/source, browse/search/filter systems, group/sort/paginate, inspect detail drawer, view chart data, export filtered CSV, switch language/theme.</td></tr>
+    <tr><td>Key CTAs/actions</td><td>Browse systems, view source data, search, clear search, filters, clear filters, chart filter chips, grouping controls, pagination, CSV export, detail open/close.</td></tr>
+    <tr><td>Core components</td><td><code>Header</code>, <code>StatsBar</code>, <code>FilterPanel</code>, <code>Charts</code>, <code>SystemsTable</code>, <code>SystemDetail</code>, <code>AboutSection</code>, <code>LanguageProvider</code>.</td></tr>
+    <tr><td>Data/API flow</td><td>Client <code>fetchAllSystems()</code> -> local <code>/api/systems</code> -> Government of Canada CKAN datastore and resource metadata APIs.</td></tr>
+    <tr><td>i18n/bilingual approach</td><td>Client language provider, localStorage persistence, bilingual field fallback, localized header/about/home; privacy/terms now client-localized too.</td></tr>
+    <tr><td>Styling/design system</td><td>Next.js App Router, React, TypeScript, Tailwind, CSS design tokens for civic light/dark themes, Recharts, no external UI kit.</td></tr>
+    <tr><td>Breakpoints tested</td><td>360, 390, 768, 1024, 1440 px on homepage; 390 px French privacy and terms; no horizontal overflow found.</td></tr>
+    <tr><td>Highest-risk areas</td><td>API data contract and partial records, legal/privacy trust copy, bilingual legal parity, CSV export safety, full-dataset manual permutations, production/live verification after any deploy.</td></tr>
+  </table>
+
+  <h2>3. Pre-Fix Scorecard</h2>
+  <table>
+    <tr><th>Category</th><th>Before</th><th>Gap to 9.5</th><th>Evidence</th></tr>
+    <tr><td>First impression</td><td>9.0</td><td>Needs server-side language polish and final launch QA.</td><td>Hero/source/independence clear; no retro UI in tests/browser.</td></tr>
+    <tr><td>Clarity</td><td>9.0</td><td>Some legal/data caveats could be clearer.</td><td>Homepage explains independent explorer and source.</td></tr>
+    <tr><td>Data trust and source transparency</td><td>8.6</td><td>Partial upstream data was not surfaced.</td><td>API returned <code>total</code> but client dropped it.</td></tr>
+    <tr><td>Navigation / IA</td><td>8.8</td><td>Secondary pages need fuller bilingual parity.</td><td>Routes are simple and visible.</td></tr>
+    <tr><td>Search and filtering UX</td><td>8.7</td><td>Accent-insensitive search and French filter semantics remain.</td><td>Search/filter tests pass; advanced combinations not exhaustive.</td></tr>
+    <tr><td>Table/list/card usability</td><td>8.9</td><td>Full real-data pagination/grouping needs more manual coverage.</td><td>Mobile cards and table tests exist.</td></tr>
+    <tr><td>System-detail inspection UX</td><td>8.6</td><td>Long real-record detail content still needs deeper review.</td><td>Keyboard open/close test passes.</td></tr>
+    <tr><td>Charts and data visualization UX</td><td>8.7</td><td>Chart export/comparison workflows remain.</td><td>Visible chart-data toggles already exist.</td></tr>
+    <tr><td>CSV/export UX</td><td>8.2</td><td>Spreadsheet formula safety missing.</td><td>Export quoted values but did not neutralize formula-leading cells.</td></tr>
+    <tr><td>Bilingual English/French UX</td><td>7.8</td><td>Privacy/terms were English-only.</td><td>Header toggle visible on legal pages.</td></tr>
+    <tr><td>Visual hierarchy</td><td>8.8</td><td>Minor polish only.</td><td>Institutional civic style mostly consistent.</td></tr>
+    <tr><td>Layout and spacing</td><td>8.8</td><td>More route-by-route review needed.</td><td>No overflow in tested widths.</td></tr>
+    <tr><td>Mobile UX</td><td>8.9</td><td>320 px and full detail flows remain.</td><td>390 px mobile test and screenshots pass.</td></tr>
+    <tr><td>Accessibility</td><td>8.8</td><td>Needs broader page/modal/mobile/French axe matrix.</td><td>Homepage light/dark axe passes.</td></tr>
+    <tr><td>Keyboard and interaction design</td><td>8.7</td><td>More grouped/pagination coverage needed.</td><td>Ctrl+K and dialog keyboard flow pass.</td></tr>
+    <tr><td>Content quality</td><td>8.4</td><td>Legal wording needed softening and parity.</td><td>Privacy made a stronger compliance claim than warranted.</td></tr>
+    <tr><td>Legal/privacy/disclaimer clarity</td><td>7.6</td><td>Privacy omitted language storage and lacked French.</td><td>Code stores <code>lang</code> and <code>theme</code>.</td></tr>
+    <tr><td>Visual consistency</td><td>8.8</td><td>Legal pages lagged localized content quality.</td><td>Layout consistent; language mismatch was the issue.</td></tr>
+    <tr><td>Performance as UX</td><td>8.6</td><td>Need production monitoring and lower bundle if possible.</td><td>Homepage first load around 130-131 kB.</td></tr>
+    <tr><td>Error, empty, loading states</td><td>8.6</td><td>Partial-data state missing.</td><td>Failure/empty states tested; partial data not surfaced.</td></tr>
+    <tr><td>Overall UX readiness</td><td>8.6</td><td>Trust, bilingual, and resilience work remain.</td><td>Strong base, not 9.5.</td></tr>
+  </table>
+
+  <h2>4. Fixed Issues</h2>
+  <table>
+    <tr><th>ID</th><th>Severity</th><th>Category</th><th>Location</th><th>Files changed</th><th>What changed</th><th>Why it matters</th><th>Verification</th></tr>
+    <tr><td>AIREG-0603-01</td><td>P1</td><td>Data trust</td><td>API/client data flow</td><td><code>route.ts</code>, <code>api.ts</code>, <code>page.tsx</code>, <code>i18n.tsx</code></td><td>Validate minimum CKAN record shape, preserve total/warnings, show data-quality notice.</td><td>Users are warned if official total and displayed records diverge.</td><td>UI test, production-start API smoke returned 412/412 and no warnings.</td></tr>
+    <tr><td>AIREG-0603-02</td><td>P1</td><td>Legal/privacy/bilingual</td><td><code>/privacy</code>, <code>/terms</code></td><td><code>privacy/content.tsx</code>, <code>terms/content.tsx</code>, page wrappers</td><td>Made legal pages bilingual and corrected localStorage privacy copy.</td><td>Canadian civic product no longer shows English-only legal content under a French language toggle.</td><td>French mobile screenshots and route checks.</td></tr>
+    <tr><td>AIREG-0603-03</td><td>P1</td><td>CSV/export safety</td><td>CSV export</td><td><code>page.tsx</code>, <code>fixtures.ts</code>, <code>explorer.spec.ts</code></td><td>Neutralize spreadsheet-formula-leading CSV cells with an apostrophe before quoting.</td><td>Reduces risk when public upstream text is opened in Excel/Sheets.</td><td>Download test reads CSV and checks formula neutralization.</td></tr>
+    <tr><td>AIREG-0603-04</td><td>P2</td><td>Test reliability</td><td>Public-route smoke</td><td><code>explorer.spec.ts</code></td><td>Use <code>domcontentloaded</code> for static route title smoke.</td><td>Avoids false failures when dev server delays the load event despite complete page render.</td><td>Full UI suite passed.</td></tr>
+    <tr><td>AIREG-0603-05</td><td>P2</td><td>Bilingual persistence</td><td>Language provider</td><td><code>i18n.tsx</code></td><td>Initialize client language state from saved localStorage when available.</td><td>Improves saved-language behaviour after hydration.</td><td>Manual French direct-route probe; no console errors.</td></tr>
+  </table>
+
+  <h2>5. Post-Fix Scorecard</h2>
+  <table>
+    <tr><th>Category</th><th>After</th><th>Reaches 9.5?</th><th>Remaining gap to 9.5</th><th>Evidence</th></tr>
+    <tr><td>First impression</td><td>9.0</td><td>No</td><td>Needs final live launch and French SSR polish.</td><td>Browser screenshots at 360-1440; no overflow/logs.</td></tr>
+    <tr><td>Clarity</td><td>9.1</td><td>No</td><td>Remaining advanced-data caveats.</td><td>Source/freshness/warnings visible.</td></tr>
+    <tr><td>Data trust and source transparency</td><td>9.1</td><td>No</td><td>No stale fallback/retry/contract test against live source yet.</td><td>API smoke 412 records, total 412, no warnings.</td></tr>
+    <tr><td>Navigation / IA</td><td>8.9</td><td>No</td><td>Needs broader secondary route polish.</td><td>Route title smoke passes.</td></tr>
+    <tr><td>Search and filtering UX</td><td>8.7</td><td>No</td><td>Accent-insensitive and multi-filter coverage remain.</td><td>Existing journey tests pass.</td></tr>
+    <tr><td>Table/list/card usability</td><td>8.9</td><td>No</td><td>Full real-data grouping/pagination review remains.</td><td>Mobile card test passes.</td></tr>
+    <tr><td>System-detail inspection UX</td><td>8.6</td><td>No</td><td>Needs long-record/detail audit.</td><td>Keyboard detail test passes.</td></tr>
+    <tr><td>Charts and data visualization UX</td><td>8.7</td><td>No</td><td>Chart-level export/comparisons remain.</td><td>Axe and journey tests pass.</td></tr>
+    <tr><td>CSV/export UX</td><td>9.0</td><td>No</td><td>Could add export scope summary and UTF-8 BOM decision.</td><td>CSV formula neutralization test passes.</td></tr>
+    <tr><td>Bilingual English/French UX</td><td>8.7</td><td>No</td><td>Direct French pages briefly show server-rendered English before hydration.</td><td>Hydrated French screenshots pass.</td></tr>
+    <tr><td>Visual hierarchy</td><td>8.8</td><td>No</td><td>Minor polish only.</td><td>Screenshots show stable hierarchy.</td></tr>
+    <tr><td>Layout and spacing</td><td>8.9</td><td>No</td><td>More nested detail/card states.</td><td>No overflow at tested widths.</td></tr>
+    <tr><td>Mobile UX</td><td>8.9</td><td>No</td><td>320 px and detail panel need deeper pass.</td><td>360 and 390 screenshots pass.</td></tr>
+    <tr><td>Accessibility</td><td>9.0</td><td>No</td><td>Needs broader route/modal/French/mobile matrix.</td><td>Axe homepage light/dark passes.</td></tr>
+    <tr><td>Keyboard and interaction design</td><td>8.7</td><td>No</td><td>Grouping/pagination keyboard coverage remains.</td><td>Ctrl+K/detail test passes.</td></tr>
+    <tr><td>Content quality</td><td>8.9</td><td>No</td><td>Legal copy should still get human review.</td><td>Privacy/terms softened and localized.</td></tr>
+    <tr><td>Legal/privacy/disclaimer clarity</td><td>8.8</td><td>No</td><td>Professional legal/privacy review remains.</td><td>Language storage now disclosed.</td></tr>
+    <tr><td>Visual consistency</td><td>8.9</td><td>No</td><td>Hydration language flash remains.</td><td>Legal pages match shell and footer pattern.</td></tr>
+    <tr><td>Performance as UX</td><td>8.6</td><td>No</td><td>Legal pages gained small client bundle for i18n.</td><td>Build: / 131 kB, privacy/terms 119 kB first load.</td></tr>
+    <tr><td>Error, empty, loading states</td><td>8.8</td><td>No</td><td>No stale fallback/retry state.</td><td>Partial-data warning and API failure tests pass.</td></tr>
+    <tr><td>Overall UX readiness</td><td>8.9</td><td>No</td><td>Close, but not 9.5; resilience and localization remain.</td><td>All final gates passed.</td></tr>
+  </table>
+
+  <h2>6. Remaining Issues / Prioritised Backlog</h2>
+  <table>
+    <tr><th>ID</th><th>Severity</th><th>Category</th><th>Location</th><th>Why it matters</th><th>Recommended next action</th><th>Human judgment?</th></tr>
+    <tr><td>R-01</td><td>P1</td><td>Bilingual UX</td><td>Direct French legal visits</td><td>Server-rendered English appears briefly before hydration.</td><td>Add locale routes or server-readable language preference strategy.</td><td>Yes</td></tr>
+    <tr><td>R-02</td><td>P1</td><td>Data resilience</td><td><code>/api/systems</code></td><td>Upstream failure still blocks explorer rather than serving stale verified data.</td><td>Add bounded timeout/retry/stale-cache fallback if product wants resilience.</td><td>Yes</td></tr>
+    <tr><td>R-03</td><td>P2</td><td>Automated coverage</td><td>Tests</td><td>Real CKAN contract, French flows, grouping, pagination, and modal a11y are not exhaustive.</td><td>Add API contract and bilingual UI specs.</td><td>No</td></tr>
+    <tr><td>R-04</td><td>P2</td><td>Legal/privacy</td><td><code>/privacy</code>, <code>/terms</code></td><td>Copy is safer but still not professionally reviewed.</td><td>Have a human/legal reviewer approve claims, timelines, liability language.</td><td>Yes</td></tr>
+    <tr><td>R-05</td><td>P2</td><td>Search/filtering</td><td>Homepage controls</td><td>French/accent-insensitive search and raw Y/N semantics could be better.</td><td>Normalize diacritics and localize option display values while preserving raw filters.</td><td>No</td></tr>
+    <tr><td>R-06</td><td>P2</td><td>Live release</td><td>Production alias</td><td>Local fixes are not deployed.</td><td>After explicit approval only: commit, push, deploy, then live verify.</td><td>Yes</td></tr>
+  </table>
+
+  <h2>7. Before/After Notes</h2>
+  <ul>
+    <li>Most important improvements: partial-data transparency, safer CSV export, bilingual privacy/terms, corrected privacy storage disclosure, stronger tests.</li>
+    <li>Users should now get clearer warnings if the source API returns fewer usable records than expected.</li>
+    <li>French users now see privacy and terms content in French after hydration.</li>
+    <li>Spreadsheet users are less exposed to formula execution from public source text.</li>
+    <li>Remaining manual review: full real-data grouping/pagination/detail flow, 320 px edge case, legal copy approval, and production/live verification after deploy.</li>
+  </ul>
+
+  <h2>8. Commands/Checks Run</h2>
+  <table>
+    <tr><th>Command/check</th><th>Pass/fail</th><th>Output summary</th><th>Unresolved failure?</th></tr>
+    <tr><td><code>git status --short</code></td><td>Pass</td><td>Dirty tree identified; pre-existing untracked artifacts preserved.</td><td>No</td></tr>
+    <tr><td><code>npm.cmd run typecheck</code></td><td>Pass</td><td><code>tsc --noEmit</code> clean.</td><td>No</td></tr>
+    <tr><td><code>npm.cmd audit</code></td><td>Pass</td><td>0 vulnerabilities.</td><td>No</td></tr>
+    <tr><td><code>npm.cmd run build</code></td><td>Pass</td><td>Final build passed; / is 17.3 kB, 131 kB first load.</td><td>No</td></tr>
+    <tr><td><code>npm.cmd run test:ui</code></td><td>Pass</td><td>8 tests passed.</td><td>No</td></tr>
+    <tr><td><code>npm.cmd run test:a11y</code></td><td>Pass</td><td>2 homepage axe tests passed in light/dark mode.</td><td>No</td></tr>
+    <tr><td>Browser DOM QA</td><td>Pass</td><td>360/390/768/1024/1440: no overflow, source visible, no retro text, no console warnings/errors.</td><td>No</td></tr>
+    <tr><td>Screenshot QA</td><td>Pass</td><td>Saved 7 screenshots under <code>artifacts/visuals/qa-2026-06-03-*.png</code>.</td><td>No</td></tr>
+    <tr><td>Production-start API smoke</td><td>Pass</td><td>Real local API returned 412 records, total 412, lastModified 2026-04-28T20:10:07.759825, no warnings.</td><td>No</td></tr>
+    <tr><td>Earlier parallel build/test attempt</td><td>Fail then resolved</td><td>Concurrent Next build/dev-server touched cache and produced transient failures.</td><td>No; rerun sequentially passed.</td></tr>
+    <tr><td>Earlier a11y run with manual server on port 3000</td><td>Fail then resolved</td><td>Playwright tried port 3001 while config expected 3000.</td><td>No; manual server stopped and rerun passed.</td></tr>
+  </table>
+
+  <h2>9. Files Changed</h2>
+  <table>
+    <tr><th>File</th><th>Reason changed</th></tr>
+    <tr><td><code>src/app/api/systems/route.ts</code></td><td>Validate CKAN shape and return structured warnings.</td></tr>
+    <tr><td><code>src/lib/api.ts</code></td><td>Expose <code>total</code> and sanitized warnings to the client.</td></tr>
+    <tr><td><code>src/app/page.tsx</code></td><td>Show data-quality warnings and harden CSV export.</td></tr>
+    <tr><td><code>src/lib/i18n.tsx</code></td><td>Add warning translations and initialize saved language on client.</td></tr>
+    <tr><td><code>src/app/privacy/page.tsx</code>, <code>src/app/privacy/content.tsx</code></td><td>Move privacy content to bilingual client component and correct storage disclosure.</td></tr>
+    <tr><td><code>src/app/terms/page.tsx</code>, <code>src/app/terms/content.tsx</code></td><td>Move terms content to bilingual client component.</td></tr>
+    <tr><td><code>tests/ui/explorer.spec.ts</code>, <code>tests/ui/fixtures.ts</code></td><td>Add partial-data and CSV-safety regression coverage; improve route smoke wait.</td></tr>
+    <tr><td><code>tasks/todo.html</code></td><td>Add June 3 goal and plan.</td></tr>
+    <tr><td><code>tasks/lessons.html</code></td><td>Capture the pasted-attachment intake correction from this session.</td></tr>
+    <tr><td><code>artifacts/visuals/qa-2026-06-03-*.png</code></td><td>Saved visual QA captures.</td></tr>
+  </table>
+
+  <h2>10. Completion Status</h2>
+  <p><strong>Complete for this subgoal:</strong> all safe P0/P1 and high-impact P2 issues identified in this pass were addressed and verified. The overall 9.5/10 objective is not complete; remaining backlog above should be handled in a follow-up pass.</p>
+  <p><strong>Suggested next /goal prompt:</strong> Continue the AI Register Explorer production-readiness push from the 2026-06-03 report. Focus on server-side bilingual/locale strategy, stale-source fallback/API resilience, real CKAN contract tests, French/accent-insensitive search and filter display, full real-data grouping/pagination/detail QA, and legal/privacy human-review notes. Do not push or deploy without explicit approval.</p>
+</main>
+</body>
+</html>

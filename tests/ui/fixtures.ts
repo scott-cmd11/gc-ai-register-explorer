@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 
-const systems = [
+export const fixtureSystems = [
   {
     _id: 1,
     ai_register_id: 'AI-001',
@@ -46,7 +46,7 @@ const systems = [
     status_date: '2024-09-20',
     ai_system_capabilities_en: 'Translation assistance',
     ai_system_capabilities_fr: 'Aide à la traduction',
-    data_sources_en: 'Public documents',
+    data_sources_en: '=HYPERLINK("https://example.com","Microsoft")',
     data_sources_fr: 'Documents publics',
     involves_personal_information: 'N',
     personal_information_banks_en: '',
@@ -89,8 +89,8 @@ export async function stubSystemsApi(page: Page) {
     await route.fulfill({
       contentType: 'application/json',
       body: JSON.stringify({
-        records: systems,
-        total: systems.length,
+        records: fixtureSystems,
+        total: fixtureSystems.length,
         lastModified: '2026-04-28T20:10:07.759825',
       }),
     })

@@ -20,6 +20,110 @@
 <body>
 <main>
   <h1>UI/UX Audit Work Plan</h1>
+  <section>
+    <h2>Release - 2026-06-03 Push and Deploy</h2>
+    <p class="note">Scope: commit the verified 9.5 local readiness changes, push the release branch to GitHub, deploy to Vercel production, and verify the live public alias. Explicit user authorization for push and deploy was given on 2026-06-03.</p>
+    <h3>Release Checklist</h3>
+    <ul>
+      <li class="done">Done: Confirmed GitHub CLI and Vercel CLI are available and authenticated.</li>
+      <li class="done">Done: Fetched <code>origin</code>; local <code>master</code> and <code>origin/master</code> had no divergence before release.</li>
+      <li class="done">Done: Staged only intended implementation, test, tracker, report, and 9.5 visual evidence files.</li>
+      <li class="done">Done: Release gates passed: <code>git diff --cached --check</code>, <code>npm.cmd run typecheck</code>, <code>npm.cmd audit</code>, <code>npm.cmd run test:ui</code>, <code>npm.cmd run test:a11y</code>, and <code>npm.cmd run build</code>.</li>
+      <li class="note">Note: An attempted parallel <code>test:a11y</code> plus <code>next build</code> run conflicted over the generated <code>.next</code> cache. The generated cache was removed and both commands passed sequentially.</li>
+      <li>In progress: Commit and push to GitHub.</li>
+      <li>Pending: Deploy to Vercel production.</li>
+      <li>Pending: Verify live URL with HTTP/API/browser checks.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Current Goal - 2026-06-03 9.5 Readiness Pass</h2>
+    <p class="note">Scope: raise the current local app from the previous high-8/low-9 readiness level toward a credible 9.5 in core civic-data categories: bilingual parity, source resilience, search/filter ergonomics, accessibility, mobile layout, data trust, performance, and regression coverage. No pushes, deployments, or unrelated cleanup.</p>
+    <h3>Acceptance Criteria</h3>
+    <ul>
+      <li>Returning French users receive French server-rendered shell/legal-page content without an English first paint.</li>
+      <li>Source API failures use bounded retry/timeout behaviour and a non-technical recovery path in the UI.</li>
+      <li>Search works across accents, case, organization, vendor, capability, user, and description fields.</li>
+      <li>Binary filters are labelled with user-facing language instead of raw Y/N choices.</li>
+      <li>Regression tests cover French initial render, retry recovery, accent-insensitive search, and labelled binary filters.</li>
+      <li>Verification includes typecheck, UI tests, accessibility tests, build, and responsive browser evidence.</li>
+    </ul>
+    <h3>Execution Checklist</h3>
+    <ul>
+      <li class="done">Done: Re-read AGENTS.md, task tracker, lessons, current git state, app shell, i18n provider, API route, explorer page, filters, table, and UI tests.</li>
+      <li class="done">Done: Patched bilingual first render, source resilience, accent-insensitive search, readable binary filters, French status badge matching, and privacy copy for the new language cookie.</li>
+      <li class="done">Done: Added targeted regression tests for French no-JavaScript server render, retry recovery, accent-insensitive search, and readable binary filters.</li>
+      <li class="done">Done: Ran full verification and saved final browser evidence.</li>
+      <li class="done">Done: Updated this tracker and final report with post-fix scores and residual risks.</li>
+    </ul>
+    <h3>9.5 Verification Results</h3>
+    <ul>
+      <li><code>npm.cmd run typecheck</code>: passed after final changes.</li>
+      <li><code>npm.cmd audit</code>: passed, zero vulnerabilities.</li>
+      <li><code>npm.cmd run test:ui</code>: passed, 12 tests using the final 4-worker Playwright configuration.</li>
+      <li><code>npm.cmd run test:a11y</code>: passed, 2 tests.</li>
+      <li><code>npm.cmd run build</code>: passed; homepage first-load JS 131 kB.</li>
+      <li>Built-server browser QA: 390 px mobile, 1440 px desktop, and 390 px French privacy page; no horizontal overflow, no console warnings/errors, source links visible, old retro text absent.</li>
+      <li>Built-server API smoke: <code>/api/systems</code> returned 412 records, source total 412, last modified 2026-04-28T20:10:07.759825, zero warnings.</li>
+      <li>Final visual captures: <code>artifacts/visuals/qa-95-home-mobile-390.png</code>, <code>artifacts/visuals/qa-95-home-desktop-1440.png</code>, <code>artifacts/visuals/qa-95-privacy-fr-390.png</code>.</li>
+    </ul>
+    <h3>Post-Fix Score Ledger</h3>
+    <table>
+      <tr><th>Category</th><th>Score</th><th>Evidence</th></tr>
+      <tr><td>Bilingual parity</td><td>9.5</td><td>Cookie-backed server initial language; no-JavaScript French privacy regression; French external privacy label localized.</td></tr>
+      <tr><td>Source resilience</td><td>9.5</td><td>Bounded upstream retry/timeout plus retry/source recovery UI; API smoke returned complete live source data.</td></tr>
+      <tr><td>Search and filters</td><td>9.5</td><td>Accent-insensitive search across bilingual names, descriptions, capabilities, users, sources, results, status, developer, department, and vendor fields; readable binary filter labels.</td></tr>
+      <tr><td>Accessibility</td><td>9.5</td><td>Axe light/dark checks passed; keyboard detail path and no-JavaScript public-page render covered.</td></tr>
+      <tr><td>Mobile/responsive UX</td><td>9.5</td><td>390 px built-server browser QA had no horizontal overflow; mobile cards, readable filters, source links, and final screenshot verified.</td></tr>
+      <tr><td>Data trust/export safety</td><td>9.5</td><td>Partial/invalid record warnings, official source links, CSV formula hardening, and complete live-source API smoke verified.</td></tr>
+      <tr><td>Performance/build health</td><td>9.5</td><td>Production build passed; homepage first-load JS remained 131 kB with charts split out of initial bundle.</td></tr>
+      <tr><td>Regression reliability</td><td>9.5</td><td>Playwright worker cap prevents dev-server contention; 12 UI tests and 2 a11y tests passed on final config.</td></tr>
+    </table>
+    <p class="note">Non-scored boundary: this is a local code/build readiness score. Production deployment and human legal review were not performed because they require explicit authorization or specialist judgment.</p>
+  </section>
+
+  <section>
+    <h2>Current Goal - 2026-06-03 Production-Readiness Pass</h2>
+    <p class="note">Scope: inspect the current local codebase and rendered site, identify current P0/P1/high-impact P2 gaps against a credible civic-data product bar, implement safe focused fixes, verify with available local checks and browser evidence, and document remaining gaps honestly. No commits, pushes, deployments, environment changes, or unrelated cleanup.</p>
+    <h3>Acceptance Criteria</h3>
+    <ul>
+      <li>Current route, component, data-flow, i18n, styling, and risk map is refreshed.</li>
+      <li>Pre-fix scores and concrete issue ledger are recorded for the requested audit categories.</li>
+      <li>All safe P0/P1 issues found in this pass are fixed, or documented as blocked/human-judgment items.</li>
+      <li>Safe high-impact P2 fixes are applied only when they improve usability, accessibility, trust, bilingual parity, mobile behaviour, or maintainability.</li>
+      <li>Verification includes package-script checks, browser/viewport smoke, console review, and diff review where available.</li>
+      <li>Final report includes post-fix scores, remaining backlog, commands/checks run, changed files, and exact continuation prompt if needed.</li>
+    </ul>
+    <h3>Execution Checklist</h3>
+    <ul>
+      <li class="done">Done: Read AGENTS.md, existing task files, package scripts, and prior AI Register audit memory.</li>
+      <li class="done">Done: Confirmed dirty worktree includes pre-existing untracked project artifacts and task files.</li>
+      <li class="done">Done: Refreshed static inspection map and identified current high-risk gaps.</li>
+      <li class="done">Done: Ran rendered audit at 360, 390, 768, 1024, and 1440 px; screenshots saved under <code>artifacts/visuals/qa-2026-06-03-*.png</code>.</li>
+      <li class="done">Done: Applied focused fixes for safe current P1/high-impact P2 findings: API warnings, CSV safety, bilingual privacy/terms, and route-smoke reliability.</li>
+      <li class="done">Done: Ran typecheck, build, UI tests, a11y tests, browser checks, live/source API checks, and final diff review.</li>
+      <li class="done">Done: Wrote final report at <code>artifacts/html/production-readiness-audit-2026-06-03.html</code>.</li>
+    </ul>
+    <h3>June 3 Verification Results</h3>
+    <ul>
+      <li><code>npm.cmd run typecheck</code>: passed.</li>
+      <li><code>npm.cmd audit</code>: passed, zero vulnerabilities.</li>
+      <li><code>npm.cmd run build</code>: passed; homepage first-load JS 131 kB.</li>
+      <li><code>npm.cmd run test:ui</code>: passed, 8 tests.</li>
+      <li><code>npm.cmd run test:a11y</code>: passed, 2 tests.</li>
+      <li>Browser DOM QA: 360/390/768/1024/1440 px, no horizontal overflow, no console warnings/errors, source visible, old retro UI absent.</li>
+      <li>Production-start API smoke: 412 records returned, total 412, last modified 2026-04-28T20:10:07.759825, no warnings.</li>
+      <li class="note">Resolved false starts: avoid running Next build and Playwright dev server concurrently; stop manual dev server before Playwright checks.</li>
+    </ul>
+    <h3>June 3 Remaining Risks</h3>
+    <ul>
+      <li class="done">Resolved in 9.5 pass: Returning French users now get server-readable language selection through <code>ai-register-lang</code>.</li>
+      <li class="done">Resolved in 9.5 pass: Upstream CKAN failures now have bounded retry/timeout and a user-facing retry/source path.</li>
+      <li class="done">Resolved in 9.5 pass: French flow tests, accent-insensitive search, and retry/filter regression tests were added.</li>
+      <li>P2: Privacy and terms copy is safer and bilingual, but should still receive human/legal review before broad launch claims.</li>
+    </ul>
+  </section>
+
   <p class="note">Created 2026-05-28. Scope: live website plus local codebase, with direct fixes for high-impact UX, accessibility, responsiveness, and data-exploration issues.</p>
 
   <h2>Inspection Map</h2>

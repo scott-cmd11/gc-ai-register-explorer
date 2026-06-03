@@ -35,15 +35,22 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   )
 }
 
+function normalizeStatusClass(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
+
 function StatusBadge({ status }: { status: string }) {
-  const s = status?.toLowerCase() ?? ''
+  const s = normalizeStatusClass(status ?? '')
   const vars = s.includes('production')
     ? { color: 'var(--status-production-text)', bg: 'var(--status-production-bg)', dot: 'var(--status-production)' }
-    : s.includes('development')
+    : s.includes('development') || s.includes('developpement')
     ? { color: 'var(--status-development-text)', bg: 'var(--status-development-bg)', dot: 'var(--status-development)' }
-    : s.includes('pilot') || s.includes('proof')
+    : s.includes('pilot') || s.includes('pilote') || s.includes('proof') || s.includes('preuve')
     ? { color: 'var(--status-pilot-text)', bg: 'var(--status-pilot-bg)', dot: 'var(--status-pilot)' }
-    : s.includes('decommission') || s.includes('retired')
+    : s.includes('decommission') || s.includes('retired') || s.includes('retire')
     ? { color: 'var(--status-decommission-text)', bg: 'var(--status-decommission-bg)', dot: 'var(--status-decommission)' }
     : { color: 'var(--text-tertiary)', bg: 'var(--bg-hover)', dot: 'var(--text-muted)' }
   return (

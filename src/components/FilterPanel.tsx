@@ -15,10 +15,16 @@ interface Props {
   onClear: () => void
 }
 
+type SelectOption = { value: string; label: string }
+
+function toSelectOption(value: string): SelectOption {
+  return { value, label: value }
+}
+
 function ToolbarSelect({
   id, label, value, options, placeholder, onChange
 }: {
-  id: string; label: string; value: string; options: string[]; placeholder: string; onChange: (v: string) => void
+  id: string; label: string; value: string; options: SelectOption[]; placeholder: string; onChange: (v: string) => void
 }) {
   return (
     <div className="relative w-full min-w-0 lg:w-auto">
@@ -40,7 +46,7 @@ function ToolbarSelect({
       >
         <option value="">{placeholder}</option>
         {options.map((o) => (
-          <option key={o} value={o}>{o}</option>
+          <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
       <svg
@@ -91,6 +97,15 @@ export default function FilterPanel({ filters, onChange, options, onClear }: Pro
   if (filters.vendor) activeFilters.push({ label: filters.vendor, clear: () => onChange({ ...filters, vendor: '' }) })
   if (filters.notificationAi) activeFilters.push({ label: filters.notificationAi === 'Y' ? t('users_notified') : t('no_notification'), clear: () => onChange({ ...filters, notificationAi: '' }) })
 
+  const personalInfoOptions = [
+    { value: 'Y', label: t('has_personal_data') },
+    { value: 'N', label: t('no_personal_data') },
+  ]
+  const notificationOptions = [
+    { value: 'Y', label: t('users_notified') },
+    { value: 'N', label: t('no_notification') },
+  ]
+
   return (
     <div className="space-y-3">
       {/* Filter dropdowns row */}
@@ -104,39 +119,39 @@ export default function FilterPanel({ filters, onChange, options, onClear }: Pro
 
         <ToolbarSelect
           id="filter-department" label={t('department')}
-          value={filters.department} options={options.departments}
+          value={filters.department} options={options.departments.map(toSelectOption)}
           placeholder={t('department')}
           onChange={(v) => onChange({ ...filters, department: v })}
         />
         <ToolbarSelect
           id="filter-status" label={t('status')}
-          value={filters.status} options={options.statuses}
+          value={filters.status} options={options.statuses.map(toSelectOption)}
           placeholder={t('status')}
           onChange={(v) => onChange({ ...filters, status: v })}
         />
         <ToolbarSelect
           id="filter-personal-data" label={t('personal_data')}
           value={filters.personalInfo}
-          options={['Y', 'N']}
+          options={personalInfoOptions}
           placeholder={t('personal_data')}
           onChange={(v) => onChange({ ...filters, personalInfo: v })}
         />
         <ToolbarSelect
           id="filter-developed-by" label={t('developed_by')}
-          value={filters.developedBy} options={options.developedBy}
+          value={filters.developedBy} options={options.developedBy.map(toSelectOption)}
           placeholder={t('developed_by')}
           onChange={(v) => onChange({ ...filters, developedBy: v })}
         />
         <ToolbarSelect
           id="filter-vendor" label={t('vendor')}
-          value={filters.vendor} options={options.vendors}
+          value={filters.vendor} options={options.vendors.map(toSelectOption)}
           placeholder={t('vendor')}
           onChange={(v) => onChange({ ...filters, vendor: v })}
         />
         <ToolbarSelect
           id="filter-notification" label={t('users_notified')}
           value={filters.notificationAi}
-          options={['Y', 'N']}
+          options={notificationOptions}
           placeholder={t('notification')}
           onChange={(v) => onChange({ ...filters, notificationAi: v })}
         />
