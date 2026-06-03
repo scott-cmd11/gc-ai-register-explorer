@@ -30,9 +30,13 @@
       <li class="done">Done: Staged only intended implementation, test, tracker, report, and 9.5 visual evidence files.</li>
       <li class="done">Done: Release gates passed: <code>git diff --cached --check</code>, <code>npm.cmd run typecheck</code>, <code>npm.cmd audit</code>, <code>npm.cmd run test:ui</code>, <code>npm.cmd run test:a11y</code>, and <code>npm.cmd run build</code>.</li>
       <li class="note">Note: An attempted parallel <code>test:a11y</code> plus <code>next build</code> run conflicted over the generated <code>.next</code> cache. The generated cache was removed and both commands passed sequentially.</li>
-      <li>In progress: Commit and push to GitHub.</li>
-      <li>Pending: Deploy to Vercel production.</li>
-      <li>Pending: Verify live URL with HTTP/API/browser checks.</li>
+      <li class="done">Done: Committed <code>a1b1c32</code> and pushed <code>master</code> to GitHub.</li>
+      <li class="done">Done: Deployed to Vercel production as <code>dpl_43V6wguqr5BcHweZ8QLHU78tb8yu</code>; live alias resolved at <code>https://ai-register-explorer.vercel.app</code>.</li>
+      <li class="done">Done: Live HTTP/API smoke passed: homepage <code>200</code>, API <code>200</code>, <code>412</code> records, <code>0</code> warnings, and no stale 90s-mode text.</li>
+      <li class="done">Done: Live desktop dark-mode axe passed; live mobile dark-mode axe found one ARIA semantics issue in the mobile result cards.</li>
+      <li class="done">Done: Fixed the mobile card semantics by using a native <code>ul</code>/<code>li</code> list structure instead of <code>article role="listitem"</code>.</li>
+      <li class="done">Done: Release-fix gates passed: <code>npm.cmd run typecheck</code>, <code>npm.cmd run test:ui</code>, <code>npm.cmd run test:a11y</code>, <code>npm.cmd audit</code>, and <code>npm.cmd run build</code>.</li>
+      <li>In progress: Commit, push, redeploy, and re-run live HTTP/API/browser/accessibility checks.</li>
     </ul>
   </section>
 

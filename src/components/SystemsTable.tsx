@@ -128,7 +128,6 @@ function MobileSystemCard({ s, onSelect }: { s: AISystem; onSelect: (s: AISystem
   return (
     <article
       className="rounded-lg p-4"
-      role="listitem"
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -263,9 +262,13 @@ function FlatTable({ systems, sortField, sortDir, onSort, onSelect, totalCount }
 
   return (
     <div ref={resultsTopRef} style={{ scrollMarginTop: '5rem' }}>
-    <div className="md:hidden space-y-3 p-3" role="list" aria-label={caption}>
-      {paged.map((s, i) => <MobileSystemCard key={s.ai_register_id ?? i} s={s} onSelect={onSelect} />)}
-    </div>
+    <ul className="md:hidden space-y-3 p-3 list-none" aria-label={caption}>
+      {paged.map((s, i) => (
+        <li key={s.ai_register_id ?? i}>
+          <MobileSystemCard s={s} onSelect={onSelect} />
+        </li>
+      ))}
+    </ul>
     <div className="hidden md:block scroll-visible overflow-x-auto overflow-y-auto max-h-[70vh]">
       <table className="w-full text-sm">
         <caption className="sr-only">{caption}</caption>
