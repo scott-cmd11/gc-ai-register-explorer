@@ -46,6 +46,22 @@
     </ul>
   </section>
   <section>
+    <h2>Release - 2026-07-08 Imagegen Redesign Push and Deploy</h2>
+    <p class="note">Scope: push the committed <code>codex/reimagine-site-imagegen</code> redesign branch, deploy it to Vercel production, and verify the live public alias. Explicit user authorization for push and deploy was given on 2026-07-08.</p>
+    <h3>Release Checklist</h3>
+    <ul>
+      <li class="done">Done: Confirmed the local browser is serving commit <code>e3efbc5</code> on branch <code>codex/reimagine-site-imagegen</code>.</li>
+      <li class="done">Done: Added <code>.vercelignore</code> so production deploys exclude local caches, screenshots, task notes, and test output.</li>
+      <li class="done">Done: Release checks passed: <code>git diff --check</code>, <code>npm.cmd run typecheck</code>, <code>npm.cmd audit</code>, <code>npm.cmd run test:ui</code>, and <code>npm.cmd run build</code>.</li>
+      <li class="done">Done: Structured review accepted one P2 performance finding: the homepage hero needed an optimized source instead of PNG-only delivery.</li>
+      <li class="done">Done: Added <code>public/images/ai-register-atlas-hero.webp</code> and updated the hero <code>image-set</code>; WebP size is 73,918 bytes versus 2,056,951 bytes for the PNG fallback.</li>
+      <li>Pending: Commit the deployment packaging and review-fix update.</li>
+      <li>Pending: Push the release branch to GitHub.</li>
+      <li>Pending: Deploy to Vercel production.</li>
+      <li>Pending: Verify the live production alias and core routes.</li>
+    </ul>
+  </section>
+  <section>
     <h2>Release - 2026-06-03 Push and Deploy</h2>
     <p class="note">Scope: commit the verified 9.5 local readiness changes, push the release branch to GitHub, deploy to Vercel production, and verify the live public alias. Explicit user authorization for push and deploy was given on 2026-06-03.</p>
     <h3>Release Checklist</h3>

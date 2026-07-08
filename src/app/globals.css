@@ -201,6 +201,7 @@ body::before {
   inset: 0;
   z-index: -2;
   background-image: image-set(
+    url('/images/ai-register-atlas-hero.webp') type('image/webp'),
     url('/images/ai-register-atlas-hero.png') type('image/png')
   );
   background-size: cover;

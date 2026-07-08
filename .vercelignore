@@ -1,0 +1,26 @@
+# Local dependencies and build output
+node_modules/
+.next/
+out/
+build/
+
+# Git and Vercel local state
+.git/
+.vercel/
+
+# Local environment and machine files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Test, audit, and Codex working artifacts
+artifacts/
+tasks/
+test-results/
+playwright-report/
+.tmp*/
+.tmp-*
+*.log
+*.tsbuildinfo

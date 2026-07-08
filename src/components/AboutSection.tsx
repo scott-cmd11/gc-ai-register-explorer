@@ -49,7 +49,7 @@ export default function AboutSection() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('disclaimer_title')}</h4>
+                  <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('disclaimer_title')}</h3>
                   <p className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: t('disclaimer_text') }} />
                 </div>
               </div>
