@@ -55,10 +55,14 @@
       <li class="done">Done: Release checks passed: <code>git diff --check</code>, <code>npm.cmd run typecheck</code>, <code>npm.cmd audit</code>, <code>npm.cmd run test:ui</code>, and <code>npm.cmd run build</code>.</li>
       <li class="done">Done: Structured review accepted one P2 performance finding: the homepage hero needed an optimized source instead of PNG-only delivery.</li>
       <li class="done">Done: Added <code>public/images/ai-register-atlas-hero.webp</code> and updated the hero <code>image-set</code>; WebP size is 73,918 bytes versus 2,056,951 bytes for the PNG fallback.</li>
-      <li>Pending: Commit the deployment packaging and review-fix update.</li>
-      <li>Pending: Push the release branch to GitHub.</li>
-      <li>Pending: Deploy to Vercel production.</li>
-      <li>Pending: Verify the live production alias and core routes.</li>
+      <li class="done">Done: Structured review rerun passed cleanly after the WebP repair: no accepted/actionable findings.</li>
+      <li class="done">Done: Committed release update <code>0e25aa6</code> and pushed <code>codex/reimagine-site-imagegen</code> to GitHub.</li>
+      <li class="done">Done: Deployed to Vercel production as <code>dpl_9mrthDZDCno711npYf9SjofdPsEN</code>; live alias resolved at <code>https://ai-register-explorer.vercel.app</code>.</li>
+      <li class="done">Done: Live HTTP/API smoke passed: <code>/</code>, <code>/about</code>, <code>/privacy</code>, and <code>/terms</code> returned <code>200</code>; <code>/api/systems</code> returned <code>412</code> records, total <code>412</code>, and <code>0</code> warnings.</li>
+      <li class="done">Done: Live asset smoke passed: production CSS references <code>ai-register-atlas-hero.webp</code>, and the WebP asset returns <code>200</code> with <code>Content-Type: image/webp</code> and length <code>73918</code>.</li>
+      <li class="done">Done: Live browser smoke passed at <code>1440</code> px desktop and <code>390</code> px mobile: no horizontal overflow, correct homepage heading, WebP hero image-set, and no console warnings/errors.</li>
+      <li class="done">Done: Vercel error-log scan for the production deployment found no error logs in the last hour.</li>
+      <li class="done">Done: Live screenshots saved at <code>artifacts/visuals/live-imagegen-release-desktop-2026-07-08.png</code> and <code>artifacts/visuals/live-imagegen-release-mobile-2026-07-08.png</code>.</li>
     </ul>
   </section>
   <section>
