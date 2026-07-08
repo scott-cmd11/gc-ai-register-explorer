@@ -12,30 +12,29 @@ interface Props {
 function MetricCard({ label, value, accentColor, icon }: { label: string; value: number; accentColor?: string; icon: React.ReactNode }) {
   return (
     <div
-      className="glass-panel metric-card min-w-0 rounded-lg p-4 sm:p-5 transition-all"
+      className="metric-card min-w-0 px-4 py-5 sm:px-6 transition-all"
       style={{
         '--metric-color': accentColor || 'var(--accent)',
-        border: '1px solid var(--border-color)',
       } as CSSProperties}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.borderColor = accentColor || 'var(--accent)'
+        e.currentTarget.style.background = 'var(--bg-hover)'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.borderColor = 'var(--border-color)'
+        e.currentTarget.style.background = 'transparent'
       }}
     >
-      <div className="flex items-center gap-2 mb-2">
-        <span className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: accentColor ? `color-mix(in srgb, ${accentColor} 12%, transparent)` : 'var(--accent-light)', color: accentColor || 'var(--accent)' }}>
+      <div className="flex items-center gap-4">
+        <span className="h-12 w-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: accentColor ? `color-mix(in srgb, ${accentColor} 14%, var(--bg-elevated))` : 'var(--accent-light)', color: accentColor || 'var(--accent)', border: '1px solid var(--border-subtle)' }}>
           {icon}
         </span>
-        <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--text-tertiary)' }}>
-          {label}
-        </span>
-      </div>
-      <div className="font-display text-3xl sm:text-4xl font-semibold tracking-normal tabular-nums" style={{ color: 'var(--text-primary)' }}>
-        {value}
+        <div>
+          <span className="block text-[0.7rem] font-extrabold uppercase tracking-[0.14em]" style={{ color: 'var(--text-tertiary)' }}>
+            {label}
+          </span>
+          <div className="font-display text-3xl sm:text-4xl font-semibold tracking-normal tabular-nums leading-none mt-1" style={{ color: 'var(--text-primary)' }}>
+            {value}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -56,14 +55,14 @@ export default function StatsBar({ systems, lastModified }: Props) {
   const hasPersonalData = systems.filter((s) => s.involves_personal_information === 'Y').length
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full px-4 sm:px-6 py-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div className="max-w-screen-2xl mx-auto w-full px-4 sm:px-6">
+      <div className="atlas-stats-band grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x" style={{ borderColor: 'var(--border-color)' }}>
         <MetricCard
           label={t('stat_total')}
           value={total}
           accentColor="var(--accent)"
           icon={
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
             </svg>
           }
@@ -73,7 +72,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
           value={inProduction}
           accentColor="var(--status-production)"
           icon={
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           }
@@ -83,7 +82,7 @@ export default function StatsBar({ systems, lastModified }: Props) {
           value={hasPersonalData}
           accentColor="var(--status-development)"
           icon={
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
             </svg>
           }
@@ -93,14 +92,14 @@ export default function StatsBar({ systems, lastModified }: Props) {
           value={depts}
           accentColor="var(--status-pilot)"
           icon={
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
             </svg>
           }
         />
       </div>
       {formattedDate && (
-        <p className="mt-5 text-xs max-w-3xl leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+        <p className="mt-4 pb-5 text-xs max-w-3xl leading-relaxed" style={{ color: 'var(--text-muted)' }}>
           <strong style={{ color: 'var(--text-secondary)' }}>{t('last_updated')}: {formattedDate}.</strong> {t('last_updated_text')}
         </p>
       )}

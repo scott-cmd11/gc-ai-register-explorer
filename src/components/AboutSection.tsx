@@ -31,7 +31,7 @@ export default function AboutSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
               </div>
-              <h3 id="about-project-heading" className="font-display text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('about_title')}</h3>
+              <h2 id="about-project-heading" className="font-display text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('about_title')}</h2>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               <span dangerouslySetInnerHTML={{ __html: t('about_text') }} />{' '}

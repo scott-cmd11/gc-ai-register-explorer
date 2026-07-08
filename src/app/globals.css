@@ -5,25 +5,25 @@
 /* ── Design Tokens — Light theme ───────────────────────────────────── */
 :root,
 [data-theme="light"] {
-  --bg-base: #F7F5F0;
-  --bg-surface: rgba(255, 255, 252, 0.78);
-  --bg-elevated: rgba(255, 255, 252, 0.94);
-  --bg-hover: rgba(20, 95, 86, 0.06);
-  --bg-hover-strong: rgba(20, 95, 86, 0.1);
-  --bg-hero: #F5F1E8;
-  --border-color: rgba(23, 33, 32, 0.12);
-  --border-subtle: rgba(23, 33, 32, 0.07);
-  --text-primary: #151A18;
-  --text-secondary: #424B47;
-  --text-tertiary: #58635D;
-  --text-muted: #68736D;
-  --accent: #006B5F;
-  --accent-light: rgba(0, 107, 95, 0.09);
-  --accent-text: #006B5F;
-  --accent-hover: #00564E;
-  --accent-subtle: rgba(0, 107, 95, 0.06);
-  --accent-warm: #C66D3B;
-  --accent-gold: #B99445;
+  --bg-base: #FBFAF6;
+  --bg-surface: rgba(255, 254, 248, 0.82);
+  --bg-elevated: #FFFDF7;
+  --bg-hover: rgba(0, 92, 78, 0.06);
+  --bg-hover-strong: rgba(0, 92, 78, 0.1);
+  --bg-hero: #F2EEE4;
+  --border-color: rgba(38, 46, 42, 0.14);
+  --border-subtle: rgba(38, 46, 42, 0.08);
+  --text-primary: #0D1A19;
+  --text-secondary: #374541;
+  --text-tertiary: #52625D;
+  --text-muted: #65736E;
+  --accent: #005C4E;
+  --accent-light: rgba(0, 92, 78, 0.1);
+  --accent-text: #005C4E;
+  --accent-hover: #00483E;
+  --accent-subtle: rgba(0, 92, 78, 0.055);
+  --accent-warm: #B95E36;
+  --accent-gold: #A98235;
   --ring: rgba(0, 107, 95, 0.28);
   --status-production: #0A7C5F;
   --status-production-bg: rgba(10, 124, 95, 0.11);
@@ -47,23 +47,23 @@
 
 /* ── Dark theme ─────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg-base: #0E1110;
-  --bg-surface: #151A18;
-  --bg-elevated: #1B211F;
-  --bg-hover: #20312E;
-  --bg-hover-strong: #29403B;
-  --bg-hero: #101513;
+  --bg-base: #0B1110;
+  --bg-surface: #121917;
+  --bg-elevated: #18211F;
+  --bg-hover: #1D302B;
+  --bg-hover-strong: #27443D;
+  --bg-hero: #0E1715;
   --border-color: rgba(234, 241, 237, 0.13);
   --border-subtle: rgba(234, 241, 237, 0.07);
   --text-primary: #F1F5F2;
   --text-secondary: #CAD5D0;
   --text-tertiary: #98A39E;
   --text-muted: #AEB8B3;
-  --accent: #7CCFC0;
-  --accent-light: rgba(124, 207, 192, 0.12);
-  --accent-text: #A5E2D8;
-  --accent-hover: #BAEEE6;
-  --accent-subtle: rgba(124, 207, 192, 0.08);
+  --accent: #84D9C8;
+  --accent-light: rgba(132, 217, 200, 0.12);
+  --accent-text: #B4EEE3;
+  --accent-hover: #C7F6EF;
+  --accent-subtle: rgba(132, 217, 200, 0.08);
   --accent-warm: #D78A5C;
   --accent-gold: #D1B164;
   --ring: rgba(124, 207, 192, 0.32);
@@ -112,7 +112,7 @@ body::before {
   background-image:
     linear-gradient(rgba(70, 63, 50, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(70, 63, 50, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-size: 28px 28px;
   mask-image: linear-gradient(to bottom, black, transparent 72%);
 }
 
@@ -128,6 +128,29 @@ body::before {
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(18px) saturate(120%);
+}
+
+.atlas-header {
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border-color) 78%, transparent);
+}
+
+.atlas-brand-mark {
+  background: linear-gradient(135deg, #006451, #073F39);
+  color: #fff;
+  box-shadow: 0 18px 38px -24px rgba(0, 92, 78, 0.76);
+}
+
+.atlas-nav-link:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.atlas-stats-band {
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 .glass-panel:hover {
@@ -160,8 +183,8 @@ body::before {
 
 .civic-hero-field {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--bg-base) 96%, transparent) 0%, color-mix(in srgb, var(--bg-base) 88%, transparent) 36%, color-mix(in srgb, var(--bg-base) 38%, transparent) 68%, transparent 100%),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-base) 0%, transparent), var(--bg-base) 100%);
+    linear-gradient(90deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 92%, transparent) 34%, color-mix(in srgb, var(--bg-base) 56%, transparent) 61%, transparent 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-hero) 72%, transparent), var(--bg-base) 100%);
 }
 
 .civic-hero-field::after {
@@ -178,11 +201,10 @@ body::before {
   inset: 0;
   z-index: -2;
   background-image: image-set(
-    url('/images/ai-registry-hero.webp') type('image/webp'),
-    url('/images/ai-registry-hero.png') type('image/png')
+    url('/images/ai-register-atlas-hero.png') type('image/png')
   );
   background-size: cover;
-  background-position: 62% 48%;
+  background-position: 61% 50%;
   transform: scale(1.01);
 }
 
@@ -191,14 +213,14 @@ body::before {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 72% 36%, transparent 0 28%, rgba(247, 245, 240, 0.18) 56%, rgba(247, 245, 240, 0.7) 100%),
-    linear-gradient(180deg, transparent 0%, var(--bg-base) 94%);
+    linear-gradient(90deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 78%, transparent) 31%, color-mix(in srgb, var(--bg-base) 8%, transparent) 55%, transparent 100%),
+    linear-gradient(180deg, transparent 68%, var(--bg-base) 100%);
 }
 
 [data-theme="dark"] .hero-photo::after {
   background:
-    radial-gradient(circle at 72% 36%, rgba(14, 17, 16, 0.08) 0 28%, rgba(14, 17, 16, 0.48) 62%, rgba(14, 17, 16, 0.86) 100%),
-    linear-gradient(180deg, rgba(14, 17, 16, 0.12) 0%, var(--bg-base) 96%);
+    linear-gradient(90deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 84%, transparent) 33%, color-mix(in srgb, var(--bg-base) 20%, transparent) 62%, transparent 100%),
+    linear-gradient(180deg, rgba(11, 17, 16, 0.12) 0%, var(--bg-base) 100%);
 }
 
 .product-pill {
@@ -206,6 +228,142 @@ body::before {
   border: 1px solid var(--border-color);
   backdrop-filter: blur(18px) saturate(130%);
   box-shadow: 0 18px 70px -52px rgba(15, 22, 20, 0.58);
+}
+
+.evidence-strip {
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  box-shadow: 0 20px 56px -44px rgba(13, 26, 25, 0.45);
+}
+
+.registry-shell {
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.registry-toolbar {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, transparent), color-mix(in srgb, var(--bg-surface) 96%, transparent));
+  border-bottom: 1px solid var(--border-color);
+}
+
+.document-page {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--bg-hero) 72%, transparent) 0 22rem, transparent 22rem),
+    var(--bg-base);
+}
+
+.document-media {
+  position: relative;
+  overflow: hidden;
+  min-height: 20rem;
+  background: var(--bg-hero);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.document-media img {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  display: block;
+}
+
+.document-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 54%, color-mix(in srgb, var(--bg-elevated) 42%, transparent));
+  pointer-events: none;
+}
+
+.document-sidebar-card,
+.document-section,
+.legal-notice {
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.document-section {
+  counter-reset: legal-section;
+}
+
+.document-section > section {
+  counter-increment: legal-section;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-block: 1.35rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.document-section > section:first-child {
+  padding-top: 0;
+}
+
+.document-section > section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.document-section > section::before {
+  content: counter(legal-section, decimal-leading-zero);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: var(--accent-light);
+  border: 1px solid var(--border-color);
+  color: var(--accent-text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.document-section > section > * {
+  grid-column: 2;
+}
+
+.document-index-line {
+  position: relative;
+}
+
+.document-index-line::before {
+  content: "";
+  position: absolute;
+  left: 0.4rem;
+  top: 1.75rem;
+  bottom: 0.4rem;
+  width: 1px;
+  background: var(--border-color);
+}
+
+.legal-section-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: var(--accent-light);
+  border: 1px solid var(--border-color);
+  color: var(--accent-text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.legal-notice {
+  background: color-mix(in srgb, var(--status-development-bg) 68%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--status-development) 45%, var(--border-color));
 }
 
 .hand-drawn {

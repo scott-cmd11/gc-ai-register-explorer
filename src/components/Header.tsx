@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/lib/i18n'
 import LanguageToggle from './LanguageToggle'
@@ -51,6 +52,7 @@ function ThemeToggle() {
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const { lang, t } = useLanguage()
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -62,33 +64,58 @@ export default function Header() {
     ? 'https://ouvert.canada.ca/data/fr/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
     : 'https://open.canada.ca/data/en/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b'
 
+  const navItems = [
+    { href: '/about', label: t('footer_about') },
+    { href: '/privacy', label: t('footer_privacy_policy') },
+    { href: '/terms', label: t('footer_terms_of_use') },
+  ]
+
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-30 transition-all duration-200"
+      className="fixed top-0 left-0 right-0 z-30 transition-all duration-200 atlas-header"
       style={{
-        background: scrolled ? 'var(--bg-surface)' : 'transparent',
+        background: scrolled ? 'color-mix(in srgb, var(--bg-elevated) 90%, transparent)' : 'color-mix(in srgb, var(--bg-base) 74%, transparent)',
         borderBottom: scrolled ? '1px solid var(--border-color)' : '1px solid transparent',
         backdropFilter: scrolled ? 'blur(18px) saturate(120%)' : 'none',
-        backgroundColor: scrolled ? 'color-mix(in srgb, var(--bg-surface) 82%, transparent)' : 'transparent',
       }}
     >
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Left: brand mark */}
-        <Link href="/" className="flex items-center gap-2 rounded-sm focus:outline-none" aria-label="AI Register Explorer home">
-          <div className="h-7 w-7 rounded-md flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-warm))', color: '#fff', boxShadow: '0 10px 24px -18px var(--accent)' }}>
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+        <div className="flex items-center gap-7">
+        <Link href="/" className="flex items-center gap-3 rounded-sm focus:outline-none" aria-label="AI Register Explorer home">
+          <div className="h-9 w-9 rounded-md flex items-center justify-center shrink-0 atlas-brand-mark">
+            <span className="font-display text-[0.92rem] font-black tracking-tight">AI</span>
           </div>
-          <span className="text-sm font-bold hidden sm:inline font-display" style={{ color: 'var(--text-primary)' }}>AI Register Explorer</span>
+          <span className="text-base font-extrabold hidden sm:inline font-display tracking-tight" style={{ color: 'var(--text-primary)' }}>AI Register Explorer</span>
         </Link>
+        <nav className="hidden lg:flex items-center gap-1" aria-label={lang === 'fr' ? 'Navigation principale' : 'Primary navigation'}>
+          {navItems.map((item) => {
+            const active = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="atlas-nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors"
+                style={{
+                  color: active ? 'var(--accent-text)' : 'var(--text-secondary)',
+                  background: active ? 'var(--accent-light)' : 'transparent',
+                }}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
+        </div>
 
         {/* Right: controls */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <a
             href={sourceDataUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-            style={{ color: 'var(--text-tertiary)' }}
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
             aria-label={t('source_data_aria')}

@@ -257,17 +257,13 @@ export default function HomePage() {
       <ScrollIndicator />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="civic-hero-field relative w-full overflow-hidden pt-24 pb-14 md:pt-32 md:pb-24" aria-labelledby="hero-title">
+      <section className="civic-hero-field relative w-full overflow-hidden pt-24 pb-12 md:pt-28 md:pb-16" aria-labelledby="hero-title">
         <div className="hero-photo" aria-hidden="true" />
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
-          <div className="min-h-[540px] md:min-h-[620px] flex items-center">
+          <div className="min-h-[500px] md:min-h-[580px] flex items-center">
           <div className="reveal-soft max-w-3xl">
-          <div className="product-pill inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
-            <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent)' }} aria-hidden="true" />
-            {t('hero_badge')}
-          </div>
           {/* H1 */}
-          <h1 id="hero-title" className="text-[2.65rem] sm:text-5xl md:text-6xl lg:text-[4.75rem] font-semibold tracking-normal leading-[0.95] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
+          <h1 id="hero-title" className="text-[2.85rem] sm:text-5xl md:text-6xl lg:text-[4.95rem] font-extrabold tracking-normal leading-[0.94] mb-6 max-w-4xl" style={{ color: 'var(--text-primary)' }}>
             {t('hero_title_1')}{' '}
             <span style={{ color: 'var(--accent-text)' }}>{t('hero_title_2')}</span>
           </h1>
@@ -282,8 +278,8 @@ export default function HomePage() {
             <button
               type="button"
               onClick={scrollToMain}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all"
-              style={{ background: 'var(--text-primary)', color: 'var(--bg-base)', boxShadow: '0 20px 56px -30px var(--text-primary)' }}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-sm font-semibold transition-all"
+              style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 20px 56px -34px var(--accent)' }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 22px 48px -25px var(--accent)' }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 18px 40px -24px var(--accent)' }}
             >
@@ -294,10 +290,10 @@ export default function HomePage() {
               href={sourceDataUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="product-pill inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-sm font-semibold transition-all"
               style={{ color: 'var(--text-secondary)' }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-surface)'; e.currentTarget.style.transform = 'translateY(0)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateY(0)' }}
             >
               {t('hero_source')}
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
@@ -305,7 +301,7 @@ export default function HomePage() {
           </div>
 
           {/* Trust indicators */}
-          <div className="product-pill inline-flex flex-wrap items-center gap-x-5 gap-y-2 rounded-full px-4 py-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+          <div className="evidence-strip inline-flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
             <span className="flex items-center gap-1.5 whitespace-nowrap">
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" /></svg>
               {t('hero_source_label')}
@@ -323,13 +319,13 @@ export default function HomePage() {
 
       {/* ── Stats ────────────────────────────────────────────────────── */}
       {!loading && !error && (
-        <section className="w-full border-y" aria-label={t('registry_summary')} style={{ borderColor: 'var(--border-color)', background: 'var(--bg-base)' }}>
+        <section className="w-full" aria-label={t('registry_summary')} style={{ background: 'var(--bg-base)' }}>
           <StatsBar systems={systems} lastModified={lastModified} />
         </section>
       )}
 
       {/* ── Main content ─────────────────────────────────────────────── */}
-      <main ref={mainRef} id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pt-10 pb-8" tabIndex={-1} style={{ scrollMarginTop: '5rem' }}>
+      <main ref={mainRef} id="main-content" className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 pt-12 pb-8" tabIndex={-1} style={{ scrollMarginTop: '5rem' }}>
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div className="flex items-center gap-3">
@@ -407,8 +403,7 @@ export default function HomePage() {
 
             {/* ── Toolbar: search + filters + controls ────────────────── */}
             <div
-              className="glass-panel rounded-lg p-4 md:p-5 mb-5 space-y-4"
-              style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
+              className="registry-shell registry-toolbar p-4 md:p-5 mb-5 space-y-4"
             >
               {/* Search row */}
               <div className="relative flex items-center w-full rounded-lg transition-all duration-200" style={{ border: '2px solid var(--border-color)', background: 'var(--bg-elevated)' }}>

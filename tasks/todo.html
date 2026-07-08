@@ -21,6 +21,31 @@
 <main>
   <h1>UI/UX Audit Work Plan</h1>
   <section>
+    <h2>Current Goal - 2026-07-07 Imagegen Whole-Site Reimagining</h2>
+    <p class="note">Scope: reimagine every public page using imagegen concepts and implement the result across the current Next.js site. Public pages in scope: <code>/</code>, <code>/about</code>, <code>/privacy</code>, and <code>/terms</code>. Preserve the civic-data product workflow, bilingual support, accessibility, source trust, and existing tests.</p>
+    <h3>Design Direction</h3>
+    <ul>
+      <li>Creative direction: public record atlas for an independent Canadian civic-data explorer.</li>
+      <li>Visual system: off-white paper, deep ink green, charcoal text, mineral blue support colour, restrained terracotta notices, ledger rules, archive-folder imagery, and code-native UI controls.</li>
+      <li>Container model: flatter document bands, evidence rails, source/summary sidebars, and data tables rather than generic marketing sections or repeated nested cards.</li>
+      <li>Important constraint: generated images provide atmosphere and page-specific media only; navigation, legal text, controls, data, links, and labels remain accessible code-native content.</li>
+    </ul>
+    <h3>Imagegen Concepts And Assets</h3>
+    <ul>
+      <li class="done">Done: Generated and saved page concepts: <code>artifacts/visuals/imagegen-reimagine-home-concept-2026-07-07.png</code>, <code>imagegen-reimagine-about-concept-2026-07-07.png</code>, <code>imagegen-reimagine-privacy-concept-2026-07-07.png</code>, and <code>imagegen-reimagine-terms-concept-2026-07-07.png</code>.</li>
+      <li class="done">Done: Generated standalone page media with no important baked-in text: <code>public/images/ai-register-atlas-hero.png</code>, <code>ai-register-about-dossier.png</code>, <code>ai-register-privacy-ledger.png</code>, and <code>ai-register-terms-record.png</code>.</li>
+    </ul>
+    <h3>Execution Checklist</h3>
+    <ul>
+      <li class="done">Done: Re-read AGENTS.md, current task/lesson files, current app routes, components, prior screenshots, and imagegen/frontend-design instructions.</li>
+      <li class="done">Done: Implemented shared visual system, header, home explorer, about, privacy, and terms redesigns from the concepts.</li>
+      <li class="done">Done: Reworked the home hero, stat band, registry controls/charts, document page sidebars, legal section numbering, and generated page media treatments.</li>
+      <li class="done">Done: Captured rendered evidence under <code>artifacts/visuals/imagegen-reimagine-render-*</code>, including loaded home, desktop document pages, and mobile document pages.</li>
+      <li class="done">Done: Verification passed: <code>npm.cmd run typecheck</code>, <code>npm.cmd run test:ui</code>, <code>npm.cmd run test:a11y</code>, <code>npm.cmd audit</code>, <code>git diff --check</code>, production <code>npm.cmd run build</code>, and an extra all-page mobile axe/overflow sweep.</li>
+      <li class="done">Done: Compared the accepted imagegen concepts and rendered screenshots with <code>view_image</code>; remaining intentional deviation is that generated imagery is used as accessible page media/backgrounds while all critical UI/legal text remains code-native.</li>
+    </ul>
+  </section>
+  <section>
     <h2>Release - 2026-06-03 Push and Deploy</h2>
     <p class="note">Scope: commit the verified 9.5 local readiness changes, push the release branch to GitHub, deploy to Vercel production, and verify the live public alias. Explicit user authorization for push and deploy was given on 2026-06-03.</p>
     <h3>Release Checklist</h3>

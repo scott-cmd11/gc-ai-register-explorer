@@ -84,7 +84,32 @@ export default function PrivacyPageContent() {
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <Header />
 
-      <main id="main-content" className="flex-1 max-w-screen-md mx-auto w-full px-6 pt-28 pb-20" tabIndex={-1}>
+      <main id="main-content" className="document-page flex-1 w-full pt-24 pb-20" tabIndex={-1}>
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[18rem_minmax(0,1fr)] gap-8 xl:gap-12">
+            <aside className="order-2 lg:order-1 lg:sticky lg:top-24 self-start">
+              <div className="document-sidebar-card p-5">
+                <p className="text-lg font-bold mb-5" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'La confidentialité en bref' : 'Privacy at a glance'}</p>
+                <ul className="space-y-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  {[
+                    [lang === 'fr' ? 'Aucun compte' : 'No accounts', lang === 'fr' ? 'Aucun compte, profil ou connexion.' : 'No accounts, profiles, or logins.'],
+                    [lang === 'fr' ? 'Aucune analytique' : 'No analytics', lang === 'fr' ? 'Aucun script analytique ou de suivi.' : 'No analytics or tracking scripts.'],
+                    [lang === 'fr' ? 'Recherche locale' : 'Search stays in your browser', lang === 'fr' ? 'Les recherches sont traitées dans votre navigateur.' : 'Search queries are processed in your browser.'],
+                    [lang === 'fr' ? 'Témoin linguistique' : 'Language cookie', lang === 'fr' ? 'Un témoin interne conserve la langue choisie.' : 'One first-party cookie stores language preference.'],
+                    [lang === 'fr' ? 'Projet indépendant' : 'Independently operated', lang === 'fr' ? 'Ce site est exploité par Scott Hazlitt au Manitoba.' : 'Operated by Scott Hazlitt in Manitoba.'],
+                  ].map(([title, body]) => (
+                    <li key={title} className="border-b pb-4 last:border-b-0 last:pb-0" style={{ borderColor: 'var(--border-subtle)' }}>
+                      <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</p>
+                      <p className="mt-1 text-xs leading-relaxed">{body}</p>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 rounded-md p-3 text-xs leading-relaxed" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)', border: '1px solid var(--border-color)' }}>
+                  {lang === 'fr' ? 'Ce site ne recueille pas directement de renseignements personnels.' : 'This site does not collect personal information directly.'}
+                </p>
+              </div>
+            </aside>
+            <div className="order-1 lg:order-2 min-w-0">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm mb-10 transition-colors" style={{ color: 'var(--text-muted)' }}>
           <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -97,7 +122,11 @@ export default function PrivacyPageContent() {
         </h1>
         <p className="text-sm mb-10" style={{ color: 'var(--text-muted)' }}>{c.updated}</p>
 
-        <div className="space-y-10 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+        <div className="document-media mb-10">
+          <img src="/images/ai-register-privacy-ledger.png" alt="" aria-hidden="true" />
+        </div>
+
+        <div className="document-section p-5 sm:p-6 space-y-0 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
           <section>
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{c.overviewTitle}</h2>
             <p>{c.overview}</p>
@@ -171,6 +200,9 @@ export default function PrivacyPageContent() {
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{c.changesTitle}</h2>
             <p>{c.changes}</p>
           </section>
+        </div>
+            </div>
+          </div>
         </div>
       </main>
 

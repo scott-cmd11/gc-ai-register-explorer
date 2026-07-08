@@ -21,7 +21,59 @@ export default function AboutPageContent() {
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <Header />
 
-      <main id="main-content" className="flex-1 max-w-screen-md mx-auto w-full px-6 pt-28 pb-20" tabIndex={-1}>
+      <main id="main-content" className="document-page flex-1 w-full pt-24 pb-20" tabIndex={-1}>
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[18rem_minmax(0,1fr)] gap-8 xl:gap-12">
+            <aside className="order-2 lg:order-1 lg:sticky lg:top-24 self-start space-y-5">
+              <nav className="document-sidebar-card p-5 document-index-line" aria-label={lang === 'fr' ? 'Sections de cette page' : 'On this page'}>
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] mb-4" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'Sur cette page' : 'On this page'}</p>
+                <ol className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  {[
+                    t('about_what_title'),
+                    t('about_operator_title'),
+                    t('about_data_title'),
+                    t('about_corrections_title'),
+                    t('about_accessibility_title'),
+                    t('about_opensource_title'),
+                  ].map((item, index) => (
+                    <li key={item} className="relative flex gap-3">
+                      <span className="relative z-10 mt-1 h-2 w-2 rounded-full" style={{ background: index === 0 ? 'var(--accent)' : 'var(--border-color)' }} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+
+              <div className="document-sidebar-card p-5">
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] mb-4" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'Source rapide' : 'Source quick facts'}</p>
+                <div className="space-y-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <div>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>AI Registry</p>
+                    <a href={openCanadaUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>open.canada.ca</a>
+                  </div>
+                  <div>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t('licence_label')}</p>
+                    <a href={licenceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>{t('licence_link')}</a>
+                  </div>
+                  <div>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{lang === 'fr' ? 'Format' : 'Format'}</p>
+                    <p>CSV / JSON / API</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="document-sidebar-card p-5">
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] mb-4" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'Exploitant' : 'Operator'}</p>
+                <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Scott Hazlitt</p>
+                <div className="mt-3 space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <a href="https://scotthazlitt.ai" target="_blank" rel="noopener noreferrer" className="block underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>scotthazlitt.ai</a>
+                  <a href="mailto:scott@scotthazlitt.ai" className="block underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>scott@scotthazlitt.ai</a>
+                  <p>Manitoba, Canada</p>
+                </div>
+              </div>
+            </aside>
+
+            <div className="order-1 lg:order-2 min-w-0">
 
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm mb-10 transition-colors" style={{ color: 'var(--text-muted)' }}>
           <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -35,9 +87,13 @@ export default function AboutPageContent() {
         </h1>
         <p className="text-sm mb-10" style={{ color: 'var(--text-muted)' }}>{t('about_page_updated')}</p>
 
-        <div className="space-y-10 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+        <div className="document-media mb-10">
+          <img src="/images/ai-register-about-dossier.png" alt="" aria-hidden="true" />
+        </div>
 
-          <section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+
+          <section className="document-section p-5">
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{t('about_what_title')}</h2>
             <p>
               <span dangerouslySetInnerHTML={{ __html: t('about_what_p1') }} />{' '}
@@ -50,7 +106,7 @@ export default function AboutPageContent() {
             <p className="mt-3" dangerouslySetInnerHTML={{ __html: t('about_what_p2') }} />
           </section>
 
-          <section>
+          <section className="document-section p-5">
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{t('about_operator_title')}</h2>
             <p dangerouslySetInnerHTML={{ __html: t('about_operator_p1') }} />
             <div className="mt-4 flex flex-col gap-2">
@@ -91,7 +147,7 @@ export default function AboutPageContent() {
             </div>
           </section>
 
-          <section>
+          <section className="document-section p-5">
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{t('about_data_title')}</h2>
             <ul className="space-y-3 list-none">
               <li><strong style={{ color: 'var(--text-primary)' }}>{t('source_label')}</strong> {t('about_data_source')}{' '}
@@ -108,7 +164,7 @@ export default function AboutPageContent() {
             </ul>
           </section>
 
-          <section>
+          <section className="document-section p-5">
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{t('about_corrections_title')}</h2>
             <p>
               {t('about_corrections_p1')}{' '}
@@ -121,7 +177,7 @@ export default function AboutPageContent() {
             </p>
           </section>
 
-          <section>
+          <section className="document-section p-5">
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{t('about_accessibility_title')}</h2>
             <p>{t('about_accessibility_p1')}</p>
             <p className="mt-3">
@@ -131,7 +187,7 @@ export default function AboutPageContent() {
             </p>
           </section>
 
-          <section>
+          <section className="document-section p-5">
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{t('about_opensource_title')}</h2>
             <p>
               {t('about_opensource_p1_prefix')}{' '}
@@ -143,6 +199,9 @@ export default function AboutPageContent() {
             </p>
           </section>
 
+        </div>
+            </div>
+          </div>
         </div>
       </main>
 

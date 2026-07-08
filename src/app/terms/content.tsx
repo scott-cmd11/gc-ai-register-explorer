@@ -99,7 +99,30 @@ export default function TermsPageContent() {
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <Header />
 
-      <main id="main-content" className="flex-1 max-w-screen-md mx-auto w-full px-6 pt-28 pb-20" tabIndex={-1}>
+      <main id="main-content" className="document-page flex-1 w-full pt-24 pb-20" tabIndex={-1}>
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[18rem_minmax(0,1fr)] gap-8 xl:gap-12">
+            <aside className="order-2 lg:order-1 lg:sticky lg:top-24 self-start space-y-5">
+              <nav className="document-sidebar-card p-5" aria-label={lang === 'fr' ? 'Sections des conditions' : 'Terms sections'}>
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] mb-4" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'Ce que couvrent ces conditions' : 'What these terms cover'}</p>
+                <ul className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  {[c.acceptanceTitle, c.independentTitle, c.infoTitle, c.licenceTitle, c.useTitle, c.warrantyTitle, c.liabilityTitle, c.linksTitle, c.lawTitle, c.contactTitle].map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </nav>
+              <div className="document-sidebar-card p-5">
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] mb-4" style={{ color: 'var(--accent-text)' }}>{c.official}</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  {lang === 'fr' ? 'Les données proviennent du registre d’IA du gouvernement du Canada.' : 'The data on this site comes from the Government of Canada AI Registry.'}
+                </p>
+                <div className="mt-4 space-y-2 text-sm">
+                  <a href={sourceDataUrl} target="_blank" rel="noopener noreferrer" className="block underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'Voir sur ouvert.canada.ca' : 'View on open.canada.ca'}</a>
+                  <a href={licenceUrl} target="_blank" rel="noopener noreferrer" className="block underline underline-offset-2" style={{ color: 'var(--accent-text)' }}>{lang === 'fr' ? 'Licence du gouvernement ouvert - Canada' : 'Open Government Licence - Canada'}</a>
+                </div>
+              </div>
+            </aside>
+            <div className="order-1 lg:order-2 min-w-0">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm mb-10 transition-colors" style={{ color: 'var(--text-muted)' }}>
           <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -112,7 +135,11 @@ export default function TermsPageContent() {
         </h1>
         <p className="text-sm mb-10" style={{ color: 'var(--text-muted)' }}>{c.updated}</p>
 
-        <div className="space-y-10 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+        <div className="document-media mb-10">
+          <img src="/images/ai-register-terms-record.png" alt="" aria-hidden="true" />
+        </div>
+
+        <div className="document-section p-5 sm:p-6 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
           <section>
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{c.acceptanceTitle}</h2>
             <p>{c.acceptance}</p>
@@ -120,7 +147,7 @@ export default function TermsPageContent() {
 
           <section>
             <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{c.independentTitle}</h2>
-            <div className="p-4 rounded-lg mb-4" style={{ background: 'var(--status-decommission-bg)', border: '1px solid var(--status-decommission)', color: 'var(--status-decommission-text)' }}>
+            <div className="legal-notice p-4 rounded-lg mb-4" style={{ color: 'var(--status-development-text)' }}>
               <p className="font-semibold mb-1">{c.important}</p>
               <p className="text-xs leading-relaxed">
                 {c.notice}{' '}
@@ -197,6 +224,9 @@ export default function TermsPageContent() {
               </a>.
             </p>
           </section>
+        </div>
+            </div>
+          </div>
         </div>
       </main>
 

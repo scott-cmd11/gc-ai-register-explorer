@@ -245,7 +245,8 @@ function ChartCard({ title, subtitle, ariaLabel, children, srTable, hint, intera
   const { t } = useLanguage()
   const [showData, setShowData] = useState(false)
   return (
-    <div className="glass-panel rounded-lg p-5 sm:p-6 transition-all"
+    <div className="data-card rounded-lg p-5 sm:p-6 transition-all"
+      style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
       onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)' }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}
     >
