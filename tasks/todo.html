@@ -21,6 +21,20 @@
 <main>
   <h1>UI/UX Audit Work Plan</h1>
   <section>
+    <h2>Current Goal - 2026-07-10 Mac Baseline Recovery</h2>
+    <p class="note">Scope: establish <code>codex/reimagine-site-imagegen</code> as a clean, reproducible Mac continuation baseline without changing product behaviour, merging, pushing, deploying, or accessing production. Approved design: <code>artifacts/html/mac-baseline-recovery-design-2026-07-10.html</code>.</p>
+    <h3>Approved Plan</h3>
+    <ul>
+      <li class="done">Done: Completed read-only orientation and confirmed the July branch is three commits ahead of <code>master</code>.</li>
+      <li class="done">Done: Scott approved versioning durable release evidence while preserving migrated intermediate artifacts as local-only files.</li>
+      <li>Pending approval of the written design artifact before implementation.</li>
+      <li>Pending: add an LF policy and remove CRLF-only working-tree drift without semantic code changes.</li>
+      <li>Pending: classify durable versus local-only migrated artifacts without deleting evidence.</li>
+      <li>Pending: install locked dependencies and run typecheck, audit, UI, accessibility, build, and diff checks sequentially.</li>
+      <li>Pending: run structured review, resolve accepted findings, document verification, and create one focused local commit.</li>
+    </ul>
+  </section>
+  <section>
     <h2>Current Goal - 2026-07-07 Imagegen Whole-Site Reimagining</h2>
     <p class="note">Scope: reimagine every public page using imagegen concepts and implement the result across the current Next.js site. Public pages in scope: <code>/</code>, <code>/about</code>, <code>/privacy</code>, and <code>/terms</code>. Preserve the civic-data product workflow, bilingual support, accessibility, source trust, and existing tests.</p>
     <h3>Design Direction</h3>

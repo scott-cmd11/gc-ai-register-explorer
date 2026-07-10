@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Register Explorer Mac Baseline Recovery Design</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211f;
+      --muted: #53605a;
+      --line: #cfd7d2;
+      --paper: #fffefa;
+      --wash: #f3f1e9;
+      --accent: #075f49;
+      --caution: #8a4f23;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; line-height: 1.55; color: var(--ink); background: var(--wash); }
+    main { max-width: 1040px; margin: 0 auto; padding: 40px 22px 64px; }
+    header, section { background: var(--paper); border: 1px solid var(--line); padding: 22px; margin-bottom: 18px; }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3.2rem); }
+    h2 { margin-top: 0; font-size: 1.35rem; }
+    h3 { margin-bottom: 6px; font-size: 1rem; }
+    p, li { max-width: 82ch; }
+    code { background: #e8eee9; padding: 1px 4px; border-radius: 3px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #e8eee9; }
+    .eyebrow { margin: 0 0 8px; color: var(--accent); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .lede, .note { color: var(--muted); }
+    .decision { border-left: 5px solid var(--accent); }
+    .boundary { border-left: 5px solid var(--caution); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Approved design · 10 July 2026</p>
+    <h1>Mac baseline recovery</h1>
+    <p class="lede">AI Register Explorer · <code>codex/reimagine-site-imagegen</code> · commit <code>0ddecdb</code></p>
+    <p>Establish a reproducible, reviewable Mac development baseline for the July production branch without changing application behaviour or touching production.</p>
+  </header>
+
+  <section class="decision">
+    <h2>Decision</h2>
+    <p>Use the July redesign branch as the baseline. Version durable project instructions, tracker pointers, and the two final July production screenshots. Preserve older migrated logs and intermediate screenshots in place while excluding them only from this checkout through <code>.git/info/exclude</code>.</p>
+  </section>
+
+  <section>
+    <h2>Why this approach</h2>
+    <table>
+      <tr><th>Approach</th><th>Assessment</th></tr>
+      <tr><td>Version durable evidence; locally exclude migrated intermediates</td><td><strong>Selected.</strong> Keeps release proof portable, avoids binary bloat, and produces a quiet local worktree without imposing broad ignore rules on future contributors.</td></tr>
+      <tr><td>Commit every untracked artifact</td><td>Rejected. It would add many redundant screenshots and machine-local logs to Git without improving reproducibility.</td></tr>
+      <tr><td>Leave all artifacts untracked</td><td>Rejected. Persistent status noise would make later accidental edits harder to detect.</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Repository changes</h2>
+    <ul>
+      <li>Restore owner write permission on migrated repository directories so Mac tooling can create planned files and build output. Directory permission metadata is not committed by Git.</li>
+      <li>Add <code>.gitattributes</code> with a repository-wide LF policy for text files.</li>
+      <li>Normalize only the three currently affected tracked files: <code>.gitignore</code>, <code>next-env.d.ts</code>, and <code>src/components/StatsBar.tsx</code>. No semantic code changes are intended.</li>
+      <li>Version the existing project <code>AGENTS.md</code>.</li>
+      <li>Convert <code>tasks/todo.md</code> and <code>tasks/lessons.md</code> from empty migration scaffolds into short pointers to the authoritative HTML trackers.</li>
+      <li>Version <code>artifacts/html/README.md</code> and the two referenced July release captures: <code>live-imagegen-release-desktop-2026-07-08.png</code> and <code>live-imagegen-release-mobile-2026-07-08.png</code>.</li>
+      <li>Add exact local-only exclusions for remaining migrated logs and intermediate screenshots to <code>.git/info/exclude</code>; do not delete or move those files.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Verification design</h2>
+    <ol>
+      <li>Confirm the working diff contains only the intended policy, documentation, tracker, and release-evidence changes.</li>
+      <li>Install dependencies with <code>npm ci</code> from the committed lockfile.</li>
+      <li>Run sequentially: <code>npm run typecheck</code>, <code>npm audit</code>, <code>npm run test:ui</code>, <code>npm run test:a11y</code>, and <code>npm run build</code>. Sequential execution avoids the known shared <code>.next</code> cache conflict.</li>
+      <li>Require <code>git diff --check</code> to pass and verify the worktree contains no unexplained files.</li>
+      <li>Run <code>autoreview --mode local</code>; verify each finding against the actual files, fix accepted findings, and rerun affected checks plus autoreview.</li>
+      <li>Create one focused local commit after all gates pass.</li>
+    </ol>
+  </section>
+
+  <section class="boundary">
+    <h2>Explicit boundaries</h2>
+    <ul>
+      <li>No merge into <code>master</code>.</li>
+      <li>No push, pull request, Vercel deployment, live-site verification, or external-data mutation.</li>
+      <li>No product, visual, legal-copy, dependency-version, or application-behaviour changes.</li>
+      <li>If locked dependency installation or current Mac verification fails, diagnose and report the failure before expanding scope.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Success criteria</h2>
+    <ul>
+      <li>The July production branch is the explicit continuation baseline.</li>
+      <li>Line-ending drift is prevented and <code>git diff --check</code> passes.</li>
+      <li>Durable release evidence is versioned; local migrated evidence remains intact.</li>
+      <li>The full Mac verification suite has fresh passing evidence.</li>
+      <li>Structured review reports no accepted or actionable findings.</li>
+      <li>A focused local commit records the recovery; remote and production state remain unchanged.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>
