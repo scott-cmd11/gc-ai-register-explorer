@@ -1,8 +1,9 @@
-import { AISystem } from './types'
+import type { SourceRecord } from './register/model'
 
 export interface SystemsPayload {
-  systems: AISystem[]
+  systems: SourceRecord[]
   lastModified: string | null
+  snapshotAt: string | null
   total: number | null
   warnings: DataWarning[]
 }
@@ -23,16 +24,18 @@ export async function fetchAllSystems(): Promise<SystemsPayload> {
     throw new Error('The AI registry response was not in the expected format.')
   }
   const warnings = Array.isArray(data.warnings)
-    ? data.warnings.filter((warning: unknown): warning is DataWarning =>
-      warning !== null &&
-      typeof warning === 'object' &&
-      typeof (warning as DataWarning).code === 'string' &&
-      typeof (warning as DataWarning).message === 'string'
-    )
+    ? data.warnings.filter(
+        (warning: unknown): warning is DataWarning =>
+          warning !== null &&
+          typeof warning === 'object' &&
+          typeof (warning as DataWarning).code === 'string' &&
+          typeof (warning as DataWarning).message === 'string'
+      )
     : []
   return {
     systems: data.records,
     lastModified: data.lastModified ?? null,
+    snapshotAt: data.snapshotAt ?? null,
     total: Number.isFinite(Number(data.total)) ? Number(data.total) : null,
     warnings,
   }

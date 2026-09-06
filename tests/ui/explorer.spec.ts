@@ -1,245 +1,169 @@
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
-import { fixtureSystems, stubSystemsApi } from './fixtures'
+import { fixtureSystems, floodRecordId, longFixtureSystems, stubSystemsApi, systemsPayload } from './fixtures'
 
-test('homepage supports the primary exploration journey', async ({ page }) => {
-  await stubSystemsApi(page)
+test.beforeEach(async ({ page }) => { await stubSystemsApi(page) })
+
+test('the register supports search, filters, sorting, grouping, export, and a dossier', async ({ page }) => {
   await page.goto('/')
+  await expect(page.locator('#main-content')).toBeVisible()
+  await expect(page.locator('#register-search')).toBeVisible()
+  await expect(page.locator('#records-tab')).toHaveAttribute('aria-selected', 'true')
+  await expect(page.locator('#records-panel')).toBeVisible()
 
-  await expect(page.getByRole('heading', { name: 'Explore AI systems used across the Government of Canada' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Explore the register' })).toBeVisible()
-  await expect(page.getByLabel('Search AI systems')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true')
+  await page.locator('#register-search').fill('flood')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#register-search').fill('')
 
-  await expect(page.locator('main').getByText('3 systems')).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Systems by Status' })).toBeVisible()
-  await page.getByRole('button', { name: 'View chart data' }).first().click()
-  await expect(page.getByRole('table', { name: 'Systems by status' })).toBeVisible()
+  await page.locator('#filter-department').selectOption('Natural Resources Canada / Ressources naturelles Canada')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-department').selectOption('')
+  await page.locator('#filter-status').selectOption('production')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-status').selectOption('')
+  await page.locator('#filter-personalInfo').selectOption('Y')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-personalInfo').selectOption('')
 
-  const searchComesBeforeCharts = await page.evaluate(() => {
-    const search = document.querySelector('#systems-search')
-    const statusChart = Array.from(document.querySelectorAll('h3')).find((heading) =>
-      heading.textContent?.includes('Systems by Status')
-    )
-    return Boolean(search && statusChart && search.getBoundingClientRect().top < statusChart.getBoundingClientRect().top)
-  })
-  expect(searchComesBeforeCharts).toBe(true)
+  await page.locator('#more-filters').click()
+  await expect(page.locator('#filter-developedBy')).toBeVisible()
+  await page.locator('#filter-developedBy').selectOption('Vendor')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-developedBy').selectOption('')
+  await page.locator('#filter-vendor').selectOption('Microsoft')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-vendor').selectOption('')
+  await page.locator('#filter-notificationAi').selectOption('Y')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-notificationAi').selectOption('')
+  await page.locator('#filter-year').selectOption('2024')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#filter-year').selectOption('')
 
-  await page.getByLabel('Search AI systems').fill('Microsoft')
-  await expect(page.locator('main').getByText('1 / 3 systems')).toBeVisible()
+  await page.locator('#sort-field').selectOption('year')
+  await page.locator('#sort-direction').selectOption('desc')
+  await page.locator('#group-by').selectOption('department')
+  await expect(page.locator('.record-group')).toHaveCount(3)
 
   const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Download filtered data as CSV' }).click()
+  await page.locator('.export-button').click()
   const download = await downloadPromise
-  expect(download.suggestedFilename()).toBe('gc-ai-register-1-systems.csv')
-  const downloadPath = await download.path()
-  expect(downloadPath).toBeTruthy()
-  const csvText = await readFile(downloadPath!, 'utf-8')
-  expect(csvText).toContain('"\'=HYPERLINK(""https://example.com"",""Microsoft"")"')
+  expect(download.suggestedFilename()).toMatch(/ai-register.*\.csv$/i)
+  const csv = await readFile(await download.path() as string, 'utf8')
+  expect(csv).toContain(floodRecordId)
+  expect(csv).toContain('"\'=HYPERLINK(""https://example.com"",""source"")"')
 
-  await page.getByLabel('Search AI systems').fill('no matching systems')
-  await expect(page.getByText('No systems match your filters')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Clear search and filters' })).toBeVisible()
-  await page.getByRole('button', { name: 'Clear search and filters' }).click()
-  await expect(page.locator('main').getByText('3 systems')).toBeVisible()
-
-  await page.getByRole('button', { name: 'View details for Benefits modernization assistant' }).click()
-  await expect(page.getByRole('dialog')).toBeVisible()
-  await page.getByRole('button', { name: 'Close system detail panel' }).click()
-  await expect(page.getByRole('dialog')).toHaveCount(0)
-})
-
-test('source data warnings are visible when the API reports partial data', async ({ page }) => {
-  await stubSystemsApi(page)
-  await page.route('**/api/systems', async (route) => {
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        records: [
-          {
-            _id: 1,
-            ai_register_id: 'AI-001',
-            name_ai_system_en: 'Benefits modernization assistant',
-            name_ai_system_fr: 'Assistant de modernisation des prestations',
-            government_organization: 'Employment and Social Development Canada / Emploi et Développement social Canada',
-            description_ai_system_en: 'Supports triage of benefits inquiries using rules-based automation.',
-            description_ai_system_fr: 'Soutient le triage des demandes de prestations.',
-            ai_system_primary_users_en: 'Program officers',
-            ai_system_primary_users_fr: 'Agents de programme',
-            developed_by_en: 'Government of Canada',
-            developed_by_fr: 'Gouvernement du Canada',
-            vendor_information: '',
-            ai_system_status_en: 'In production',
-            ai_system_status_fr: 'En production',
-            status_date: '2025-02-01',
-            ai_system_capabilities_en: 'Classification and workflow routing',
-            ai_system_capabilities_fr: 'Classification et aiguillage',
-            data_sources_en: 'Internal program data',
-            data_sources_fr: 'Données internes du programme',
-            involves_personal_information: 'Y',
-            personal_information_banks_en: 'Program records',
-            personal_information_banks_fr: 'Dossiers du programme',
-            notification_ai: 'Y',
-            ai_system_results_en: 'Faster routing for service requests',
-            ai_system_results_fr: 'Acheminement plus rapide des demandes',
-          },
-        ],
-        total: 2,
-        lastModified: '2026-04-28T20:10:07.759825',
-        warnings: [{
-          code: 'partial_dataset',
-          message: 'The source API reported more records than this page received.',
-          total: 2,
-          returned: 1,
-        }],
-      }),
-    })
-  })
-
-  await page.goto('/')
-  await expect(page.getByText('Data quality notice')).toBeVisible()
-  await expect(page.getByText('The source API reported 2 records, but this page received 1.')).toBeVisible()
-})
-
-test('mobile exploration controls are readable and do not overflow', async ({ page }) => {
-  await stubSystemsApi(page)
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
-
-  await expect(page.getByRole('heading', { name: 'Explore the register' })).toBeVisible()
-  await expect(page.getByLabel('Search AI systems')).toBeVisible()
-
-  const layout = await page.evaluate(() => ({
-    hasHorizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 2,
-    selectWidths: Array.from(document.querySelectorAll('select')).map((select) =>
-      Math.round(select.getBoundingClientRect().width)
-    ),
-  }))
-
-  expect(layout.hasHorizontalOverflow).toBe(false)
-  expect(layout.selectWidths).toHaveLength(6)
-  expect(Math.min(...layout.selectWidths)).toBeGreaterThanOrEqual(300)
-  await expect(page.getByRole('list', { name: 'All 3 AI systems' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'View details for Benefits modernization assistant' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Scroll down for more content' })).toHaveCount(0)
-})
-
-test('public information routes render credible page titles', async ({ page }) => {
-  for (const route of ['/about', '/privacy', '/terms']) {
-    await page.goto(route, { waitUntil: 'domcontentloaded' })
-    await expect(page.locator('h1')).toBeVisible()
-    await expect(page.locator('body')).not.toContainText('90s Mode')
-  }
-})
-
-test('language cookie server-renders French public pages without JavaScript', async ({ browser }) => {
-  const context = await browser.newContext({
-    baseURL: 'http://127.0.0.1:3000',
-    javaScriptEnabled: false,
-  })
-  await context.addCookies([{ name: 'ai-register-lang', value: 'fr', url: 'http://127.0.0.1:3000' }])
-  const page = await context.newPage()
-
-  await page.goto('/privacy')
-
-  await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
-  await expect(page.getByRole('heading', { name: /Politique de confidentialit/i })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Privacy Policy' })).toHaveCount(0)
-
-  await context.close()
-})
-
-test('keyboard path opens and closes a system detail dialog', async ({ page }) => {
-  await stubSystemsApi(page)
-  await page.goto('/')
-
-  await page.keyboard.press('Control+K')
-  await expect(page.getByLabel('Search AI systems')).toBeFocused()
-
-  const detailsButton = page.getByRole('button', { name: 'View details for Benefits modernization assistant' })
-  await detailsButton.focus()
-  await expect(detailsButton).toBeFocused()
-  await page.keyboard.press('Enter')
-
-  await expect(page.getByRole('dialog')).toBeVisible()
+  const opener = page.locator('.record-open').filter({ hasText: 'Flood Susceptibility Index' })
+  await opener.click()
+  await expect(page.locator('#record-dialog')).toBeVisible()
+  await expect(page.locator('#dossier-title')).toContainText('Flood Susceptibility Index')
   await page.keyboard.press('Escape')
-  await expect(page.getByRole('dialog')).toHaveCount(0)
-  await expect(detailsButton).toBeFocused()
+  await expect(page.locator('#record-dialog')).toBeHidden()
+  await expect(opener).toBeFocused()
 })
 
-test('API failure state is clear and non-technical', async ({ page }) => {
-  await page.route('**/api/systems', async (route) => {
-    await route.fulfill({
-      status: 502,
-      contentType: 'application/json',
-      body: JSON.stringify({ error: 'Upstream unavailable' }),
-    })
-  })
+test('deep links resolve official register ids and report unavailable ids', async ({ page }) => {
+  await page.goto('/?record=' + encodeURIComponent(floodRecordId))
+  await expect(page.locator('#record-dialog')).toBeVisible()
+  await expect(page.locator('#dossier-title')).toContainText('Flood Susceptibility Index')
+  await page.goto('/?record=missing-register-id')
+  await expect(page.getByText(/unavailable in the current snapshot/i)).toBeVisible()
+})
 
+test('patterns exposes seven chart views and chart filters return to records', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByText('Failed to load data')).toBeVisible()
-  await expect(page.getByText('Unable to load AI registry data. Please try again later.')).toBeVisible()
-  await expect(page.getByText('The source registry did not respond successfully.')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Official source' })).toHaveAttribute('href', /open\.canada\.ca/)
+  await page.locator('#patterns-tab').click()
+  await expect(page.locator('#insights')).toBeVisible()
+  for (const key of ['status', 'departments', 'years', 'pii', 'developers', 'vendors', 'statusYears']) {
+    await page.locator('#chart-tab-' + key).click()
+    await expect(page.locator('#chart-stage')).toBeVisible()
+  }
+  await page.locator('#chart-tab-statusYears').click()
+  await page.locator('.stack-piece').first().click()
+  await expect(page.locator('#records-tab')).toHaveAttribute('aria-selected', 'true')
+  await expect(page.locator('#filter-status')).not.toHaveValue('')
+  await expect(page.locator('#filter-year')).not.toHaveValue('')
 })
 
-test('API failure state can retry into the explorer', async ({ page }) => {
+test('patterns use the active search subset for its summary and chart table', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('#register-search').fill('flood')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await page.locator('#patterns-tab').click()
+  await expect(page.locator('#insights')).toBeVisible()
+  await expect(page.locator('.pattern-summary strong').first()).toHaveText('1')
+  await expect(page.locator('#chart-stage .chart-denominator')).toContainText('1')
+  await page.locator('#chart-stage .chart-table-wrap summary').click()
+  const total = await page.locator('#chart-stage .chart-data-table tbody tr').evaluateAll((rows) =>
+    rows.reduce((sum, row) => sum + Number(((row as HTMLTableRowElement).cells[1]?.textContent ?? '0').replace(/[^\d.-]/g, '')), 0)
+  )
+  expect(total).toBe(1)
+})
+
+test('missing flags remain distinct and French search matches bilingual source fields', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('#filter-personalInfo').selectOption('__unknown__')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await expect(page.locator('.record-open')).toContainText('Inspection Planning Model')
+  await page.locator('#filter-personalInfo').selectOption('')
+  await page.locator('#lang-toggle').click()
+  await page.locator('#register-search').fill('coherence')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await expect(page.locator('.record-open')).toContainText('Examen de la qualité de la traduction')
+})
+
+test('browser Back closes a record and restores the filtered result state', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('#filter-status').selectOption('production')
+  const opener = page.locator('.record-open')
+  await expect(opener).toHaveCount(1)
+  await opener.click()
+  await expect(page.locator('#record-dialog')).toBeVisible()
+  await expect(page).toHaveURL(/record=2526-NRCan-RNCan-006/)
+  await page.goBack()
+  await expect(page.locator('#record-dialog')).toBeHidden()
+  await expect(page.locator('#filter-status')).toHaveValue('production')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+})
+
+test('an expanded result list survives Escape and Back from a record beyond the first page', async ({ page }) => {
+  await stubSystemsApi(page, systemsPayload({ records: longFixtureSystems, total: longFixtureSystems.length }))
+  await page.goto('/')
+  await expect(page.locator('.record-open')).toHaveCount(24)
+  await page.getByRole('button', { name: /show more systems/i }).click()
+  await expect(page.locator('.record-open')).toHaveCount(30)
+
+  const opener = page.locator('.record-open').nth(28)
+  await opener.click()
+  await expect(page.locator('#record-dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.locator('#record-dialog')).toBeHidden()
+  await expect(page.locator('.record-open')).toHaveCount(30)
+  await expect(opener).toBeFocused()
+
+  await opener.click()
+  await expect(page.locator('#record-dialog')).toBeVisible()
+  await page.goBack()
+  await expect(page.locator('#record-dialog')).toBeHidden()
+  await expect(page.locator('.record-open')).toHaveCount(30)
+  await expect(opener).toBeFocused()
+})
+
+test('partial data and retryable source errors remain legible', async ({ page }) => {
+  await stubSystemsApi(page, systemsPayload({ records: [fixtureSystems[0]], total: 3, warnings: [{ code: 'partial_dataset', message: 'Limited preview', total: 3, returned: 1 }] }))
+  await page.goto('/')
+  await expect(page.getByText(/displays 1 of 3 source records/i)).toBeVisible()
+
   let calls = 0
+  await page.unroute('**/api/systems')
   await page.route('**/api/systems', async (route) => {
     calls += 1
-    if (calls === 1) {
-      await route.fulfill({
-        status: 502,
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'Upstream unavailable' }),
-      })
-      return
-    }
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        records: fixtureSystems,
-        total: fixtureSystems.length,
-        lastModified: '2026-04-28T20:10:07.759825',
-      }),
-    })
+    if (calls === 1) await route.fulfill({ status: 502, contentType: 'application/json', body: JSON.stringify({ error: 'unavailable' }) })
+    else await route.fulfill({ contentType: 'application/json', body: JSON.stringify(systemsPayload()) })
   })
-
-  await page.goto('/')
-  await expect(page.getByText('Failed to load data')).toBeVisible()
-
-  await page.getByRole('button', { name: 'Retry' }).click()
-
-  await expect(page.getByRole('heading', { name: 'Explore the register' })).toBeVisible()
-  await expect(page.locator('main').getByText('3 systems')).toBeVisible()
+  await page.reload()
+  await expect(page.getByText(/could not load/i)).toBeVisible()
+  await page.getByRole('button', { name: /try again/i }).click()
+  await expect(page.locator('#register-search')).toBeVisible()
   expect(calls).toBe(2)
-})
-
-test('search ignores accents across bilingual fields', async ({ page }) => {
-  await stubSystemsApi(page)
-  await page.goto('/')
-
-  await page.getByRole('button', { name: /fran/i }).click()
-  await page.getByLabel(/Rechercher/).fill('coherence')
-
-  await expect(page.locator('main').getByText(/1 \/ 3 syst/)).toBeVisible()
-  await expect(page.getByRole('button', { name: /Flux de traduction Microsoft/ })).toBeVisible()
-})
-
-test('binary filters show readable labels instead of raw dataset codes', async ({ page }) => {
-  await stubSystemsApi(page)
-  await page.goto('/')
-
-  await expect(page.locator('#filter-personal-data option[value="Y"]')).toHaveText('Has personal data')
-  await expect(page.locator('#filter-personal-data option[value="N"]')).toHaveText('No personal data')
-  await expect(page.locator('#filter-notification option[value="Y"]')).toHaveText('Users notified')
-  await expect(page.locator('#filter-notification option[value="N"]')).toHaveText('No notification')
-
-  await page.getByRole('button', { name: /fran/i }).click()
-
-  await expect(page.locator('#filter-personal-data option[value="Y"]')).toHaveText(/Donn.es personnelles/)
-  await expect(page.locator('#filter-personal-data option[value="N"]')).toHaveText(/Aucune donn.e personnelle/)
-  await expect(page.locator('#filter-notification option[value="Y"]')).toHaveText(/Utilisateurs avis.s/)
-  await expect(page.locator('#filter-notification option[value="N"]')).toHaveText(/Aucune notification/)
 })

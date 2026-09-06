@@ -36,3 +36,6 @@ test-results/
 .claude/settings.local.json
 
 .vercel
+
+# Local release verification evidence
+artifacts/release-evidence/

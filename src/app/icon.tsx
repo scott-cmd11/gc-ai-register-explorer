@@ -10,19 +10,18 @@ export default function Icon() {
         style={{
           width: 32,
           height: 32,
-          borderRadius: 6,
-          background: '#4F46E5',
+          background: '#f7f8f5',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-end',
           justifyContent: 'center',
-          color: 'white',
-          fontSize: 14,
-          fontWeight: 700,
-          letterSpacing: '-0.5px',
-          fontFamily: 'sans-serif',
+          gap: 3,
+          padding: '5px 4px 7px',
+          borderBottom: '3px solid #a64c35',
         }}
       >
-        AI
+        {[17, 22, 13].map((height, index) => (
+          <div key={index} style={{ width: 6, height, background: '#a64c35' }} />
+        ))}
       </div>
     ),
     { ...size }
