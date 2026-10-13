@@ -42,6 +42,10 @@ export type ChartKey =
   | 'statusYears'
 export type SortField = 'name' | 'department' | 'status' | 'year' | 'vendor' | 'personalInfo'
 export type GroupBy = 'none' | 'department' | 'vendor' | 'status'
+export type Audience = 'public' | 'employees' | 'neither' | '__unknown__'
+export type Changed = 'any' | 'new' | 'updated'
+// Register IDs added or edited in the latest government update (see changes.ts).
+export type ChangeSets = { added: Set<string>; updated: Set<string> }
 export type RegisterState = {
   query: string
   department: string
@@ -51,6 +55,8 @@ export type RegisterState = {
   vendor: string
   notificationAi: 'Y' | 'N' | '__unknown__' | ''
   year: string
+  audience: Audience | ''
+  changed: Changed | ''
   sortField: SortField
   sortDir: 'asc' | 'desc'
   groupBy: GroupBy
@@ -82,6 +88,8 @@ export const defaults: Readonly<RegisterState> = Object.freeze({
   vendor: '',
   notificationAi: '',
   year: '',
+  audience: '',
+  changed: '',
   sortField: 'name',
   sortDir: 'asc',
   groupBy: 'none',
@@ -98,6 +106,7 @@ const sortFields = new Set<SortField>([
 ])
 const groupFields = new Set<GroupBy>(['none', 'department', 'vendor', 'status'])
 const flags = new Set(['Y', 'N', '__unknown__'])
+const audiences = new Set<Audience>(['public', 'employees', 'neither', '__unknown__'])
 const searchFields = [
   'ai_register_id',
   'name_ai_system_en',
@@ -153,6 +162,7 @@ function normalized(value: SourceValue): string {
   return string(value)
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
     .toLocaleLowerCase()
 }
 function language(value: Lang): Lang {
@@ -226,6 +236,14 @@ function flag(raw: SourceValue): 'Y' | 'N' | '__unknown__' {
   const result = string(raw).trim().toUpperCase()
   return result === 'Y' || result === 'N' ? result : '__unknown__'
 }
+// "Public" covers both source values that name members of the public as users.
+export function audience(record: SourceRecord): Audience {
+  const users = string(record.ai_system_primary_users_en).trim().toLocaleLowerCase()
+  if (users === 'members of public' || users === 'both employees and public') return 'public'
+  if (users === 'gc employees') return 'employees'
+  if (users === 'neither employees nor public') return 'neither'
+  return '__unknown__'
+}
 function developerValue(record: SourceRecord): string {
   return string(record.developed_by_en).trim() || '__unknown__'
 }
@@ -258,6 +276,8 @@ function normalizeState(input?: Partial<RegisterState>): RegisterState {
       ? (state.notificationAi as RegisterState['notificationAi'])
       : '',
     year: /^\d{4}$/.test(string(state.year)) ? string(state.year) : '',
+    audience: audiences.has(state.audience as Audience) ? (state.audience as Audience) : '',
+    changed: ['any', 'new', 'updated'].includes(state.changed) ? (state.changed as Changed) : '',
     sortField: sortFields.has(state.sortField as SortField)
       ? (state.sortField as SortField)
       : defaults.sortField,
@@ -283,6 +303,8 @@ function sortRecords(records: SourceRecord[], state: RegisterState, lang: Lang):
         : state.sortField === 'personalInfo'
           ? flag(record.involves_personal_information) === '__unknown__'
           : !sortValue(record, state, lang).trim()
+  // Source text sometimes contains doubled spaces; ignore them when ordering.
+  const key = (record: SourceRecord) => sortValue(record, state, lang).replace(/\s+/g, ' ').trim()
   return records.slice().sort((a, b) => {
     const aUnknown = unknown(a),
       bUnknown = unknown(b)
@@ -290,8 +312,8 @@ function sortRecords(records: SourceRecord[], state: RegisterState, lang: Lang):
     const compared =
       state.sortField === 'year'
         ? Number(sortValue(a, state, lang)) - Number(sortValue(b, state, lang))
-        : sortValue(a, state, lang).localeCompare(
-            sortValue(b, state, lang),
+        : key(a).localeCompare(
+            key(b),
             lang === 'fr' ? 'fr-CA' : 'en-CA',
             { sensitivity: 'base' }
           )
@@ -306,10 +328,15 @@ function sortRecords(records: SourceRecord[], state: RegisterState, lang: Lang):
 export function filter(
   records: SourceRecord[],
   input: Partial<RegisterState>,
-  lang: Lang
+  lang: Lang,
+  changes?: ChangeSets | null
 ): SourceRecord[] {
   const state = normalizeState(input)
-  const query = normalized(state.query)
+  const changedMatch = (id: string) =>
+    !state.changed ||
+    (state.changed !== 'updated' && Boolean(changes?.added.has(id))) ||
+    (state.changed !== 'new' && Boolean(changes?.updated.has(id)))
+  const query = normalized(state.query).trim()
   const matched = records.filter((record) => {
     if (query && !searchFields.some((key) => normalized(value(record, key)).includes(query)))
       return false
@@ -320,10 +347,89 @@ export function filter(
       (!state.developedBy || developerValue(record) === state.developedBy) &&
       (!state.vendor || vendorValues(record).includes(state.vendor)) &&
       (!state.notificationAi || flag(record.notification_ai) === state.notificationAi) &&
-      (!state.year || year(record) === state.year)
+      (!state.year || year(record) === state.year) &&
+      (!state.audience || audience(record) === state.audience) &&
+      changedMatch(record.ai_register_id)
     )
   })
   return sortRecords(matched, state, lang)
+}
+// One readable line from the description for list rows. When searching, prefer the
+// sentence that contains the search words so people can see why a record matched.
+export function excerpt(
+  record: SourceRecord,
+  lang: Lang,
+  query = '',
+  limit = 180
+): SourceField {
+  const source = sourceField(record, 'description_ai_system', lang)
+  if (source.missing) return source
+  const sentences = source.text
+    .replace(/\s+/g, ' ')
+    .trim()
+    // Split at sentence ends, but not after abbreviations such as "e.g." or "Dr.".
+    .split(/(?<!\b(?:e\.g|i\.e|etc|vs|Dr|Mr|Mrs|Ms|St|No|p\. ex|c\.-à-d|M|Mme)\.)(?<=[.!?])\s+/)
+    .filter(Boolean)
+  const wanted = normalized(query).trim()
+  const sentence =
+    (wanted && sentences.find((item) => normalized(item).includes(wanted))) || sentences[0] || ''
+  if (sentence.length <= limit) return { ...source, text: sentence }
+  // Start the window a little before the match so the matched words stay visible.
+  const at = wanted ? normalized(sentence).indexOf(wanted) : -1
+  let from = 0
+  if (at > limit - wanted.length - 20) {
+    const start = Math.max(0, Math.min(at - 60, sentence.length - limit))
+    from = start > 0 ? sentence.indexOf(' ', start) + 1 : 0
+  }
+  const space = sentence.lastIndexOf(' ', from + limit - 1)
+  const end =
+    sentence.length - from <= limit ? sentence.length : space > from ? space : from + limit
+  const cut = sentence.slice(from, end).replace(/[\s,;:]+$/, '')
+  return { ...source, text: (from > 0 ? '…' : '') + cut + (end < sentence.length ? '…' : '') }
+}
+// Splits text into plain and matching parts, ignoring case, accents and repeated spaces,
+// so the display can mark what the search found without altering the source wording.
+export function highlight(text: string, query: string): Array<{ text: string; match: boolean }> {
+  const wanted = normalized(query).trim()
+  if (!wanted || !text) return [{ text, match: false }]
+  let folded = ''
+  const origin: number[] = []
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index]
+    if (/\s/.test(char)) {
+      if (folded.endsWith(' ')) continue
+      folded += ' '
+      origin.push(index)
+      continue
+    }
+    for (const part of normalized(char)) {
+      folded += part
+      origin.push(index)
+    }
+  }
+  const parts: Array<{ text: string; match: boolean }> = []
+  let cursor = 0,
+    from = folded.indexOf(wanted)
+  while (from !== -1) {
+    const start = origin[from],
+      end = origin[from + wanted.length - 1] + 1
+    if (start > cursor) parts.push({ text: text.slice(cursor, start), match: false })
+    parts.push({ text: text.slice(start, end), match: true })
+    cursor = end
+    from = folded.indexOf(wanted, from + wanted.length)
+  }
+  if (cursor < text.length) parts.push({ text: text.slice(cursor), match: false })
+  return parts
+}
+// Headline counts for one organisation, independent of any other active filters.
+export function organisationProfile(records: SourceRecord[], organisation: string) {
+  const own = records.filter((record) => record.government_organization === organisation)
+  return {
+    ...summary(own),
+    vendors: aggregate(own, 'en')
+      .vendors.slice(0, 3)
+      .map((row) => ({ name: row.key, count: row.value })),
+  }
 }
 export function summary(records: SourceRecord[]) {
   return {
@@ -334,6 +440,7 @@ export function summary(records: SourceRecord[]) {
     production: records.filter((record) => canonicalStatus(record) === 'production').length,
     personalInfo: records.filter((record) => flag(record.involves_personal_information) === 'Y')
       .length,
+    public: records.filter((record) => audience(record) === 'public').length,
   }
 }
 function countOptions(pairs: Array<{ value: string; label: string }>): OptionRow[] {

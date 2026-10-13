@@ -25,14 +25,17 @@ export default function Hero({
   t,
   onOpen,
   onExplore,
+  onSearch,
 }: {
   records: SourceRecord[];
   lang: Lang;
   t: Translate;
   onOpen: (id: string) => void;
   onExplore: () => void;
+  onSearch: (query: string) => void;
 }) {
   const [selected, setSelected] = useState(features[0][0]);
+  const [query, setQuery] = useState("");
   const exhibit = useRef<HTMLDivElement>(null),
     preview = useRef<HTMLElement>(null),
     controls = useRef<HTMLDivElement>(null);
@@ -97,6 +100,34 @@ export default function Hero({
           <span>{t("heroLine2").replace(/[.]$/, "")}</span>
         </h1>
         <p className="hero-intro">{t("heroIntro")}</p>
+        {/* Phones only: the full search panel sits several screens below the artwork. */}
+        <form
+          className="hero-search"
+          role="search"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSearch(query.trim().slice(0, 500));
+            // The main search box now holds the query; clearing here avoids a stale copy.
+            setQuery("");
+          }}
+        >
+          <label className="sr-only" htmlFor="hero-search">
+            {t("searchLabel")}
+          </label>
+          <input
+            type="search"
+            id="hero-search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={t("heroSearchPlaceholder")}
+            autoComplete="off"
+            maxLength={500}
+            enterKeyHint="search"
+          />
+          <button type="submit" className="button">
+            {t("searchButton")}
+          </button>
+        </form>
         <div className="hero-actions">
           <a
             className="button button-primary"
@@ -144,19 +175,17 @@ export default function Hero({
             {dept(record.government_organization, lang)}
             <span className="scope-count">
               <strong>{number(count, lang)}</strong>
-              {lang === "en"
-                ? `of ${number(records.length, lang)} reported systems`
-                : `sur ${number(records.length, lang)} systèmes déclarés`}
+              {t("scopeCount", { total: number(records.length, lang) })}
             </span>
           </span>
           <span className="edition">
-            {String(
-              Math.max(
+            {t("exampleOf", {
+              n: Math.max(
                 0,
                 available.findIndex(([id]) => id === record.ai_register_id),
               ) + 1,
-            ).padStart(2, "0")}{" "}
-            — {String(available.length || 1).padStart(2, "0")}
+              total: available.length || 1,
+            })}
           </span>
         </div>
         {/* Artwork is illustrative; the overlaid record is live source text. */}

@@ -125,6 +125,33 @@ export default function Patterns({
     [totals.personalInfo, 'piiCount'],
   ]
 
+  // Plain-language readings of the current result set, shown before the charts.
+  const departments = charts.departments
+  const topFive = departments.slice(0, 5).reduce((total, row) => total + row.value, 0)
+  // Needs at least two records so counts read naturally ("2 systems", not "1 systems").
+  const findings = records.length > 1
+    ? [
+        t('findProduction', {
+          count: number(totals.production),
+          total: number(totals.total),
+          share: percentage(totals.production),
+        }),
+        t('findPii', { count: number(totals.personalInfo), share: percentage(totals.personalInfo) }),
+        t('findPublic', { count: number(totals.public), share: percentage(totals.public) }),
+        // Only name a leader when it is not tied with the runner-up.
+        ...(departments.length > 1 && departments[0].value > departments[1].value
+          ? [
+              t('findTopDept', {
+                org: departments[0].label,
+                count: number(departments[0].value),
+                share: percentage(departments[0].value),
+              }),
+            ]
+          : []),
+        ...(departments.length > 5 ? [t('findTopFive', { share: percentage(topFive) })] : []),
+      ]
+    : []
+
   const renderStatusYears = () => {
     const { rows, statuses, excluded } = charts.statusYears
     const maximum = Math.max(
@@ -384,6 +411,16 @@ export default function Patterns({
           </div>
         ))}
       </div>
+      {findings.length > 0 && (
+        <div className="pattern-findings">
+          <h4>{t('findingsTitle')}</h4>
+          <ul>
+            {findings.map((finding) => (
+              <li key={finding}>{finding}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="pattern-layout">
         <div className="chart-nav" role="tablist" aria-label={t('chartSelect')}>
           {chartKeys.map((key, index) => (

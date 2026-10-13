@@ -1,4 +1,5 @@
 import type { SourceRecord } from './register/model'
+import type { RecordChanges } from './register/changes'
 
 export interface SystemsPayload {
   systems: SourceRecord[]
@@ -6,6 +7,7 @@ export interface SystemsPayload {
   snapshotAt: string | null
   total: number | null
   warnings: DataWarning[]
+  changes: RecordChanges | null
 }
 
 export interface DataWarning {
@@ -38,5 +40,20 @@ export async function fetchAllSystems(): Promise<SystemsPayload> {
     snapshotAt: data.snapshotAt ?? null,
     total: Number.isFinite(Number(data.total)) ? Number(data.total) : null,
     warnings,
+    changes: validChanges(data.changes),
   }
+}
+
+function validChanges(value: unknown): RecordChanges | null {
+  const changes = value as RecordChanges | null
+  return changes &&
+    typeof changes.since === 'string' &&
+    Array.isArray(changes.added) &&
+    changes.added.every((id) => typeof id === 'string') &&
+    Array.isArray(changes.updated) &&
+    changes.updated.every((row) => typeof row?.id === 'string') &&
+    Array.isArray(changes.removed) &&
+    changes.removed.every((row) => typeof row?.id === 'string')
+    ? changes
+    : null
 }

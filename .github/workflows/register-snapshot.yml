@@ -1,0 +1,42 @@
+# Daily check of the official AI Register. When the government publishes an update,
+# a copy is saved to data/snapshots/ and committed to master; Vercel then rebuilds
+# the site, which compares the live register with the previous copy ("what changed").
+name: Register snapshot
+
+on:
+  schedule:
+    - cron: '0 11 * * *' # 11:00 UTC: 6:00 Winnipeg (CDT), 5:00 in winter
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: register-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Pinned to exact releases because this job can update master, which deploys the site.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Save a copy if the register changed
+        run: node scripts/snapshot-register.mjs
+      - name: Commit the new copy
+        run: |
+          if [ -z "$(git status --porcelain data/snapshots)" ]; then
+            echo "No new copy."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add data/snapshots
+          git commit -m "data: save AI Register update $(ls data/snapshots | sort | tail -1 | cut -c1-10)"
+          # Pick up any release made while this job ran, so the upload is not rejected.
+          git pull --rebase origin master
+          git push origin HEAD:master

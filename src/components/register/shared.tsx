@@ -17,9 +17,22 @@ export const licenceUrl = (lang: Lang) =>
     : 'https://open.canada.ca/en/open-government-licence-canada'
 export const number = (value: number, lang: Lang) =>
   new Intl.NumberFormat(lang === 'fr' ? 'fr-CA' : 'en-CA').format(value)
+// A timestamp with a time zone (the snapshot) is a moment: use the reader's local date.
+// A zoneless value (the source's modified date) keeps its calendar date as written.
+const parseDay = (value: string | null) => {
+  const zoned = value && /^\d{4}-\d{2}-\d{2}T[\d:.]+(Z|[+-]\d{2}:?\d{2})$/.test(value)
+  return value && /^\d{4}-\d{2}-\d{2}/.test(value)
+    ? new Date(zoned ? value : value.slice(0, 10) + 'T12:00:00')
+    : null
+}
+export const localDay = (value: string | null) => {
+  const parsed = parseDay(value)
+  if (!parsed || Number.isNaN(parsed.getTime())) return null
+  const pad = (part: number) => String(part).padStart(2, '0')
+  return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`
+}
 export const date = (value: string | null, lang: Lang) => {
-  const parsed =
-    value && /^\d{4}-\d{2}-\d{2}/.test(value) ? new Date(value.slice(0, 10) + 'T12:00:00') : null
+  const parsed = parseDay(value)
   return parsed && !Number.isNaN(parsed.getTime())
     ? new Intl.DateTimeFormat(lang === 'fr' ? 'fr-CA' : 'en-CA', {
         day: 'numeric',

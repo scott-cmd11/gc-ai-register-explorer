@@ -20,6 +20,31 @@
 <body>
 <main>
   <h1>UI/UX Audit Work Plan</h1>
+<h2>Current Goal - 2026-10-12 UI/UX batch 1 (Claude)</h2>
+<p>Worktree <code>/Users/scott/Developer/ai-register-ui-20261012</code>, branch <code>claude/ui-improvements-20261012</code> from <code>8222064</code> plus the uncommitted live Sep 6 edits to <code>globals.css</code> and <code>Hero.tsx</code> copied in from <code>ai-register-release-20260906</code> (that worktree left untouched). Uncommitted; not pushed or deployed. Source review: <code>ai-register-Canada/artifacts/html/ui-ux-improvements-2026-10-12.html</code>.</p>
+<ul>
+<li>Done: snapshot date shown in reader's local time zone (was UTC); CSV filename matches.</li>
+<li>Done: sort and search ignore doubled spaces in source text (e.g. "AI&nbsp;&nbsp;for scientific discovery").</li>
+<li>Done: hero exhibit label clarified ("25 of the 412 reported systems come from this organisation", "Example 1 of 4").</li>
+<li>Done: shorter search placeholders (EN/FR) that fit at 360 px.</li>
+<li>Done: "Start with" presets (public, personal info, in production, facial, chatbots, immigration); new <code>audience</code> filter derived from <code>ai_system_primary_users_en</code>.</li>
+<li>Done: "At a glance" findings on Patterns (needs &ge;2 records; leader named only when untied).</li>
+<li>Done: phone-only hero search (&le;920 px), replaces other filters, keeps sort/grouping.</li>
+<li>Checks: tsc, node model tests 11/11, Playwright 13/13 (incl. new preset/hero test, axe light/dark), <code>next build</code> OK, browser check desktop 1440 / phone 375 and 360, EN/FR, light/dark. /code-review: 6 fixed, 2 skipped (keyword presets are substring searches; sort-key precompute).</li>
+</ul>
+<h2>Batch 2 (Claude, same worktree, 2026-10-12)</h2>
+<ul>
+<li>Done: keyword presets split into "Or search for" chips labelled with the search word (honest: they are substring searches).</li>
+<li>Done: one-line description per row (<code>excerpt</code>: sentence containing the query, windowed so the match stays visible, abbreviation-aware split); query highlighting with <code>&lt;mark&gt;</code> via accent/case/space-insensitive <code>highlight</code>; row button no longer uses aria-label so screen readers hear the summary.</li>
+<li>Done: organisation names in rows open an organisation summary panel (<code>organisationProfile</code>: totals ignore other filters; top vendors reuse <code>aggregate().vendors</code>).</li>
+<li>Done: "Primary users" filter moved to the main row (5 cols &ge;1181 px, 3+2 at 921&ndash;1180 px, 2 cols below).</li>
+<li>Done: status badges tinted per status (production green, development blue diamond, retired dashed, unknown plain); <code>--development</code> changed from amber to mineral blue for colour-blind separation in charts.</li>
+<li>Done: plainer headings ("Search the register." / "How to read this data." and FR).</li>
+<li>Checks: tsc, model tests 15/15, Playwright 14/14 (axe light/dark passes with new colours), next build OK; browser checks at 1440, 1280, 1024, 375 px, EN/FR. /code-review: 7 fixed, 2 skipped (per-keystroke excerpt cost in grouped view; noted).</li>
+<li>Open decision: "what changed" needs stored snapshots (none exist). Options put to Scott: scheduled GitHub Action committing a JSON snapshot when CKAN modified date changes (recommended) vs Vercel Blob vs manual.</li>
+<li>Not committed, not pushed, not deployed.</li>
+</ul>
+
   <section>
     <h2>Current Goal - 2026-07-10 Mac Baseline Recovery</h2>
     <p class="note">Scope: establish <code>codex/reimagine-site-imagegen</code> as a clean, reproducible Mac continuation baseline without changing product behaviour, merging, pushing, deploying, or accessing production. Approved design: <code>artifacts/html/mac-baseline-recovery-design-2026-07-10.html</code>.</p>

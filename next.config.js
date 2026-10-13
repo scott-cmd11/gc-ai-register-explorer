@@ -54,6 +54,8 @@ const securityHeaders = [
 
 const nextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  // Stored register copies are read at runtime by the data route to show what changed.
+  outputFileTracingIncludes: { '/api/systems': ['./data/snapshots/*.json'] },
   async headers() {
     return [
       {

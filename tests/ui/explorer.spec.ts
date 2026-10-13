@@ -167,3 +167,67 @@ test('partial data and retryable source errors remain legible', async ({ page })
   await expect(page.locator('#register-search')).toBeVisible()
   expect(calls).toBe(2)
 })
+
+test('starting points toggle their filters and the phone hero search reaches the records', async ({ page }) => {
+  await page.goto('/?lang=en')
+  const pii = page.getByRole('button', { name: 'Handles personal information' })
+  await pii.click()
+  await expect(pii).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('#filter-personalInfo')).toHaveValue('Y')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await pii.click()
+  await expect(pii).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.locator('.record-open')).toHaveCount(fixtureSystems.length)
+
+  await expect(page.locator('.hero-search')).toBeHidden()
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.locator('#hero-search').fill('flood')
+  await page.locator('#hero-search').press('Enter')
+  await expect(page.locator('#register-search')).toHaveValue('flood')
+  await expect(page.locator('.record-open')).toHaveCount(1)
+  await expect(page).toHaveURL(/query=flood/)
+})
+
+test('keyword buttons name their search, rows explain matches, and organisation links open a summary', async ({ page }) => {
+  await page.goto('/?lang=en')
+  await page.getByRole('button', { name: 'Search for “immigration”' }).waitFor()
+  await page.locator('#register-search').fill('flood')
+  await expect(page.locator('.record-open mark').first()).toHaveText(/flood/i)
+  await page.locator('#register-search').fill('')
+
+  const orgLink = page.locator('.org-link').first()
+  const orgName = (await orgLink.textContent())?.trim() ?? ''
+  await orgLink.click()
+  await expect(page.locator('.org-profile h3')).toHaveText(orgName)
+  await expect(page.locator('#register-search')).toHaveValue('')
+  await page.getByRole('button', { name: 'Show all organisations' }).click()
+  await expect(page.locator('.org-profile')).toHaveCount(0)
+  await expect(page.locator('.record-open')).toHaveCount(fixtureSystems.length)
+})
+
+test('the latest government update is summarised, filterable, and labelled on rows', async ({ page }) => {
+  await stubSystemsApi(page, systemsPayload({
+    changes: {
+      since: '2026-01-10T09:00:00',
+      added: [floodRecordId],
+      updated: [{ id: '2025-StatCan-004', fields: ['ai_system_status_en'] }],
+      removed: [{ id: 'OLD-1', name_en: 'Retired chatbot', name_fr: 'Robot retiré', organisation: 'Org / Org' }],
+    },
+  }))
+  await page.goto('/?lang=en')
+  await expect(page.locator('.change-summary')).toContainText('1 new, 1 edited, 1 removed')
+  await page.getByRole('button', { name: 'Show changed records' }).click()
+  await expect(page.locator('.record-open')).toHaveCount(2)
+  await expect(page).toHaveURL(/changed=any/)
+  await expect(page.locator(`tr[data-record-id="${floodRecordId}"] .change-tag`)).toHaveText('New')
+  await expect(page.locator('tr[data-record-id="2025-StatCan-004"] .change-tag')).toHaveText('Edited')
+  await page.locator('.change-summary summary').click()
+  await expect(page.locator('.change-summary li')).toContainText('Retired chatbot')
+})
+
+test('no change summary appears before a second government update is stored', async ({ page }) => {
+  await page.goto('/?lang=en')
+  await expect(page.locator('#register-search')).toBeVisible()
+  await expect(page.locator('.change-summary')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Changed in the latest update' })).toHaveCount(0)
+})

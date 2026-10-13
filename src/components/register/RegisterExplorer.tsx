@@ -15,6 +15,7 @@ import {
   flagName,
   Icon,
   licenceUrl,
+  localDay,
   number,
   sourceUrl,
   statusName,
@@ -30,7 +31,17 @@ const filterKeys = [
   'vendor',
   'notificationAi',
   'year',
+  'audience',
+  'changed',
 ] as const
+// One-tap starting points. Each replaces the current filters with its own.
+// Keyword ones are plain searches, so they are labelled with the word searched.
+const filterPresets: Array<{ label: string; filters: Partial<C.RegisterState> }> = [
+  { label: 'presetPublic', filters: { audience: 'public' } },
+  { label: 'presetPii', filters: { personalInfo: 'Y' } },
+  { label: 'inProduction', filters: { status: 'production' } },
+]
+const keywordPresets = ['facial', 'chatbot', 'immigration']
 const chartKeys: C.ChartKey[] = [
   'status',
   'departments',
@@ -46,6 +57,21 @@ const initialData: SystemsPayload = {
   snapshotAt: null,
   total: null,
   warnings: [],
+  changes: null,
+}
+function RecordSummary({
+  line,
+  marked,
+}: {
+  line: C.SourceField
+  marked: (text: string) => React.ReactNode
+}) {
+  if (line.missing) return null
+  return (
+    <span className="record-summary" lang={line.language}>
+      {marked(line.text)}
+    </span>
+  )
 }
 export default function RegisterExplorer() {
   const { lang, setLang } = useLanguage(),
@@ -64,7 +90,21 @@ export default function RegisterExplorer() {
   const search = useRef<HTMLInputElement>(null),
     pushedRecord = useRef(false)
   const records = data.systems
-  const filtered = useMemo(() => C.filter(records, state, lang), [records, state, lang])
+  const changeSets = useMemo<C.ChangeSets | null>(
+    () =>
+      data.changes
+        ? {
+            added: new Set(data.changes.added),
+            updated: new Set(data.changes.updated.map((row) => row.id)),
+          }
+        : null,
+    [data.changes]
+  )
+  const changedCount = changeSets ? changeSets.added.size + changeSets.updated.size : 0
+  const filtered = useMemo(
+    () => C.filter(records, state, lang, changeSets),
+    [records, state, lang, changeSets]
+  )
   const opts = useMemo(() => C.options(records, lang), [records, lang])
   const years = useMemo(
     () =>
@@ -105,7 +145,10 @@ export default function RegisterExplorer() {
       setSelectedId(params.get('record'))
       setMoreFilters(
         (expanded) =>
-          expanded || Boolean(next.developedBy || next.vendor || next.notificationAi || next.year)
+          expanded ||
+          Boolean(
+            next.developedBy || next.vendor || next.notificationAi || next.year
+          )
       )
       // Closing a dossier must retain expanded rows and their focus targets.
       const language = params.get('lang')
@@ -150,9 +193,38 @@ export default function RegisterExplorer() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [selectedId])
+  function scrollToResults(selector = '.workbench-toolbar') {
+    requestAnimationFrame(() =>
+      document.querySelector(selector)?.scrollIntoView({
+        block: 'start',
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      })
+    )
+  }
   function change(key: keyof C.RegisterState, value: string) {
     setState((current) => ({ ...current, [key]: value }))
     setLimit(24)
+  }
+  function applyPreset(filters: Partial<C.RegisterState>, on: boolean) {
+    setState((current) => ({
+      ...C.defaults,
+      sortField: current.sortField,
+      sortDir: current.sortDir,
+      groupBy: current.groupBy,
+      ...(on ? {} : filters),
+    }))
+    setLimit(24)
+  }
+  // A hero search is a fresh question: it replaces other filters, keeping sort and grouping.
+  function heroSearch(query: string) {
+    applyPreset({ query }, false)
+    setView('records')
+    scrollToResults()
+  }
+  // "Show all systems from …" means exactly that: other filters are cleared.
+  function showOrganisation(organisation: string) {
+    applyPreset({ department: organisation }, false)
+    scrollToResults('.org-profile')
   }
   function reset() {
     setState({ ...C.defaults })
@@ -174,13 +246,10 @@ export default function RegisterExplorer() {
     setLimit(24)
     if (['developedBy', 'vendor', 'notificationAi', 'year'].includes(key) || extraYear)
       setMoreFilters(true)
-    requestAnimationFrame(() => {
+    requestAnimationFrame(() =>
       document.getElementById('records-tab')?.focus({ preventScroll: true })
-      document.querySelector('.workbench-toolbar')?.scrollIntoView({
-        block: 'start',
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-      })
-    })
+    )
+    scrollToResults()
   }
   function openRecord(id: string) {
     if (!records.some((record) => record.ai_register_id === id)) {
@@ -207,7 +276,7 @@ export default function RegisterExplorer() {
     )
     const link = document.createElement('a')
     link.href = url
-    link.download = `ai-register-${lang}-${data.snapshotAt?.slice(0, 10) ?? 'records'}.csv`
+    link.download = `ai-register-${lang}-${localDay(data.snapshotAt) ?? 'records'}.csv`
     link.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
     setAnnouncement(t('csvReady', { count: number(filtered.length, lang) }))
@@ -220,6 +289,10 @@ export default function RegisterExplorer() {
     if (key === 'developedBy')
       return opts.developers.find((option) => option.value === value)?.label || value
     if (key === 'year') return t('statusYear') + ': ' + value
+    if (key === 'audience')
+      return audienceOptions.find((option) => option.value === value)?.label || value
+    if (key === 'changed')
+      return t(value === 'new' ? 'changedNew' : value === 'updated' ? 'changedUpdated' : 'changedAny')
     return value
   }
   const alphabetic = (rows: { value: string; label: string }[]) =>
@@ -228,6 +301,12 @@ export default function RegisterExplorer() {
     value,
     label: flagName(value, t),
   }))
+  const audienceOptions = [
+    ['public', 'audiencePublic'],
+    ['employees', 'audienceEmployees'],
+    ['neither', 'audienceNeither'],
+    ['__unknown__', 'notSpecified'],
+  ].map(([value, label]) => ({ value, label: t(label) }))
   const statusOptions = ['production', 'development', 'retired', 'unknown'].map((value) => ({
     value,
     label: statusName(value, t),
@@ -254,6 +333,28 @@ export default function RegisterExplorer() {
       </select>
     </label>
   )
+  const marked = (text: string) =>
+    C.highlight(text, state.query).map((part, index) =>
+      part.match ? <mark key={index}>{part.text}</mark> : part.text
+    )
+  const presetButton = (key: string, label: string, aria: string | undefined, filters: Partial<C.RegisterState>) => {
+    const on = filterKeys.every(
+      (name) => state[name] === ((filters[name] as string | undefined) ?? '')
+    )
+    return (
+      <button
+        type="button"
+        className="preset"
+        key={key}
+        aria-pressed={on}
+        aria-label={aria}
+        onClick={() => applyPreset(filters, on)}
+      >
+        {label}
+      </button>
+    )
+  }
+  const profile = state.department ? C.organisationProfile(records, state.department) : null
   const table = (rows: C.SourceRecord[]) => (
     <table className="record-table">
       <thead>
@@ -275,18 +376,42 @@ export default function RegisterExplorer() {
               <button
                 className="record-open"
                 onClick={() => openRecord(record.ai_register_id)}
-                aria-label={t('rowOpen', { name: C.field(record, 'name_ai_system', lang) })}
               >
+                {/* No aria-label: screen readers should hear the summary too. */}
+                <span className="sr-only">{t('rowOpenPrefix')} </span>
                 <span
                   className="record-title"
                   lang={C.sourceField(record, 'name_ai_system', lang).language}
                 >
-                  {C.field(record, 'name_ai_system', lang) || t('notSpecified')}
+                  {C.field(record, 'name_ai_system', lang)
+                    ? marked(C.field(record, 'name_ai_system', lang))
+                    : t('notSpecified')}
                 </span>
+                {changeSets?.added.has(record.ai_register_id) ? (
+                  <span className="change-tag">{t('tagNew')}</span>
+                ) : changeSets?.updated.has(record.ai_register_id) ? (
+                  <span className="change-tag">{t('tagUpdated')}</span>
+                ) : null}
+                <RecordSummary line={C.excerpt(record, lang, state.query)} marked={marked} />
                 <span className="source-id">{record.ai_register_id}</span>
               </button>
             </th>
-            <td>{C.dept(record.government_organization, lang)}</td>
+            <td>
+              {state.department === record.government_organization ? (
+                C.dept(record.government_organization, lang)
+              ) : (
+                <button
+                  type="button"
+                  className="org-link"
+                  aria-label={t('rowOrgFilter', {
+                    name: C.dept(record.government_organization, lang),
+                  })}
+                  onClick={() => showOrganisation(record.government_organization)}
+                >
+                  {C.dept(record.government_organization, lang)}
+                </button>
+              )}
+            </td>
             <td>
               <StatusTag record={record} t={t} />
             </td>
@@ -379,6 +504,7 @@ export default function RegisterExplorer() {
               t={t}
               onOpen={openRecord}
               onExplore={() => setView('records')}
+              onSearch={heroSearch}
             />
             <div className="source-ribbon">
               <div className="ribbon-inner shell">
@@ -395,6 +521,50 @@ export default function RegisterExplorer() {
                   <span>{t('snapshot', { date: date(data.snapshotAt, lang) })}</span>
                 </p>
               </div>
+              {data.changes && (
+                <div className="change-summary shell">
+                  <p>
+                    {changedCount + data.changes.removed.length > 0
+                      ? t('changeSummary', {
+                          since: date(data.changes.since, lang),
+                          added: number(data.changes.added.length, lang),
+                          updated: number(data.changes.updated.length, lang),
+                          removed: number(data.changes.removed.length, lang),
+                        })
+                      : t('changeNone', { since: date(data.changes.since, lang) })}
+                  </p>
+                  {changedCount > 0 && (
+                    <button
+                      type="button"
+                      className="text-link"
+                      onClick={() => {
+                        applyPreset({ changed: 'any' }, false)
+                        setView('records')
+                        scrollToResults()
+                      }}
+                    >
+                      {t('changeShow')}
+                    </button>
+                  )}
+                  {data.changes.removed.length > 0 && (
+                    <details>
+                      <summary>
+                        {t('changeRemoved')} ({number(data.changes.removed.length, lang)})
+                      </summary>
+                      <ul>
+                        {data.changes.removed.map((row) => (
+                          <li key={row.id}>
+                            {(lang === 'fr' ? row.name_fr : row.name_en) || row.name_en || row.name_fr}{' '}
+                            <span className="source-id">
+                              {C.dept(row.organisation, lang)} · {row.id}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                </div>
+              )}
             </div>
             <section
               className="register-section shell"
@@ -449,6 +619,7 @@ export default function RegisterExplorer() {
                   )}
                   {select('status', t('status'), statusOptions, t('allStatuses'))}
                   {select('personalInfo', t('personalInfo'), flagOptions, t('allPersonalInfo'))}
+                  {select('audience', t('audience'), audienceOptions, t('allAudiences'))}
                   <button
                     className="more-filters"
                     id="more-filters"
@@ -465,6 +636,24 @@ export default function RegisterExplorer() {
                   {select('vendor', t('vendors'), alphabetic(opts.vendors), t('allVendors'))}
                   {select('notificationAi', t('notification'), flagOptions, t('allNotification'))}
                   {select('year', t('statusYear'), years, t('allYears'))}
+                </div>
+              </div>
+              <div className="preset-rows">
+                <div className="preset-row" role="group" aria-labelledby="preset-label">
+                  <span id="preset-label">{t('startWith')}</span>
+                  {filterPresets.map((preset) =>
+                    presetButton(preset.label, t(preset.label), undefined, preset.filters)
+                  )}
+                  {changedCount > 0 &&
+                    presetButton('changedAny', t('changedAny'), undefined, { changed: 'any' })}
+                </div>
+                <div className="preset-row" role="group" aria-labelledby="keyword-label">
+                  <span id="keyword-label">{t('searchFor')}</span>
+                  {keywordPresets.map((word) =>
+                    presetButton(word, t('quoted', { text: word }), t('searchForLabel', { text: word }), {
+                      query: word,
+                    })
+                  )}
                 </div>
               </div>
               <div className="active-filters" role="group" aria-label={t('activeFilters')}>
@@ -491,6 +680,52 @@ export default function RegisterExplorer() {
                   </button>
                 )}
               </div>
+              {profile && (
+                <section className="org-profile" aria-labelledby="org-profile-title">
+                  <div className="org-profile-head">
+                    <p className="eyebrow">{t('profileEyebrow')}</p>
+                    <h3 id="org-profile-title">{C.dept(state.department, lang)}</h3>
+                    <p className="org-profile-note">{t('profileNote')}</p>
+                  </div>
+                  <dl className="org-profile-stats">
+                    {(
+                      [
+                        [profile.total, 'profileSystems'],
+                        [profile.production, 'profileProduction'],
+                        [profile.personalInfo, 'profilePii'],
+                        [profile.public, 'profilePublic'],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <div key={label}>
+                        <dt>{t(label)}</dt>
+                        <dd>{number(value, lang)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="org-profile-foot">
+                    <p>
+                      <span>{t('profileVendors')}: </span>
+                      {profile.vendors.length
+                        ? profile.vendors
+                            .map((vendor) => `${vendor.name} (${number(vendor.count, lang)})`)
+                            .join(', ')
+                        : t('profileNoVendors')}
+                    </p>
+                    <div className="org-profile-actions">
+                      <button className="button" type="button" onClick={() => navigate('patterns')}>
+                        {t('profileCharts')}
+                      </button>
+                      <button
+                        className="button-quiet"
+                        type="button"
+                        onClick={() => change('department', '')}
+                      >
+                        {t('profileClear')}
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              )}
               <div className="workbench-toolbar">
                 <div
                   className="view-tabs"
