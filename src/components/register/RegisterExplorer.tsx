@@ -477,9 +477,15 @@ export default function RegisterExplorer() {
               <div className="shell">
                 <div className="partial-banner" role="status">
                   <div>
-                    <h2>{t('partialTitle')}</h2>
+                    <h2>
+                      {data.warnings.some((warning) => warning.code === 'stale_snapshot')
+                        ? t('staleTitle')
+                        : t('partialTitle')}
+                    </h2>
                     <p>
-                      {data.total !== null && data.total > records.length
+                      {data.warnings.some((warning) => warning.code === 'stale_snapshot')
+                        ? t('staleBody')
+                        : data.total !== null && data.total > records.length
                         ? t('partialAvailable', {
                             count: number(records.length, lang),
                             total: number(data.total, lang),

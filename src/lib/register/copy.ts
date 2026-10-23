@@ -174,6 +174,9 @@ const copy: Record<Lang, Record<string, string>> = {
     errorBody: 'Try again. If the problem continues, visit the official source.',
     retry: 'Try again',
     partialTitle: 'Preview of a limited dataset',
+    staleTitle: 'Showing the latest stored snapshot',
+    staleBody:
+      'The live source was temporarily unavailable. This page is showing the latest validated snapshot; check the official source for current records.',
     partialBody:
       'This preview intentionally limits the displayed records. Missing fields remain distinct from a No value.',
     viewState: 'View state',
@@ -445,6 +448,9 @@ const copy: Record<Lang, Record<string, string>> = {
     errorBody: 'Réessayez. Si le problème persiste, consultez la source officielle.',
     retry: 'Réessayer',
     partialTitle: 'Aperçu d’un ensemble de données limité',
+    staleTitle: 'Affichage du dernier instantané enregistré',
+    staleBody:
+      'La source en direct était temporairement indisponible. Cette page affiche le dernier instantané validé; consultez la source officielle pour les dossiers à jour.',
     partialBody:
       'Cet aperçu limite volontairement les dossiers affichés. Les champs vides restent distincts d’une valeur Non.',
     viewState: 'État de l’affichage',

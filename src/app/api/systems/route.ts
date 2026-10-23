@@ -4,10 +4,12 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fetchFreshSourceSnapshot } from '@/lib/register/ckan'
 import { diffRecords, pickBaseline, type RecordChanges, type Snapshot } from '@/lib/register/changes'
+import { readLatestStoredSnapshot } from '@/lib/register/stored-snapshot'
+import { sourceFailureResult } from '@/lib/register/source-failure'
 import type { SourceRecord } from '@/lib/register/model'
 
 type DataWarning = {
-  code: 'partial_dataset' | 'invalid_records' | 'duplicate_records'
+  code: 'partial_dataset' | 'invalid_records' | 'duplicate_records' | 'stale_snapshot'
   message: string
   total?: number
   returned?: number
@@ -87,9 +89,8 @@ export async function GET() {
     return NextResponse.json({ records, lastModified, snapshotAt, total, warnings, changes })
   } catch (error) {
     console.error('[systems] Unable to retrieve AI registry data.', error)
-    return NextResponse.json(
-      { error: 'Unable to retrieve data. Please try again later.' },
-      { status: 502 }
-    )
+    const snapshot = await readLatestStoredSnapshot(snapshotDirectory)
+    const fallback = sourceFailureResult(snapshot)
+    return NextResponse.json(fallback.body, { status: fallback.status })
   }
 }
