@@ -5,7 +5,7 @@ import { Providers } from './providers'
 import { LANGUAGE_COOKIE, normalizeLang } from '@/lib/language'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ai-register-explorer.vercel.app'),
+  metadataBase: new URL('https://explorer.scotthazlitt.ai'),
   title: 'AI Register — In plain sight',
   description:
     'Explore AI systems reported by federal organisations. Search records, inspect source information, and compare reporting patterns.',
