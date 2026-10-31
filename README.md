@@ -2,7 +2,7 @@
 
 An independent data visualization tool that makes the Government of Canada's [Artificial Intelligence Registry](https://open.canada.ca/data/en/dataset/fcbc0200-79ba-4fa4-94a6-00e32facea6b) more accessible, searchable, and insightful.
 
-**Live site:** [ai-register-explorer.vercel.app](https://ai-register-explorer.vercel.app)
+**Live site:** [explorer.scotthazlitt.ai](https://explorer.scotthazlitt.ai)
 
 ---
 
